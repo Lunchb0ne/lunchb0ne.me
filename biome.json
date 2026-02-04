@@ -19,7 +19,8 @@
   "formatter": {
     "enabled": true,
     "indentStyle": "space",
-    "formatWithErrors": true
+    "formatWithErrors": true,
+    "lineWidth": 130
   },
   "assist": { "actions": { "source": { "organizeImports": "on" } } },
   "linter": {
