@@ -1,13 +1,13 @@
 import { Center, Float, Html, MeshTransmissionMaterial, Sparkles, Text } from "@react-three/drei";
 import { useFrame, useThree } from "@react-three/fiber";
-import { useEffect, useRef, useState } from "react";
+import { memo, useEffect, useRef, useState } from "react";
 import type { Group, Mesh } from "three";
 import { TextMorph } from "torph/react";
 import { useCursor } from "@/hooks/useCursor";
 import { CONFIG, TAGLINES, TECH_ICONS } from "./config";
 import { Sticker } from "./Sticker";
 
-const PrismMaterial = () => (
+const PrismMaterial = memo(() => (
   <MeshTransmissionMaterial
     backside={true}
     samples={CONFIG.PRISM.SAMPLES}
@@ -20,7 +20,26 @@ const PrismMaterial = () => (
     anisotropy={CONFIG.PRISM.ANISOTROPY}
     color={CONFIG.COLORS.PRISM}
   />
-);
+));
+
+const TAGLINE_CONTAINER_STYLE = {
+  fontFamily: '"JetBrains Mono", monospace',
+  fontSize: "16px",
+  lineHeight: "1.4",
+  color: CONFIG.COLORS.GLOW,
+  letterSpacing: "0.1em",
+  fontWeight: "700",
+  textShadow: `0 0 15px ${CONFIG.COLORS.GLOW}33`,
+  pointerEvents: "none" as const,
+  opacity: 0.9,
+  textAlign: "center" as const,
+  textWrap: "balance" as const,
+  width: "90vw",
+  maxWidth: "600px",
+  display: "flex",
+  justifyContent: "center",
+  minHeight: "3em",
+};
 
 export const HeroContent = ({ onHover }: { onHover: (hover: boolean) => void }) => {
   const meshRef = useRef<Mesh>(null);
@@ -31,23 +50,19 @@ export const HeroContent = ({ onHover }: { onHover: (hover: boolean) => void }) 
   useEffect(() => {
     const interval = setInterval(() => {
       setTaglineIndex((prev) => (prev + 1) % TAGLINES.length);
-    }, 3000);
+    }, 4000);
     return () => clearInterval(interval);
   }, []);
 
   useFrame((state) => {
-    // Only animate the coin orbit
     if (orbitRef.current) {
       orbitRef.current.rotation.y = state.clock.getElapsedTime() * 0.1;
     }
   });
 
   const { viewport } = useThree();
-
-  // Fixed sizing values (non-responsive)
   const targetFontSize = 3.5;
   const taglineOffset = -2.3;
-  const taglineSize = 16;
 
   return (
     <group>
@@ -68,27 +83,13 @@ export const HeroContent = ({ onHover }: { onHover: (hover: boolean) => void }) 
           ABHISHEK·ARYAN
         </Text>
 
-        {/* 3D-embedded HTML Text Morph */}
-        <Html center transform position={[0, taglineOffset, 0]} style={{ opacity: 0.9 }}>
-          <div
-            style={{
-              fontFamily: '"JetBrains Mono", monospace',
-              fontSize: `${taglineSize}px`,
-              lineHeight: "1.4",
-              color: CONFIG.COLORS.GLOW,
-              letterSpacing: "0.1em",
-              fontWeight: "700",
-              whiteSpace: "nowrap",
-              textShadow: `0 0 5px ${CONFIG.COLORS.GLOW}66`,
-              pointerEvents: "none",
-            }}
-          >
-            <TextMorph>{TAGLINES[taglineIndex]}</TextMorph>
+        <Html center position={[0, taglineOffset, 0]} className="pointer-events-none">
+          <div style={TAGLINE_CONTAINER_STYLE}>
+            <TextMorph duration={600}>{TAGLINES[taglineIndex]}</TextMorph>
           </div>
         </Html>
       </Center>
 
-      {/* Central Floating Prism */}
       <Float speed={5} rotationIntensity={1} floatIntensity={0.5}>
         <mesh
           ref={meshRef}
@@ -106,14 +107,12 @@ export const HeroContent = ({ onHover }: { onHover: (hover: boolean) => void }) 
         </mesh>
       </Float>
 
-      {/* Tech Orbit with Stickers */}
       <group ref={orbitRef}>
         {TECH_ICONS.map((tech, i) => (
           <Sticker key={tech.slug} icon={tech.icon} index={i} total={TECH_ICONS.length} />
         ))}
       </group>
 
-      {/* Subtle background particles */}
       <Sparkles count={50} scale={8} size={2} speed={0.2} opacity={0.3} color="white" />
     </group>
   );

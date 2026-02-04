@@ -11,7 +11,7 @@ const CONFIG = {
 
 export const ScrollIndicator = () => {
   return (
-    <div className="absolute bottom-12 left-0 right-0 flex justify-center z-20 pointer-events-none">
+    <div className="absolute bottom-12 inset-x-0 flex justify-center z-50 pointer-events-none">
       <motion.div
         animate={{ y: [0, 10, 0] }}
         transition={{ duration: 2, repeat: Number.POSITIVE_INFINITY }}

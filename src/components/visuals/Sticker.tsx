@@ -17,33 +17,37 @@ export const Sticker = ({ icon, index, total }: { icon: SI.SimpleIcon; index: nu
   const z = Math.cos(angle) * CONFIG.ORBIT.RADIUS;
   const y = Number(index % 2 === 0 ? 1 : -1.5);
 
-  const targetQuaternion = useMemo(() => new THREE.Quaternion(), []);
-  const lookAtQuaternion = useMemo(() => new THREE.Quaternion(), []);
-  const tiltQuaternion = useMemo(() => new THREE.Quaternion(), []);
-  const tempEuler = useMemo(() => new THREE.Euler(), []);
-  const tempVec = useMemo(() => new THREE.Vector3(), []);
-  const currentRotBackup = useMemo(() => new THREE.Quaternion(), []);
+  const { baseQuaternion, targetQuaternion, tiltQuaternion, tempEuler, tempVec } = useMemo(() => {
+    const pos = new THREE.Vector3(x, y, z);
+    const m = new THREE.Matrix4();
+    m.lookAt(pos, new THREE.Vector3(0, 0, 0), new THREE.Vector3(0, 1, 0));
+
+    return {
+      baseQuaternion: new THREE.Quaternion().setFromRotationMatrix(m),
+      targetQuaternion: new THREE.Quaternion(),
+      tiltQuaternion: new THREE.Quaternion(),
+      tempEuler: new THREE.Euler(),
+      tempVec: new THREE.Vector3(),
+    };
+  }, [x, y, z]);
 
   useFrame((state) => {
     if (!meshRef.current) return;
 
+    // Handle Scale
     const targetScale = hovered ? CONFIG.ANIMATION.HOVER_SCALE : 1;
     tempVec.set(targetScale, targetScale, targetScale);
     meshRef.current.scale.lerp(tempVec, CONFIG.ANIMATION.TRANSITION_SPEED);
 
-    currentRotBackup.copy(meshRef.current.quaternion);
-    meshRef.current.lookAt(0, 0, 0);
-    lookAtQuaternion.copy(meshRef.current.quaternion);
-    meshRef.current.quaternion.copy(currentRotBackup);
-
+    // Handle Rotation
     if (hovered) {
       const mouseX = state.pointer.x * CONFIG.ANIMATION.TILT_INTENSITY;
       const mouseY = state.pointer.y * CONFIG.ANIMATION.TILT_INTENSITY;
       tempEuler.set(-mouseY * 0.5, mouseX * 0.5, 0);
       tiltQuaternion.setFromEuler(tempEuler);
-      targetQuaternion.copy(lookAtQuaternion).multiply(tiltQuaternion);
+      targetQuaternion.copy(baseQuaternion).multiply(tiltQuaternion);
     } else {
-      targetQuaternion.copy(lookAtQuaternion);
+      targetQuaternion.copy(baseQuaternion);
     }
 
     meshRef.current.quaternion.slerp(targetQuaternion, CONFIG.ANIMATION.TRANSITION_SPEED);

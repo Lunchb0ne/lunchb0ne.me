@@ -22,6 +22,19 @@ export const Route = createRootRoute({
     ],
     links: [
       {
+        rel: "preconnect",
+        href: "https://fonts.googleapis.com",
+      },
+      {
+        rel: "preconnect",
+        href: "https://fonts.gstatic.com",
+        crossOrigin: "",
+      },
+      {
+        rel: "stylesheet",
+        href: "https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Outfit:wght@400;800&display=swap",
+      },
+      {
         rel: "stylesheet",
         href: appCss,
       },
@@ -63,17 +76,19 @@ function RootDocument({ children }: { children: React.ReactNode }) {
       <body>
         <CursorProvider>
           {children}
-          <TanStackDevtools
-            config={{
-              position: "bottom-right",
-            }}
-            plugins={[
-              {
-                name: "Tanstack Router",
-                render: <TanStackRouterDevtoolsPanel />,
-              },
-            ]}
-          />
+          {import.meta.env.DEV && (
+            <TanStackDevtools
+              config={{
+                position: "bottom-right",
+              }}
+              plugins={[
+                {
+                  name: "Tanstack Router",
+                  render: <TanStackRouterDevtoolsPanel />,
+                },
+              ]}
+            />
+          )}
         </CursorProvider>
         <Scripts />
       </body>

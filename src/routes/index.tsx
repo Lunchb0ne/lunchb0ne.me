@@ -32,7 +32,7 @@ function Home() {
 
   return (
     <main
-      className={`relative w-full min-h-screen bg-[#050505] text-white overflow-x-hidden transition-colors duration-500 selection:bg-cyan-500/30 selection:text-cyan-200 ${
+      className={`relative w-full min-h-screen bg-[#050505] text-white transition-colors duration-500 selection:bg-cyan-500/30 selection:text-cyan-200 ${
         cursorType === "hover" ? "cursor-none" : ""
       }`}
     >
@@ -45,23 +45,23 @@ function Home() {
         <About />
       </Section>
 
-      <Section id="experience">
+      <Section id="experience" maxWidth="4xl" className="border-t border-white/5">
         <Experience />
       </Section>
 
-      <Section id="projects">
+      <Section id="projects" className="border-t border-white/5">
         <Projects />
       </Section>
 
-      <Section id="skills">
+      <Section id="skills" className="border-t border-white/5">
         <Skills />
       </Section>
 
-      <Section id="opensource">
+      <Section id="opensource" maxWidth="4xl" className="border-t border-white/5">
         <OpenSource />
       </Section>
 
-      <Section id="contact">
+      <Section id="contact" maxWidth="4xl" className="border-t border-white/5">
         <Contact />
       </Section>
     </main>

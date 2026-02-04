@@ -1,5 +1,9 @@
-@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Outfit:wght@400;800&display=swap');
 @import "tailwindcss";
+
+html {
+  overflow-x: hidden;
+  overflow-y: scroll;
+}
 
 body {
   @apply m-0;

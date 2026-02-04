@@ -4,11 +4,11 @@ import { Environment, Lightformer } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
 import { Bloom, EffectComposer, Glitch, SMAA, ToneMapping } from "@react-three/postprocessing";
 import { Leva, useControls } from "leva";
-import { Suspense, useState } from "react";
+import { memo, Suspense, useState } from "react";
 import * as THREE from "three";
 import { HeroContent } from "./HeroContent";
 
-const Lights = () => (
+const Lights = memo(() => (
   <Environment resolution={512}>
     <group rotation={[-Math.PI / 4, -0.3, 0]}>
       <Lightformer intensity={4} rotation-x={Math.PI / 2} position={[0, 5, -9]} scale={[10, 10, 1]} />
@@ -16,6 +16,38 @@ const Lights = () => (
       <Lightformer intensity={2} rotation-y={Math.PI / 2} position={[-5, -1, -1]} scale={[20, 0.1, 1]} color="#fcb69f" />
     </group>
   </Environment>
+));
+
+const CANVAS_GL_CONFIG = { antialias: false, alpha: true };
+const CANVAS_PERFORMANCE_CONFIG = { min: 0.5 };
+const BACKGROUND_COLOR = ["#050505"] as [string];
+const GLITCH_DELAY = new THREE.Vector2(0, 0);
+const GLITCH_DURATION = new THREE.Vector2(0.1, 0.3);
+
+interface PostProcessingProps {
+  bloomIntensity: number;
+  bloomThreshold: number;
+  bloomRadius: number;
+  glitchStrength: number;
+  glitchRatio: number;
+  hoverGlitch: boolean;
+}
+
+const PostProcessing = memo(
+  ({ bloomIntensity, bloomThreshold, bloomRadius, glitchStrength, glitchRatio, hoverGlitch }: PostProcessingProps) => (
+    <EffectComposer multisampling={0}>
+      <Bloom luminanceThreshold={bloomThreshold} mipmapBlur intensity={bloomIntensity} radius={bloomRadius} />
+      <Glitch
+        active={hoverGlitch}
+        delay={GLITCH_DELAY}
+        duration={GLITCH_DURATION}
+        strength={new THREE.Vector2(0.2, glitchStrength)}
+        ratio={glitchRatio}
+      />
+      <SMAA />
+      <ToneMapping />
+    </EffectComposer>
+  ),
 );
 
 export const HomeScene = () => {
@@ -33,23 +65,24 @@ export const HomeScene = () => {
   return (
     <>
       <Leva hidden={import.meta.env.PROD} />
-      <Canvas camera={{ position: [0, 0, 8], fov: 45 }} dpr={[1, 1.5]} gl={{ antialias: false, alpha: true }}>
-        <color attach="background" args={["#050505"]} />
+      <Canvas
+        camera={{ position: [0, 0, 8], fov: 45 }}
+        dpr={[1, 1.5]}
+        gl={CANVAS_GL_CONFIG}
+        performance={CANVAS_PERFORMANCE_CONFIG}
+      >
+        <color attach="background" args={BACKGROUND_COLOR} />
         <Suspense fallback={null}>
           <HeroContent onHover={setHoverGlitch} />
           <Lights />
-          <EffectComposer multisampling={0}>
-            <Bloom luminanceThreshold={bloomThreshold} mipmapBlur intensity={bloomIntensity} radius={bloomRadius} />
-            <Glitch
-              active={hoverGlitch}
-              delay={new THREE.Vector2(0, 0)}
-              duration={new THREE.Vector2(0.1, 0.3)}
-              strength={new THREE.Vector2(0.2, glitchStrength)}
-              ratio={glitchRatio}
-            />
-            <SMAA />
-            <ToneMapping />
-          </EffectComposer>
+          <PostProcessing
+            bloomIntensity={bloomIntensity}
+            bloomThreshold={bloomThreshold}
+            bloomRadius={bloomRadius}
+            glitchStrength={glitchStrength}
+            glitchRatio={glitchRatio}
+            hoverGlitch={hoverGlitch}
+          />
         </Suspense>
       </Canvas>
     </>

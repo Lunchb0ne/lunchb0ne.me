@@ -16,8 +16,8 @@ export const MorphingWord = ({ className }: { className?: string }) => {
   }, []);
 
   return (
-    <div className={className} style={{ display: "inline-block" }}>
-      <TextMorph>{WORDS[index]}</TextMorph>
+    <div className={`${className} inline-flex items-center justify-center min-w-[1.2em]`}>
+      <TextMorph duration={500}>{WORDS[index]}</TextMorph>
     </div>
   );
 };

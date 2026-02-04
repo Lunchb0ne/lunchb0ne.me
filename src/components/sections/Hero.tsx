@@ -3,9 +3,9 @@ import { ScrollIndicator } from "@/components/visuals/ScrollIndicator";
 
 export const Hero = () => {
   return (
-    <div className="relative w-full h-[100vh] bg-[#050505]">
+    <div className="relative w-full h-screen bg-[#050505] overflow-hidden">
       {/* Combined Scene */}
-      <ClientHomeScene />
+      <ClientHomeScene rootMargin="200px" />
       {/* Scroll Indicator */}
       <ScrollIndicator />
     </div>
