@@ -14,7 +14,7 @@ const config = defineConfig({
     },
   },
   plugins: [
-    devtools(),
+    // devtools(),
     cloudflare({ viteEnvironment: { name: "ssr" } }),
     // this is the plugin that enables path aliases
     viteTsConfigPaths({

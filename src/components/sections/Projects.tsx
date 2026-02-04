@@ -2,35 +2,37 @@ import { motion } from "framer-motion";
 import { ArrowUpRight, Box, Cpu, Zap } from "lucide-react";
 import { useCursor } from "@/hooks/useCursor";
 
-const PROJECTS = [
-  {
-    title: "OnCall Assistant & SOP Buddy",
-    category: "AI / Infrastructure",
-    impact: "40% reduction in response time",
-    description:
-      "Generative AI-powered diagnostic tool for AWS operators to proactively investigate Blue/Green Deployment operational issues. Built using AWS Bedrock and CDK.",
-    tech: ["Python", "TypeScript", "AWS Bedrock", "CDK"],
-    icon: <Zap className="w-6 h-6" />,
-  },
-  {
-    title: "Dedicated Log Volume",
-    category: "Database Performance",
-    impact: "15% reduction in latency jitter",
-    description:
-      "Owned end-to-end development for Multi-AZ DB Instances. Improved P99 performance for I/O-intensive production workloads in RDS Aurora.",
-    tech: ["Java", "Distributed Systems", "Storage Internals"],
-    icon: <Cpu className="w-6 h-6" />,
-  },
-  {
-    title: "OnFlix Streaming Platform",
-    category: "Full Stack",
-    impact: "Sub-second metadata tracking",
-    description:
-      "Architected a full-stack video streaming SPA with real-time metadata tracking using Nuxt.js and Firebase. Delivered a seamless user experience.",
-    tech: ["Nuxt.js", "Vue.js", "Firebase", "Vuex"],
-    icon: <Box className="w-6 h-6" />,
-  },
-];
+const CONFIG = {
+  PROJECTS: [
+    {
+      title: "OnCall Assistant & SOP Buddy",
+      category: "AI / Infrastructure",
+      impact: "40% reduction in response time",
+      description:
+        "Generative AI-powered diagnostic tool for AWS operators to proactively investigate Blue/Green Deployment operational issues. Built using AWS Bedrock and CDK.",
+      tech: ["Python", "TypeScript", "AWS Bedrock", "CDK"],
+      icon: <Zap className="w-6 h-6" />,
+    },
+    {
+      title: "Dedicated Log Volume",
+      category: "Database Performance",
+      impact: "15% reduction in latency jitter",
+      description:
+        "Owned end-to-end development for Multi-AZ DB Instances. Improved P99 performance for I/O-intensive production workloads in RDS Aurora.",
+      tech: ["Java", "Distributed Systems", "Storage Internals"],
+      icon: <Cpu className="w-6 h-6" />,
+    },
+    {
+      title: "OnFlix Streaming Platform",
+      category: "Full Stack",
+      impact: "Sub-second metadata tracking",
+      description:
+        "Architected a full-stack video streaming SPA with real-time metadata tracking using Nuxt.js and Firebase. Delivered a seamless user experience.",
+      tech: ["Nuxt.js", "Vue.js", "Firebase", "Vuex"],
+      icon: <Box className="w-6 h-6" />,
+    },
+  ],
+} as const;
 
 const itemVariants = {
   hidden: { opacity: 0, y: 20 },
@@ -49,7 +51,7 @@ export const Projects = () => {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {PROJECTS.map((project) => (
+          {CONFIG.PROJECTS.map((project) => (
             <motion.article
               key={project.title}
               variants={itemVariants}

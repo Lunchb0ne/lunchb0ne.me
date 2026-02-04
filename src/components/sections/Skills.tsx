@@ -1,11 +1,11 @@
-"use client";
-
-const SKILLS = {
-  Languages: ["Java", "Go", "TypeScript", "Python", "Ruby", "SQL"],
-  Infrastructure: ["AWS CDK", "Kubernetes", "Docker", "Terraform", "Serverless"],
-  "Web & UI": ["React", "Next.js", "TailwindCSS", "Three.js", "Framer Motion"],
-  "Databases & Tools": ["PostgreSQL", "MySQL", "Redis", "Kafka", "Git"],
-};
+const CONFIG = {
+  SKILLS: {
+    Languages: ["Java", "Go", "TypeScript", "Python", "Ruby", "SQL"],
+    Infrastructure: ["AWS CDK", "Kubernetes", "Docker", "Terraform", "Serverless"],
+    "Web & UI": ["React", "Next.js", "TailwindCSS", "Three.js", "Framer Motion"],
+    "Databases & Tools": ["PostgreSQL", "MySQL", "Redis", "Kafka", "Git"],
+  },
+} as const;
 
 export const Skills = () => {
   return (
@@ -17,7 +17,7 @@ export const Skills = () => {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-          {Object.entries(SKILLS).map(([category, items]) => (
+          {Object.entries(CONFIG.SKILLS).map(([category, items]) => (
             <div key={category} className="space-y-6">
               <h3 className="text-sm font-mono text-cyan-400/80 uppercase tracking-widest">{category}</h3>
               <div className="flex flex-wrap gap-2">

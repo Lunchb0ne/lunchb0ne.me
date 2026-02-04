@@ -30,31 +30,27 @@ export const Route = createRootRoute({
 
   shellComponent: RootDocument,
   errorComponent: (props) => (
-    <RootDocument>
-      <div className="flex flex-col items-center justify-center min-h-screen bg-neutral-950 text-white p-4 text-center">
-        <h1 className="text-4xl font-bold mb-4 text-red-500">Something went wrong</h1>
-        <p className="text-neutral-400 mb-8 max-w-md">{props.error.message}</p>
-        <button
-          type="button"
-          onClick={props.reset}
-          className="px-6 py-2 bg-neutral-800 hover:bg-neutral-700 rounded-lg transition-colors"
-        >
-          Try again
-        </button>
-      </div>
-    </RootDocument>
+    <div className="flex flex-col items-center justify-center min-h-screen bg-neutral-950 text-white p-4 text-center">
+      <h1 className="text-4xl font-bold mb-4 text-red-500">Something went wrong</h1>
+      <p className="text-neutral-400 mb-8 max-w-md">{props.error.message}</p>
+      <button
+        type="button"
+        onClick={props.reset}
+        className="px-6 py-2 bg-neutral-800 hover:bg-neutral-700 rounded-lg transition-colors"
+      >
+        Try again
+      </button>
+    </div>
   ),
   notFoundComponent: () => (
-    <RootDocument>
-      <div className="flex flex-col items-center justify-center min-h-screen bg-neutral-950 text-white p-4 text-center">
-        <h1 className="text-9xl font-bold mb-4 text-neutral-800">404</h1>
-        <h2 className="text-2xl font-semibold mb-4">Page Not Found</h2>
-        <p className="text-neutral-400 mb-8 max-w-md">The page you are looking for does not exist or has been moved.</p>
-        <a href="/" className="px-6 py-2 bg-cyan-600 hover:bg-cyan-500 rounded-lg transition-colors font-medium">
-          Go Home
-        </a>
-      </div>
-    </RootDocument>
+    <div className="flex flex-col items-center justify-center min-h-screen bg-neutral-950 text-white p-4 text-center">
+      <h1 className="text-9xl font-bold mb-4 text-neutral-800">404</h1>
+      <h2 className="text-2xl font-semibold mb-4">Page Not Found</h2>
+      <p className="text-neutral-400 mb-8 max-w-md">The page you are looking for does not exist or has been moved.</p>
+      <a href="/" className="px-6 py-2 bg-cyan-600 hover:bg-cyan-500 rounded-lg transition-colors font-medium">
+        Go Home
+      </a>
+    </div>
   ),
 });
 

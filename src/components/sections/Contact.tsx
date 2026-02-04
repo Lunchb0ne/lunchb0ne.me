@@ -1,6 +1,5 @@
-"use client";
-
 import { ArrowRight, Github, Linkedin, Mail, Twitter } from "lucide-react";
+import { MorphingWord } from "@/components/visuals/MorphingWord";
 
 export const Contact = () => {
   return (
@@ -9,8 +8,8 @@ export const Contact = () => {
       <div className="absolute inset-0 bg-gradient-to-b from-transparent to-cyan-950/20 pointer-events-none" />
 
       <div className="max-w-4xl mx-auto text-center relative z-10">
-        <h2 className="text-4xl md:text-5xl font-bold text-white mb-6 tracking-tight">
-          Ready to build the <span className="text-cyan-400">future</span>?
+        <h2 className="text-4xl md:text-5xl font-bold text-white mb-6 tracking-tight flex items-center justify-center gap-2">
+          Ready to build the <MorphingWord className="text-cyan-400 min-w-[120px]" />?
         </h2>
         <p className="text-lg text-white/50 mb-12 max-w-2xl mx-auto leading-relaxed">
           Whether you have a question about distributed systems, want to collaborate on an open-source project, or just want to
@@ -19,18 +18,12 @@ export const Contact = () => {
 
         <div className="flex flex-col sm:flex-row items-center justify-center gap-6 mb-20">
           <a
-            href="mailto:abhishek.rbg@gmail.com"
+            href="mailto:hi@lunchb0ne.me"
             className="group flex items-center gap-3 px-8 py-4 bg-white text-black font-bold rounded-full hover:bg-cyan-400 transition-colors duration-300"
           >
             <Mail className="w-5 h-5" />
             <span>Say Hello</span>
             <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-          </a>
-          <a
-            href="https://calendar.app.google/..." // Placeholder or real link if known
-            className="px-8 py-4 rounded-full border border-white/20 text-white font-medium hover:bg-white/5 transition-colors"
-          >
-            Schedule a Call
           </a>
         </div>
 

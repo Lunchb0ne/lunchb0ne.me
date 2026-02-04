@@ -1,5 +1,3 @@
-"use client";
-
 import { Code2, Globe, Heart } from "lucide-react";
 
 export const About = () => {
