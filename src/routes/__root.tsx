@@ -1,5 +1,5 @@
 import { TanStackDevtools } from "@tanstack/react-devtools";
-import { createRootRoute, HeadContent, Scripts } from "@tanstack/react-router";
+import { createRootRoute, HeadContent, Link, Scripts } from "@tanstack/react-router";
 import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
 import { NoiseTexture } from "@/components/ui/NoiseTexture";
 import { CursorProvider } from "@/hooks/useCursor";
@@ -77,9 +77,9 @@ export const Route = createRootRoute({
       <h1 className="text-9xl font-bold mb-4 text-neutral-800">404</h1>
       <h2 className="text-2xl font-semibold mb-4">Page Not Found</h2>
       <p className="text-neutral-400 mb-8 max-w-md">The page you are looking for does not exist or has been moved.</p>
-      <a href="/" className="px-6 py-2 bg-cyan-600 hover:bg-cyan-500 rounded-lg transition-colors font-medium">
+      <Link to="/" className="px-6 py-2 bg-cyan-600 hover:bg-cyan-500 rounded-lg transition-colors font-medium">
         Go Home
-      </a>
+      </Link>
     </div>
   ),
 });
