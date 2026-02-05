@@ -24,6 +24,44 @@ export const Route = createFileRoute("/")({
         content:
           "Software Development Engineer specialized in building resilient distributed systems and cloud-native infrastructure.",
       },
+      // Open Graph
+      {
+        property: "og:type",
+        content: "website",
+      },
+      {
+        property: "og:url",
+        content: "https://lunchb0ne.me",
+      },
+      {
+        property: "og:title",
+        content: "Abhishek Aryan | SDE II at AWS",
+      },
+      {
+        property: "og:description",
+        content: "Building resilient distributed systems and cloud-native infrastructure.",
+      },
+      {
+        property: "og:image",
+        content: "/og-image.png",
+      },
+      // Twitter Card
+      {
+        name: "twitter:card",
+        content: "summary_large_image",
+      },
+      {
+        name: "twitter:title",
+        content: "Abhishek Aryan | SDE II at AWS",
+      },
+      {
+        name: "twitter:description",
+        content: "Building resilient distributed systems and cloud-native infrastructure.",
+      },
+      {
+        name: "twitter:image",
+        content: "/og-image.png",
+      },
     ],
   }),
 });

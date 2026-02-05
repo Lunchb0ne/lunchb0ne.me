@@ -17,10 +17,27 @@ export const Route = createRootRoute({
         content: "width=device-width, initial-scale=1",
       },
       {
-        title: "Lunch's Site",
+        title: "Abhishek Aryan | Portfolio",
+      },
+      {
+        name: "theme-color",
+        content: "#050505",
       },
     ],
     links: [
+      {
+        rel: "icon",
+        type: "image/svg+xml",
+        href: "/icon.svg",
+      },
+      {
+        rel: "apple-touch-icon",
+        href: "/logo192.png",
+      },
+      {
+        rel: "manifest",
+        href: "/manifest.json",
+      },
       {
         rel: "preconnect",
         href: "https://fonts.googleapis.com",
