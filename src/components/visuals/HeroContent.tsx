@@ -37,6 +37,7 @@ const PrismMaterial = memo(() => (
     color={CONFIG.COLORS.PRISM}
   />
 ));
+PrismMaterial.displayName = "PrismMaterial";
 
 const TAGLINE_CONTAINER_STYLE = {
   fontFamily: '"JetBrains Mono", monospace',
@@ -64,19 +65,20 @@ interface MarqueeTextProps extends React.ComponentProps<typeof Text> {
 const MarqueeText = ({ children, speed = 2, ...props }: MarqueeTextProps) => {
   const group = useRef<Group>(null);
   const [width, setWidth] = useState(0);
+  const widthRef = useRef(0); // Used in useFrame to avoid closure stale value
   const gap = 0; // Gap handled by text content
 
   useFrame((state, delta) => {
-    if (group.current && width > 0) {
+    if (group.current && widthRef.current > 0) {
       // Non-linear ease (sine wave speed variation)
       const time = state.clock.getElapsedTime();
-      const wave = Math.sin(time * 0.5) * 0.3 + 1; // fluctuated between 0.7 and 1.3
+      const wave = Math.sin(time * 0.5) * 0.3 + 1; // fluctuates between 0.7 and 1.3
       const currentSpeed = speed * wave;
 
       // Move left
       group.current.position.x -= delta * currentSpeed;
       // Reset position when the first text has fully moved out
-      const totalWidth = width + gap;
+      const totalWidth = widthRef.current + gap;
       if (group.current.position.x < -totalWidth) {
         group.current.position.x += totalWidth;
       }
@@ -87,8 +89,9 @@ const MarqueeText = ({ children, speed = 2, ...props }: MarqueeTextProps) => {
   const onSync = (scene: THREE.Object3D) => {
     const box = new THREE.Box3().setFromObject(scene);
     const w = box.max.x - box.min.x;
-    if (w > 0 && Math.abs(w - width) > 0.1) {
-      setWidth(w);
+    if (w > 0 && Math.abs(w - widthRef.current) > 0.1) {
+      widthRef.current = w;
+      setWidth(w); // Update state for JSX position
     }
   };
 

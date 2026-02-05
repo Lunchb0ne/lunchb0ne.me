@@ -7,17 +7,14 @@ import { useCursor } from "@/hooks/useCursor";
 import { COIN_MATERIALS, CONFIG, coinGeometry } from "./config";
 import { EmbossedLogo } from "./EmbossedLogo";
 
-export const Sticker = ({
-  icon,
-  index,
-  total,
-  materialType = "chrome",
-}: {
+interface StickerProps {
   icon: SI.SimpleIcon;
   index: number;
   total: number;
   materialType?: keyof typeof COIN_MATERIALS;
-}) => {
+}
+
+export const Sticker = ({ icon, index, total, materialType = "chrome" }: StickerProps) => {
   const meshRef = useRef<THREE.Group>(null);
   const [hovered, setHover] = useState(false);
   const { setCursorType } = useCursor();
@@ -25,7 +22,7 @@ export const Sticker = ({
   const angle = (index / total) * Math.PI * 2;
   const x = Math.sin(angle) * CONFIG.ORBIT.RADIUS;
   const z = Math.cos(angle) * CONFIG.ORBIT.RADIUS;
-  const y = Number(index % 2 === 0 ? 1 : -1.5);
+  const y = index % 2 === 0 ? 1 : -1.5;
 
   const { baseQuaternion, targetQuaternion, tiltQuaternion, tempEuler, tempVec } = useMemo(() => {
     const pos = new THREE.Vector3(x, y, z);

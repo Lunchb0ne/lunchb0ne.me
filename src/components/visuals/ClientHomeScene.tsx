@@ -3,31 +3,34 @@
 import { useEffect, useRef, useState } from "react";
 import { HomeScene } from "@/components/visuals/HomeScene";
 
-export const ClientHomeScene = ({ rootMargin = "100px", threshold = 0 }: { rootMargin?: string; threshold?: number }) => {
-  const [mounted, setMounted] = useState(false);
-  const [isVisible, setIsVisible] = useState(false);
+interface ClientHomeSceneProps {
+  rootMargin?: string;
+  threshold?: number;
+}
+
+export const ClientHomeScene = ({ rootMargin = "100px", threshold = 0 }: ClientHomeSceneProps) => {
+  const [shouldRender, setShouldRender] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    setMounted(true);
+    const container = containerRef.current;
+    if (!container) return;
 
     const observer = new IntersectionObserver(
       ([entry]) => {
-        setIsVisible(entry.isIntersecting);
+        setShouldRender(entry.isIntersecting);
       },
       { threshold, rootMargin },
     );
 
-    if (containerRef.current) {
-      observer.observe(containerRef.current);
-    }
+    observer.observe(container);
 
     return () => observer.disconnect();
   }, [rootMargin, threshold]);
 
   return (
     <div ref={containerRef} className="absolute inset-0 z-0 overflow-hidden">
-      {mounted && isVisible ? <HomeScene /> : null}
+      {shouldRender ? <HomeScene /> : null}
     </div>
   );
 };

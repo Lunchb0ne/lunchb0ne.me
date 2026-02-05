@@ -4,7 +4,7 @@ import { Environment, Lightformer } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
 import { Bloom, EffectComposer, Glitch, SMAA, ToneMapping } from "@react-three/postprocessing";
 import { Leva, useControls } from "leva";
-import { memo, Suspense, useState } from "react";
+import { memo, Suspense, useMemo, useState } from "react";
 import * as THREE from "three";
 import { HeroContent } from "./HeroContent";
 
@@ -17,6 +17,7 @@ const Lights = memo(() => (
     </group>
   </Environment>
 ));
+Lights.displayName = "Lights";
 
 const CANVAS_GL_CONFIG = { antialias: false, alpha: true };
 const CANVAS_PERFORMANCE_CONFIG = { min: 0.5 };
@@ -34,21 +35,27 @@ interface PostProcessingProps {
 }
 
 const PostProcessing = memo(
-  ({ bloomIntensity, bloomThreshold, bloomRadius, glitchStrength, glitchRatio, hoverGlitch }: PostProcessingProps) => (
-    <EffectComposer multisampling={0}>
-      <Bloom luminanceThreshold={bloomThreshold} mipmapBlur intensity={bloomIntensity} radius={bloomRadius} />
-      <Glitch
-        active={hoverGlitch}
-        delay={GLITCH_DELAY}
-        duration={GLITCH_DURATION}
-        strength={new THREE.Vector2(0.2, glitchStrength)}
-        ratio={glitchRatio}
-      />
-      <SMAA />
-      <ToneMapping />
-    </EffectComposer>
-  ),
+  ({ bloomIntensity, bloomThreshold, bloomRadius, glitchStrength, glitchRatio, hoverGlitch }: PostProcessingProps) => {
+    // Memoize Vector2 to avoid recreation on every render
+    const glitchStrengthVec = useMemo(() => new THREE.Vector2(0.2, glitchStrength), [glitchStrength]);
+
+    return (
+      <EffectComposer multisampling={0}>
+        <Bloom luminanceThreshold={bloomThreshold} mipmapBlur intensity={bloomIntensity} radius={bloomRadius} />
+        <Glitch
+          active={hoverGlitch}
+          delay={GLITCH_DELAY}
+          duration={GLITCH_DURATION}
+          strength={glitchStrengthVec}
+          ratio={glitchRatio}
+        />
+        <SMAA />
+        <ToneMapping />
+      </EffectComposer>
+    );
+  },
 );
+PostProcessing.displayName = "PostProcessing";
 
 export const HomeScene = () => {
   const [hoverGlitch, setHoverGlitch] = useState(false);
