@@ -1,9 +1,20 @@
-"use client";
-
 import { useEffect, useState } from "react";
 import { TextMorph } from "torph/react";
+import { cn } from "@/utils/cn";
 
-const WORDS = ["future", "next", "weird", "cool", "new"];
+// Words that tie into the portfolio themes: distributed systems, open source, databases, innovation
+const WORDS = [
+  "future",
+  "resilient",
+  "distributed",
+  "scalable",
+  "next",
+  "edge",
+  "fault-tolerant",
+  "cloud-native",
+  "open source",
+  "innovative",
+];
 
 export const MorphingWord = ({ className }: { className?: string }) => {
   const [index, setIndex] = useState(0);
@@ -11,13 +22,13 @@ export const MorphingWord = ({ className }: { className?: string }) => {
   useEffect(() => {
     const interval = setInterval(() => {
       setIndex((prev) => (prev + 1) % WORDS.length);
-    }, 3000);
+    }, 2500);
     return () => clearInterval(interval);
   }, []);
 
   return (
-    <div className={`${className} inline-flex items-center justify-center min-w-[1.2em]`}>
-      <TextMorph duration={500}>{WORDS[index]}</TextMorph>
-    </div>
+    <span className={cn(className, "relative inline-block translate-y-[-0.05em] leading-normal")}>
+      <TextMorph duration={600}>{WORDS[index]}</TextMorph>
+    </span>
   );
 };

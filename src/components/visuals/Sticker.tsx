@@ -4,10 +4,20 @@ import { useMemo, useRef, useState } from "react";
 import type * as SI from "simple-icons";
 import * as THREE from "three";
 import { useCursor } from "@/hooks/useCursor";
-import { CONFIG, coinGeometry, coinMaterial } from "./config";
+import { COIN_MATERIALS, CONFIG, coinGeometry } from "./config";
 import { EmbossedLogo } from "./EmbossedLogo";
 
-export const Sticker = ({ icon, index, total }: { icon: SI.SimpleIcon; index: number; total: number }) => {
+export const Sticker = ({
+  icon,
+  index,
+  total,
+  materialType = "chrome",
+}: {
+  icon: SI.SimpleIcon;
+  index: number;
+  total: number;
+  materialType?: keyof typeof COIN_MATERIALS;
+}) => {
   const meshRef = useRef<THREE.Group>(null);
   const [hovered, setHover] = useState(false);
   const { setCursorType } = useCursor();
@@ -72,7 +82,7 @@ export const Sticker = ({ icon, index, total }: { icon: SI.SimpleIcon; index: nu
             setCursorType("default");
           }}
         >
-          <mesh rotation={[Math.PI / 2, 0, 0]} geometry={coinGeometry} material={coinMaterial} />
+          <mesh rotation={[Math.PI / 2, 0, 0]} geometry={coinGeometry} material={COIN_MATERIALS[materialType]} />
           <group position={[0, 0, CONFIG.LOGO.Z_OFFSET]}>
             <EmbossedLogo svgContent={icon.svg} />
           </group>

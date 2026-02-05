@@ -4,8 +4,8 @@ import { MorphingWord } from "@/components/visuals/MorphingWord";
 export const Contact = () => {
   return (
     <div className="text-center relative z-10">
-      <h2 className="text-4xl md:text-5xl font-bold text-white mb-6 tracking-tight flex items-center justify-center gap-2">
-        Ready to build the <MorphingWord className="text-cyan-400 min-w-[120px]" />?
+      <h2 className="text-4xl md:text-5xl font-bold text-white mb-6 tracking-tight">
+        Ready to build the <MorphingWord className="text-cyan-400" />?
       </h2>
       <p className="text-lg text-white/50 mb-12 max-w-2xl mx-auto leading-relaxed">
         Whether you have a question about distributed systems, want to collaborate on an open-source project, or just want to say
@@ -53,9 +53,7 @@ export const Contact = () => {
         </a>
       </div>
 
-      <div className="mt-20 text-center text-white/20 text-sm font-mono">
-        &copy; {new Date().getFullYear()} Abhishek Aryan. All rights reserved.
-      </div>
+      <div className="mt-20 text-center text-white/20 text-sm font-mono">&copy; 2026 Abhishek Aryan. All rights reserved.</div>
     </div>
   );
 };

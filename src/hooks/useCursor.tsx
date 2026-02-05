@@ -1,5 +1,5 @@
 import type React from "react";
-import { createContext, useContext, useMemo, useState } from "react";
+import { createContext, use, useMemo, useState } from "react";
 
 type CursorType = "default" | "hover" | "text" | "hidden";
 
@@ -21,4 +21,4 @@ export const CursorProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   return <CursorContext.Provider value={value}>{children}</CursorContext.Provider>;
 };
 
-export const useCursor = () => useContext(CursorContext);
+export const useCursor = () => use(CursorContext);

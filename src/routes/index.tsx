@@ -4,12 +4,13 @@ import { About } from "@/components/sections/About";
 import { Contact } from "@/components/sections/Contact";
 import { Experience } from "@/components/sections/Experience";
 import { Hero } from "@/components/sections/Hero";
-import { OpenSource } from "@/components/sections/OpenSource";
+
 import { Projects } from "@/components/sections/Projects";
 import { Skills } from "@/components/sections/Skills";
 import { Section } from "@/components/ui/Section";
 import { Spotlight } from "@/components/ui/Spotlight";
 import { useCursor } from "@/hooks/useCursor";
+import { cn } from "@/utils/cn";
 
 export const Route = createFileRoute("/")({
   component: Home,
@@ -32,9 +33,10 @@ function Home() {
 
   return (
     <main
-      className={`relative w-full min-h-screen bg-[#050505] text-white transition-colors duration-500 selection:bg-cyan-500/30 selection:text-cyan-200 ${
-        cursorType === "hover" ? "cursor-none" : ""
-      }`}
+      className={cn(
+        "relative w-full min-h-screen bg-[#050505] text-white transition-colors duration-500 selection:bg-cyan-500/30 selection:text-cyan-200",
+        cursorType === "hover" && "cursor-none",
+      )}
     >
       <Spotlight />
       <Navigation />
@@ -55,10 +57,6 @@ function Home() {
 
       <Section id="skills" className="border-t border-white/5">
         <Skills />
-      </Section>
-
-      <Section id="opensource" maxWidth="4xl" className="border-t border-white/5">
-        <OpenSource />
       </Section>
 
       <Section id="contact" maxWidth="4xl" className="border-t border-white/5">

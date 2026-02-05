@@ -1,7 +1,7 @@
 import { TanStackDevtools } from "@tanstack/react-devtools";
 import { createRootRoute, HeadContent, Scripts } from "@tanstack/react-router";
 import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
-
+import { NoiseTexture } from "@/components/ui/NoiseTexture";
 import { CursorProvider } from "@/hooks/useCursor";
 
 import appCss from "@/styles.css?url";
@@ -74,6 +74,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
         <HeadContent />
       </head>
       <body>
+        <NoiseTexture />
         <CursorProvider>
           {children}
           {import.meta.env.DEV && (

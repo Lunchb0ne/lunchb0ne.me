@@ -6,23 +6,28 @@ export const About = () => {
     <>
       <Section.Header>About Me</Section.Header>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-16 items-start">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-start">
         <div className="space-y-6 text-lg leading-relaxed text-white/70">
           <p>
-            I'm a <span className="text-cyan-400 font-medium">Software Development Engineer</span> specialized in building
-            resilient distributed systems and cloud-native infrastructure. Currently at{" "}
-            <span className="text-white">AWS (RDS Aurora)</span>, I work on the control plane that manages thousands of database
-            clusters securely and reliably.
+            I’m a <span className="text-cyan-400 font-medium">Software Development Engineer</span> focused on{" "}
+            <span className="text-white">resilient distributed systems</span> and cloud‑native infrastructure. At{" "}
+            <span className="text-white font-medium">AWS RDS & Aurora</span>, I work on the{" "}
+            <span className="text-cyan-400">control plane</span> that orchestrates thousands of database clusters: failovers,
+            backups, security, all the <span className="italic text-white/90">invisible machinery</span> that makes “it just
+            works” actually true.
           </p>
           <p>
-            My engineering philosophy revolves around <span className="italic">simplicity in design</span> and{" "}
-            <span className="italic">robustness in execution</span>. I believe that the best systems are the ones that are easy to
-            reason about, yet powerful enough to handle massive scale.
+            My bias is toward <span className="italic text-white font-medium">simple, ruthless designs</span>. No ceremony, no
+            cleverness for its own sake, no black boxes you have to “trust”. If a system can’t be explained on a{" "}
+            <span className="text-white">whiteboard in ten minutes</span>, I probably don’t want it running in production.
           </p>
           <p>
-            Beyond the code, I'm an active <span className="text-pink-400">Open Sourcerer</span> contributing to tools that
-            improve developer experience. When I'm not optimizing query paths or debugging race conditions, you'll find me
-            exploring the latest in generative AI or tinkering with new web technologies.
+            When I’m off the clock, I’m usually doing the same thing with fewer guardrails: building{" "}
+            <span className="text-cyan-400">stress tools</span>, weird CLIs, and{" "}
+            <span className="text-pink-400 font-medium">open source experiments</span> that push databases until they complain and
+            surface where they crack. I also spend an unhealthy amount of time exploring{" "}
+            <span className="text-cyan-400">generative AI</span> and coding agents, and hacking on{" "}
+            <span className="text-cyan-400">new web tech</span> to see how far the stack can be pushed before it gives up.
           </p>
         </div>
 

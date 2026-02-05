@@ -1,23 +1,31 @@
-import * as SI from "simple-icons";
+import {
+  siDocker,
+  siGo,
+  siKubernetes,
+  siMysql,
+  siNextdotjs,
+  siOpenjdk,
+  siPostgresql,
+  siPython,
+  siReact,
+  siRuby,
+  siServerless,
+  siTailwindcss,
+  siThreedotjs,
+  siTypescript,
+} from "simple-icons";
 import * as THREE from "three";
 
 export const CONFIG = {
   COLORS: {
-    BACKGROUND: "#050505",
     METAL_BASE: "#ffffff",
     GLOW: "#a5f3fc",
     PRISM: "#e2e8f0",
-    MATRIX: "#00ff41",
-    RIBBON: "#ff00ff",
   },
   COIN: {
     RADIUS: 0.7,
     DEPTH: 0.1,
     SEGMENTS: 64,
-    ROUGHNESS: 0.15,
-    METALNESS: 1,
-    CLEARCOAT: 1,
-    CLEARCOAT_ROUGHNESS: 0.1,
   },
   LOGO: {
     ROUGHNESS: 0.3,
@@ -51,26 +59,26 @@ export const CONFIG = {
   },
 } as const;
 
-// Sample 7 random icons from this
-export const TECH_ICONS = [
-  { slug: "java", icon: SI.siOpenjdk, name: "Java" },
-  { slug: "go", icon: SI.siGo, name: "Go" },
-  { slug: "typescript", icon: SI.siTypescript, name: "TypeScript" },
-  { slug: "python", icon: SI.siPython, name: "Python" },
-  { slug: "ruby", icon: SI.siRuby, name: "Ruby" },
-  { slug: "kubernetes", icon: SI.siKubernetes, name: "Kubernetes" },
-  { slug: "docker", icon: SI.siDocker, name: "Docker" },
-  { slug: "serverless", icon: SI.siServerless, name: "Serverless" },
-  { slug: "react", icon: SI.siReact, name: "React" },
-  { slug: "nextjs", icon: SI.siNextdotjs, name: "Next.js" },
-  { slug: "tailwind", icon: SI.siTailwindcss, name: "Tailwind" },
-  { slug: "threejs", icon: SI.siThreedotjs, name: "Three.js" },
-  { slug: "postgres", icon: SI.siPostgresql, name: "PostgreSQL" },
-  { slug: "mysql", icon: SI.siMysql, name: "MySQL" },
-]
-  .filter((item) => !!item.icon)
-  .sort(() => Math.random() - 0.5)
-  .slice(0, 7);
+// Full list of tech icons - random selection happens client-side in HeroContent
+export const ALL_TECH_ICONS = [
+  { slug: "java", icon: siOpenjdk, name: "Java" },
+  { slug: "go", icon: siGo, name: "Go" },
+  { slug: "typescript", icon: siTypescript, name: "TypeScript" },
+  { slug: "python", icon: siPython, name: "Python" },
+  { slug: "ruby", icon: siRuby, name: "Ruby" },
+  { slug: "kubernetes", icon: siKubernetes, name: "Kubernetes" },
+  { slug: "docker", icon: siDocker, name: "Docker" },
+  { slug: "serverless", icon: siServerless, name: "Serverless" },
+  { slug: "react", icon: siReact, name: "React" },
+  { slug: "nextjs", icon: siNextdotjs, name: "Next.js" },
+  { slug: "tailwind", icon: siTailwindcss, name: "Tailwind" },
+  { slug: "threejs", icon: siThreedotjs, name: "Three.js" },
+  { slug: "postgres", icon: siPostgresql, name: "PostgreSQL" },
+  { slug: "mysql", icon: siMysql, name: "MySQL" },
+];
+
+// Number of icons to display (randomly selected on each page load)
+export const ICON_COUNT = 6;
 
 export const TAGLINES = [
   "ARCHITECTING RESILIENT DISTRIBUTED SYSTEMS",
@@ -95,14 +103,38 @@ export const coinGeometry = new THREE.CylinderGeometry(
   CONFIG.COIN.SEGMENTS,
 );
 
-export const coinMaterial = new THREE.MeshPhysicalMaterial({
-  color: CONFIG.COLORS.METAL_BASE,
-  roughness: CONFIG.COIN.ROUGHNESS,
-  metalness: CONFIG.COIN.METALNESS,
-  clearcoat: CONFIG.COIN.CLEARCOAT,
-  clearcoatRoughness: CONFIG.COIN.CLEARCOAT_ROUGHNESS,
-  reflectivity: 1,
-});
+// Premium metal material variants
+export const COIN_MATERIALS = {
+  // Classic chrome/silver
+  chrome: new THREE.MeshPhysicalMaterial({
+    color: "#ffffff",
+    roughness: 0.15,
+    metalness: 1,
+    clearcoat: 1,
+    clearcoatRoughness: 0.1,
+    reflectivity: 1,
+  }),
+  // Premium gold
+  gold: new THREE.MeshPhysicalMaterial({
+    color: "#d4a853",
+    roughness: 0.2,
+    metalness: 1,
+    clearcoat: 0.8,
+    clearcoatRoughness: 0.15,
+    reflectivity: 1,
+  }),
+  // Titanium silver (darker, more matte)
+  titanium: new THREE.MeshPhysicalMaterial({
+    color: "#8a9a9a",
+    roughness: 0.35,
+    metalness: 0.9,
+    clearcoat: 0.4,
+    clearcoatRoughness: 0.3,
+    reflectivity: 0.8,
+  }),
+} as const;
+
+export const COIN_MATERIAL_KEYS = Object.keys(COIN_MATERIALS) as (keyof typeof COIN_MATERIALS)[];
 
 export const logoMaterial = new THREE.MeshPhysicalMaterial({
   color: CONFIG.COLORS.METAL_BASE,

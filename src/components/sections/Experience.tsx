@@ -41,11 +41,11 @@ export const Experience = () => {
       <div className="space-y-12">
         {CONFIG.EXPERIENCE.map((exp) => (
           <motion.div
-            key={exp.role}
+            key={`${exp.company}-${exp.role}`}
             variants={itemVariants}
             className="group relative pl-8 border-l border-white/10 hover:border-cyan-500/50 transition-colors duration-500"
           >
-            <div className="absolute -left-[5px] top-2 w-2.5 h-2.5 rounded-full bg-[#050505] border border-white/30 group-hover:border-cyan-400 group-hover:bg-cyan-400 group-hover:shadow-[0_0_10px_rgba(34,211,238,0.5)] transition-all duration-300" />
+            <div className="absolute -left-1.25 top-2 w-2.5 h-2.5 rounded-full bg-[#050505] border border-white/30 group-hover:border-cyan-400 group-hover:bg-cyan-400 group-hover:shadow-[0_0_10px_rgba(34,211,238,0.5)] transition-all duration-300" />
 
             <div className="flex flex-col md:flex-row md:items-center justify-between mb-2">
               <h3 className="text-xl font-bold text-white group-hover:text-cyan-400 transition-colors flex items-center gap-3">
