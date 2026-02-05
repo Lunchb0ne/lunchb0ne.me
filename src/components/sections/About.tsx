@@ -9,20 +9,20 @@ export const About = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-start">
         <div className="space-y-6 text-lg leading-relaxed text-white/70">
           <p>
-            I’m a <span className="text-cyan-400 font-medium">Software Development Engineer</span> focused on{" "}
-            <span className="text-white">resilient distributed systems</span> and cloud‑native infrastructure. At{" "}
+            I&apos;m a <span className="text-cyan-400 font-medium">Software Development Engineer</span> focused on{" "}
+            <span className="text-white">resilient distributed systems</span> and cloud-native infrastructure. At{" "}
             <span className="text-white font-medium">AWS RDS & Aurora</span>, I work on the{" "}
-            <span className="text-cyan-400">control plane</span> that orchestrates thousands of database clusters: failovers,
-            backups, security, all the <span className="italic text-white/90">invisible machinery</span> that makes “it just
-            works” actually true.
+            <span className="text-cyan-400">control plane</span> that orchestrates thousands of database clusters: replication,
+            failovers, backups, security, all the <span className="italic text-white/90">invisible machinery</span> that makes “it
+            just works” actually true.
           </p>
           <p>
             My bias is toward <span className="italic text-white font-medium">simple, ruthless designs</span>. No ceremony, no
-            cleverness for its own sake, no black boxes you have to “trust”. If a system can’t be explained on a{" "}
-            <span className="text-white">whiteboard in ten minutes</span>, I probably don’t want it running in production.
+            cleverness for its own sake, no black boxes you have to "trust". If a system can&apos;t be explained on a{" "}
+            <span className="text-white">whiteboard in ten minutes</span>, I probably don&apos;t want it running in production.
           </p>
           <p>
-            When I’m off the clock, I’m usually doing the same thing with fewer guardrails: building{" "}
+            When I&apos;m off the clock, I&apos;m usually doing the same thing with fewer guardrails: building{" "}
             <span className="text-cyan-400">stress tools</span>, weird CLIs, and{" "}
             <span className="text-pink-400 font-medium">open source experiments</span> that push databases until they complain and
             surface where they crack. I also spend an unhealthy amount of time exploring{" "}
