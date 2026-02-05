@@ -1,6 +1,6 @@
 import { Float } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
-import { useMemo, useRef, useState } from "react";
+import { useMemo, useRef } from "react";
 import type * as SI from "simple-icons";
 import * as THREE from "three";
 import { useCursor } from "@/hooks/useCursor";
@@ -16,13 +16,18 @@ interface StickerProps {
 
 export const Sticker = ({ icon, index, total, materialType = "chrome" }: StickerProps) => {
   const meshRef = useRef<THREE.Group>(null);
-  const [hovered, setHover] = useState(false);
+  const hoveredRef = useRef(false); // Use ref to avoid stale closure in useFrame
   const { setCursorType } = useCursor();
 
-  const angle = (index / total) * Math.PI * 2;
-  const x = Math.sin(angle) * CONFIG.ORBIT.RADIUS;
-  const z = Math.cos(angle) * CONFIG.ORBIT.RADIUS;
-  const y = index % 2 === 0 ? 1 : -1.5;
+  // Memoize position calculation - only depends on index/total/config
+  const { x, y, z } = useMemo(() => {
+    const angle = (index / total) * Math.PI * 2;
+    return {
+      x: Math.sin(angle) * CONFIG.ORBIT.RADIUS,
+      z: Math.cos(angle) * CONFIG.ORBIT.RADIUS,
+      y: index % 2 === 0 ? 1 : -1.5,
+    };
+  }, [index, total]);
 
   const { baseQuaternion, targetQuaternion, tiltQuaternion, tempEuler, tempVec } = useMemo(() => {
     const pos = new THREE.Vector3(x, y, z);
@@ -42,12 +47,12 @@ export const Sticker = ({ icon, index, total, materialType = "chrome" }: Sticker
     if (!meshRef.current) return;
 
     // Handle Scale
-    const targetScale = hovered ? CONFIG.ANIMATION.HOVER_SCALE : 1;
+    const targetScale = hoveredRef.current ? CONFIG.ANIMATION.HOVER_SCALE : 1;
     tempVec.set(targetScale, targetScale, targetScale);
     meshRef.current.scale.lerp(tempVec, CONFIG.ANIMATION.TRANSITION_SPEED);
 
     // Handle Rotation
-    if (hovered) {
+    if (hoveredRef.current) {
       const mouseX = state.pointer.x * CONFIG.ANIMATION.TILT_INTENSITY;
       const mouseY = state.pointer.y * CONFIG.ANIMATION.TILT_INTENSITY;
       tempEuler.set(-mouseY * 0.5, mouseX * 0.5, 0);
@@ -71,11 +76,11 @@ export const Sticker = ({ icon, index, total, materialType = "chrome" }: Sticker
           ref={meshRef}
           onPointerOver={(e) => {
             e.stopPropagation();
-            setHover(true);
+            hoveredRef.current = true;
             setCursorType("hover");
           }}
           onPointerOut={() => {
-            setHover(false);
+            hoveredRef.current = false;
             setCursorType("default");
           }}
         >

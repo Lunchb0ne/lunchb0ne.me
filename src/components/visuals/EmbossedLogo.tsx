@@ -35,6 +35,8 @@ export const EmbossedLogo = ({ svgContent }: { svgContent: string }) => {
       if (!box) return;
 
       const maxDim = Math.max(box.max.x - box.min.x, box.max.y - box.min.y);
+      if (maxDim === 0) return; // Guard against division by zero
+
       const targetSize = CONFIG.COIN.RADIUS * 2 * CONFIG.LOGO.SCALE_FACTOR;
       const scaleFactor = targetSize / maxDim;
 

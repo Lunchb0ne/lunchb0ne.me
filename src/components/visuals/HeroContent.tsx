@@ -1,7 +1,7 @@
 import { Float, Html, MeshTransmissionMaterial, Sparkles, Text } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
 import { memo, useEffect, useRef, useState } from "react";
-import type { Group, Mesh } from "three";
+import type { Group } from "three";
 import * as THREE from "three";
 import { TextMorph } from "torph/react";
 import { useCursor } from "@/hooks/useCursor";
@@ -62,11 +62,13 @@ interface MarqueeTextProps extends React.ComponentProps<typeof Text> {
   speed?: number;
 }
 
+// Reuse Box3 instance to avoid GC pressure in onSync
+const tempBox = new THREE.Box3();
+
 const MarqueeText = ({ children, speed = 2, ...props }: MarqueeTextProps) => {
   const group = useRef<Group>(null);
   const [width, setWidth] = useState(0);
   const widthRef = useRef(0); // Used in useFrame to avoid closure stale value
-  const gap = 0; // Gap handled by text content
 
   useFrame((state, delta) => {
     if (group.current && widthRef.current > 0) {
@@ -78,20 +80,19 @@ const MarqueeText = ({ children, speed = 2, ...props }: MarqueeTextProps) => {
       // Move left
       group.current.position.x -= delta * currentSpeed;
       // Reset position when the first text has fully moved out
-      const totalWidth = widthRef.current + gap;
-      if (group.current.position.x < -totalWidth) {
-        group.current.position.x += totalWidth;
+      if (group.current.position.x < -widthRef.current) {
+        group.current.position.x += widthRef.current;
       }
     }
   });
 
   // Calculate width from the first text instance
   const onSync = (scene: THREE.Object3D) => {
-    const box = new THREE.Box3().setFromObject(scene);
-    const w = box.max.x - box.min.x;
+    tempBox.setFromObject(scene);
+    const w = tempBox.max.x - tempBox.min.x;
     if (w > 0 && Math.abs(w - widthRef.current) > 0.1) {
       widthRef.current = w;
-      setWidth(w); // Update state for JSX position
+      setWidth(w);
     }
   };
 
@@ -100,15 +101,19 @@ const MarqueeText = ({ children, speed = 2, ...props }: MarqueeTextProps) => {
       <Text anchorX="center" anchorY="middle" onSync={onSync} {...props}>
         {children}
       </Text>
-      <Text anchorX="center" anchorY="middle" position={[width + gap, 0, 0]} {...props}>
+      <Text anchorX="center" anchorY="middle" position={[width, 0, 0]} {...props}>
         {children}
       </Text>
     </group>
   );
 };
 
+// Layout constants
+const MARQUEE_FONT_SIZE = 3.5;
+const TAGLINE_Y_OFFSET = -2.6;
+const TAGLINE_INTERVAL_MS = 4000;
+
 export const HeroContent = ({ onHover }: { onHover: (hover: boolean) => void }) => {
-  const meshRef = useRef<Mesh>(null);
   const orbitRef = useRef<Group>(null);
   const { setCursorType } = useCursor();
   const [taglineIndex, setTaglineIndex] = useState(0);
@@ -123,7 +128,7 @@ export const HeroContent = ({ onHover }: { onHover: (hover: boolean) => void }) 
   useEffect(() => {
     const interval = setInterval(() => {
       setTaglineIndex((prev) => (prev + 1) % TAGLINES.length);
-    }, 4000);
+    }, TAGLINE_INTERVAL_MS);
     return () => clearInterval(interval);
   }, []);
 
@@ -133,15 +138,12 @@ export const HeroContent = ({ onHover }: { onHover: (hover: boolean) => void }) 
     }
   });
 
-  const targetFontSize = 3.5;
-  const taglineOffset = -2.6;
-
   return (
     <group>
       <group position={[0, 0, -2]}>
         <MarqueeText
           speed={0.8}
-          fontSize={targetFontSize}
+          fontSize={MARQUEE_FONT_SIZE}
           letterSpacing={0.05}
           color="white"
           textAlign="center"
@@ -153,7 +155,7 @@ export const HeroContent = ({ onHover }: { onHover: (hover: boolean) => void }) 
           ABHISHEK·ARYAN·
         </MarqueeText>
 
-        <Html center position={[0, taglineOffset, 0]} className="pointer-events-none">
+        <Html center position={[0, TAGLINE_Y_OFFSET, 0]} className="pointer-events-none">
           <div style={TAGLINE_CONTAINER_STYLE}>
             <TextMorph duration={600}>{TAGLINES[taglineIndex]}</TextMorph>
           </div>
@@ -162,7 +164,6 @@ export const HeroContent = ({ onHover }: { onHover: (hover: boolean) => void }) 
 
       <Float speed={5} rotationIntensity={1} floatIntensity={0.5}>
         <mesh
-          ref={meshRef}
           onPointerOver={() => {
             setCursorType("hover");
             onHover(true);
