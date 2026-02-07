@@ -11,12 +11,16 @@ interface Position {
 const CursorTypeContext = createContext<CursorType>("default");
 const CursorActionsContext = createContext<(type: CursorType) => void>(() => {});
 const CursorPositionContext = createContext<Position>({ x: 0, y: 0 });
+const CursorTrailPositionContext = createContext<Position>({ x: 0, y: 0 });
 
 export const CursorProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [cursorType, setCursorType] = useState<CursorType>("default");
   const [position, setPosition] = useState<Position>({ x: -100, y: -100 }); // Start off-screen to avoid cursor in corners on load
+  const [trailPosition, setTrailPosition] = useState<Position>({ x: -100, y: -100 });
   const rafRef = useRef<number | null>(null);
+  const trailRafRef = useRef<number | null>(null);
   const latestPositionRef = useRef<Position>({ x: 0, y: 0 });
+  const trailPositionRef = useRef<Position>({ x: -100, y: -100 });
 
   useEffect(() => {
     // Standard interactive elements + .group (Tailwind hover pattern) + [data-interactive] for explicit marking
@@ -48,6 +52,21 @@ export const CursorProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       }
     };
 
+    const updateTrail = () => {
+      const target = latestPositionRef.current;
+      const current = trailPositionRef.current;
+      const next = {
+        x: current.x + (target.x - current.x) * 0.18,
+        y: current.y + (target.y - current.y) * 0.18,
+      };
+
+      trailPositionRef.current = next;
+      setTrailPosition(next);
+      trailRafRef.current = window.requestAnimationFrame(updateTrail);
+    };
+
+    trailRafRef.current = window.requestAnimationFrame(updateTrail);
+
     window.addEventListener("mousemove", handleMouseMove, { passive: true });
     return () => {
       window.removeEventListener("mousemove", handleMouseMove);
@@ -55,13 +74,19 @@ export const CursorProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         window.cancelAnimationFrame(rafRef.current);
         rafRef.current = null;
       }
+      if (trailRafRef.current !== null) {
+        window.cancelAnimationFrame(trailRafRef.current);
+        trailRafRef.current = null;
+      }
     };
   }, []);
 
   return (
     <CursorActionsContext.Provider value={setCursorType}>
       <CursorTypeContext.Provider value={cursorType}>
-        <CursorPositionContext.Provider value={position}>{children}</CursorPositionContext.Provider>
+        <CursorPositionContext.Provider value={position}>
+          <CursorTrailPositionContext.Provider value={trailPosition}>{children}</CursorTrailPositionContext.Provider>
+        </CursorPositionContext.Provider>
       </CursorTypeContext.Provider>
     </CursorActionsContext.Provider>
   );
@@ -70,9 +95,11 @@ export const CursorProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 export const useCursorType = () => use(CursorTypeContext);
 export const useSetCursorType = () => use(CursorActionsContext);
 export const useCursorPosition = () => use(CursorPositionContext);
+export const useCursorTrailPosition = () => use(CursorTrailPositionContext);
 
 export const useCursor = () => ({
   cursorType: useCursorType(),
   setCursorType: useSetCursorType(),
   position: useCursorPosition(),
+  trailPosition: useCursorTrailPosition(),
 });
