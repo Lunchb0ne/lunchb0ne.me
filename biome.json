@@ -25,7 +25,20 @@
   "assist": { "actions": { "source": { "organizeImports": "on" } } },
   "linter": {
     "enabled": true,
+    "domains": {
+      "react": "recommended"
+    },
     "rules": {
+      "style": {
+        "useComponentExportOnlyModules": "warn",
+        "useFragmentSyntax": "warn",
+        "useSelfClosingElements": "warn"
+      },
+      "nursery": {
+        "useSortedClasses": "warn",
+        "useConsistentArrowReturn": "warn",
+        "useConsistentMethodSignatures": "warn"
+      },
       "recommended": true
     }
   },

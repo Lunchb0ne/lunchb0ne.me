@@ -1,24 +1,78 @@
 import type React from "react";
-import { createContext, use, useMemo, useState } from "react";
+import { createContext, use, useEffect, useRef, useState } from "react";
 
 type CursorType = "default" | "hover" | "text" | "hidden";
 
-interface CursorContextType {
-  cursorType: CursorType;
-  setCursorType: (type: CursorType) => void;
+interface Position {
+  x: number;
+  y: number;
 }
 
-const CursorContext = createContext<CursorContextType>({
-  cursorType: "default",
-  setCursorType: () => {},
-});
+const CursorTypeContext = createContext<CursorType>("default");
+const CursorActionsContext = createContext<(type: CursorType) => void>(() => {});
+const CursorPositionContext = createContext<Position>({ x: 0, y: 0 });
 
 export const CursorProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [cursorType, setCursorType] = useState<CursorType>("default");
+  const [position, setPosition] = useState<Position>({ x: -100, y: -100 }); // Start off-screen to avoid cursor in corners on load
+  const rafRef = useRef<number | null>(null);
+  const latestPositionRef = useRef<Position>({ x: 0, y: 0 });
 
-  const value = useMemo(() => ({ cursorType, setCursorType }), [cursorType]);
+  useEffect(() => {
+    // Standard interactive elements + .group (Tailwind hover pattern) + [data-interactive] for explicit marking
+    const interactiveSelector =
+      'a, button, input, textarea, select, [role="button"], [tabindex]:not([tabindex="-1"]), .group, [data-interactive]';
 
-  return <CursorContext.Provider value={value}>{children}</CursorContext.Provider>;
+    const handleMouseMove = (e: MouseEvent) => {
+      latestPositionRef.current = { x: e.clientX, y: e.clientY };
+
+      if (rafRef.current === null) {
+        rafRef.current = window.requestAnimationFrame(() => {
+          rafRef.current = null;
+          const { x, y } = latestPositionRef.current;
+          setPosition(latestPositionRef.current);
+
+          // Use elementFromPoint to detect elements regardless of pointer-events inheritance
+          const elementUnderCursor = document.elementFromPoint(x, y) as HTMLElement | null;
+
+          // Skip automatic detection for canvas elements - let Three.js handle cursor via onPointerOver/Out
+          if (elementUnderCursor?.tagName === "CANVAS") {
+            return;
+          }
+
+          const isInteractive = elementUnderCursor?.closest(interactiveSelector);
+          const nextType: CursorType = isInteractive ? "hover" : "default";
+
+          setCursorType((prev) => (prev === nextType ? prev : nextType));
+        });
+      }
+    };
+
+    window.addEventListener("mousemove", handleMouseMove, { passive: true });
+    return () => {
+      window.removeEventListener("mousemove", handleMouseMove);
+      if (rafRef.current !== null) {
+        window.cancelAnimationFrame(rafRef.current);
+        rafRef.current = null;
+      }
+    };
+  }, []);
+
+  return (
+    <CursorActionsContext.Provider value={setCursorType}>
+      <CursorTypeContext.Provider value={cursorType}>
+        <CursorPositionContext.Provider value={position}>{children}</CursorPositionContext.Provider>
+      </CursorTypeContext.Provider>
+    </CursorActionsContext.Provider>
+  );
 };
 
-export const useCursor = () => use(CursorContext);
+export const useCursorType = () => use(CursorTypeContext);
+export const useSetCursorType = () => use(CursorActionsContext);
+export const useCursorPosition = () => use(CursorPositionContext);
+
+export const useCursor = () => ({
+  cursorType: useCursorType(),
+  setCursorType: useSetCursorType(),
+  position: useCursorPosition(),
+});

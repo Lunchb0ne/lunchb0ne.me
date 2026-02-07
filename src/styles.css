@@ -19,6 +19,12 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  cursor: none;
+}
+
+/* Ensure cursor: none applies to all interactive elements */
+a, button, input, textarea, select, [role="button"] {
+  cursor: none;
 }
 
 code {

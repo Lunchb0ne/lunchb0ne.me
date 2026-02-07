@@ -90,6 +90,42 @@ export const TAGLINES = [
   "OPEN SOURCE DISTRIBUTED SYSTEMS",
 ];
 
+export const HERO_TAGLINE_Y_OFFSET = -2.6;
+export const HERO_TAGLINE_INTERVAL_MS = 3000;
+export const HERO_TAGLINE_CONTAINER_STYLE = {
+  fontFamily: '"JetBrains Mono", monospace',
+  fontSize: "16px",
+  lineHeight: "1.4",
+  color: CONFIG.COLORS.GLOW,
+  letterSpacing: "0.1em",
+  fontWeight: "700",
+  textShadow: `0 0 15px ${CONFIG.COLORS.GLOW}33`,
+  pointerEvents: "none" as const,
+  opacity: 0.9,
+  textAlign: "center" as const,
+  textWrap: "balance" as const,
+  width: "90vw",
+  maxWidth: "600px",
+  display: "flex",
+  justifyContent: "center",
+  minHeight: "3em",
+} as const;
+
+export const CANVAS_GL_CONFIG = { antialias: false, alpha: true } as const;
+export const CANVAS_PERFORMANCE_CONFIG = { min: 0.5 } as const;
+export const BACKGROUND_COLOR = ["#050505"] as [string];
+
+export const GLITCH_DELAY = new THREE.Vector2(0, 0);
+export const GLITCH_DURATION = new THREE.Vector2(0.1, 0.3);
+
+export const DEFAULT_POST_PROCESSING = {
+  bloomIntensity: 0.7,
+  bloomThreshold: 1.2,
+  bloomRadius: 0.5,
+  glitchStrength: 0.3,
+  glitchRatio: 0.65,
+} as const;
+
 // Shared Geometries and Materials
 // We create these once here to avoid recreation on every render/mount if possible,
 // or at least have a central definition.

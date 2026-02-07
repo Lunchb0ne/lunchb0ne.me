@@ -18,17 +18,13 @@ export const Navigation = () => {
   };
 
   return (
-    <nav className="fixed top-0 inset-x-0 p-8 flex justify-between items-center z-50 pointer-events-none">
-      <Link
-        to="/"
-        onClick={scrollToTop}
-        className="font-bold tracking-tighter text-xl pointer-events-auto cursor-pointer font-mono"
-      >
-        AA.
+    <nav className="pointer-events-none fixed inset-x-0 top-0 z-50 flex items-center justify-between rounded-b-2xl bg-black/20 px-4 py-2 bg-blend-darken backdrop-blur-lg">
+      <Link to="/" onClick={scrollToTop} className="pointer-events-auto flex cursor-pointer select-none items-center">
+        <img src="/icon.svg" alt="Abhishek Aryan" className="pointer-events-none h-18 w-18 select-none md:h-20 md:w-20" />
       </Link>
-      <div className="flex gap-6 text-xs font-mono font-medium pointer-events-auto text-white/70">
+      <div className="pointer-events-auto flex gap-6 font-medium font-mono text-white/70 text-xs">
         {CONFIG.LINKS.map((link) => (
-          <Link key={link.label} to="/" hash={link.hash} className="hover:text-cyan-400 transition-colors cursor-pointer">
+          <Link key={link.label} to="/" hash={link.hash} className="cursor-pointer transition-colors hover:text-cyan-400">
             {link.label}
           </Link>
         ))}
