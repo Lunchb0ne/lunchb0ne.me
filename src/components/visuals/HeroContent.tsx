@@ -54,19 +54,19 @@ const PrismMaterial = memo(
     chromaticAberration = CONFIG.PRISM.CHROMATIC_ABERRATION,
     anisotropy = CONFIG.PRISM.ANISOTROPY,
   }: PrismSettings) => (
-  <MeshTransmissionMaterial
-    backside={true}
-    samples={CONFIG.PRISM.SAMPLES}
-    resolution={CONFIG.PRISM.RESOLUTION}
-    transmission={transmission}
-    roughness={roughness}
-    ior={ior}
-    thickness={thickness}
-    chromaticAberration={chromaticAberration}
-    anisotropy={anisotropy}
-    color={color}
-  />
-),
+    <MeshTransmissionMaterial
+      backside={true}
+      samples={CONFIG.PRISM.SAMPLES}
+      resolution={CONFIG.PRISM.RESOLUTION}
+      transmission={transmission}
+      roughness={roughness}
+      ior={ior}
+      thickness={thickness}
+      chromaticAberration={chromaticAberration}
+      anisotropy={anisotropy}
+      color={color}
+    />
+  ),
 );
 PrismMaterial.displayName = "PrismMaterial";
 
@@ -93,7 +93,7 @@ export const HeroContent = ({
   useEffect(() => {
     const interval = setInterval(() => {
       setTaglineIndex((prev) => (prev + 1) % TAGLINES.length);
-    }, TAGLINE_INTERVAL_MS);
+    }, HERO_TAGLINE_INTERVAL_MS);
     return () => clearInterval(interval);
   }, []);
 
@@ -108,7 +108,7 @@ export const HeroContent = ({
       <group position={[0, 0, -2]}>
         <MarqueeText
           speed={0.8}
-          fontSize={MARQUEE_FONT_SIZE}
+          fontSize={HERO_MARQUEE_FONT_SIZE}
           letterSpacing={0.05}
           color="white"
           textAlign="center"
@@ -120,8 +120,8 @@ export const HeroContent = ({
           ABHISHEK·ARYAN·
         </MarqueeText>
 
-        <Html center position={[0, TAGLINE_Y_OFFSET, 0]} className="pointer-events-none">
-          <div style={TAGLINE_CONTAINER_STYLE}>
+        <Html center position={[0, HERO_TAGLINE_Y_OFFSET, 0]} className="pointer-events-none">
+          <div style={HERO_TAGLINE_CONTAINER_STYLE}>
             <TextMorph duration={600}>{TAGLINES[taglineIndex]}</TextMorph>
           </div>
         </Html>
@@ -139,7 +139,7 @@ export const HeroContent = ({
           }}
         >
           <dodecahedronGeometry args={[1.4, 0]} />
-          <PrismMaterial />
+          <PrismMaterial {...prism} />
         </mesh>
       </Float>
 
@@ -149,7 +149,7 @@ export const HeroContent = ({
         ))}
       </group>
 
-      <Sparkles count={50} scale={8} size={2} speed={0.2} opacity={0.3} color="white" />
+      {sparklesEnabled ? <Sparkles count={50} scale={8} size={2} speed={0.2} opacity={0.3} color="white" /> : null}
     </group>
   );
 };

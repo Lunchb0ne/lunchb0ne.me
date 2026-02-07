@@ -29,16 +29,21 @@ export const Route = createRootRoute({
     links: [
       {
         rel: "icon",
+        href: "/favicon.ico",
+        sizes: "32x32",
+      },
+      {
+        rel: "icon",
         type: "image/svg+xml",
-        href: "/icon.svg",
+        href: "/favicon.svg",
       },
       {
         rel: "apple-touch-icon",
-        href: "/icon.svg",
+        href: "/apple-touch-icon.png",
       },
       {
         rel: "manifest",
-        href: "/manifest.json",
+        href: "/manifest.webmanifest",
       },
       {
         rel: "preconnect",

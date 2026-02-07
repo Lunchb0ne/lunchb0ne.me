@@ -4,13 +4,7 @@ import { Canvas } from "@react-three/fiber";
 import { Leva, useControls } from "leva";
 import { Suspense, useCallback, useEffect, useState } from "react";
 import { usePrefersReducedMotion } from "@/hooks/usePrefersReducedMotion";
-import {
-  BACKGROUND_COLOR,
-  CANVAS_GL_CONFIG,
-  CANVAS_PERFORMANCE_CONFIG,
-  CONFIG,
-  DEFAULT_POST_PROCESSING,
-} from "./config";
+import { BACKGROUND_COLOR, CANVAS_GL_CONFIG, CANVAS_PERFORMANCE_CONFIG, CONFIG, DEFAULT_POST_PROCESSING } from "./config";
 import { HeroContent } from "./HeroContent";
 import { Lights } from "./Lights";
 import { DevPostProcessingControls, PostProcessing, type PostProcessingControls } from "./PostProcessing";
@@ -88,15 +82,31 @@ export const HomeScene = () => {
       >
         <color attach="background" args={BACKGROUND_COLOR} />
         <Suspense fallback={null}>
-          <HeroContent onHover={setHoverGlitch} />
-          <Lights />
+          <HeroContent
+            onHover={setHoverGlitch}
+            sparklesEnabled={!prefersReducedMotion}
+            prism={{
+              color: sceneControls.prismColor,
+              transmission: sceneControls.prismTransmission,
+              ior: sceneControls.prismIor,
+              thickness: sceneControls.prismThickness,
+            }}
+          />
+          <Lights
+            keyIntensity={sceneControls.keyLightIntensity}
+            glowIntensity={sceneControls.glowLightIntensity}
+            warmIntensity={sceneControls.warmLightIntensity}
+          />
           <PostProcessing
-            bloomIntensity={bloomIntensity}
-            bloomThreshold={bloomThreshold}
-            bloomRadius={bloomRadius}
-            glitchStrength={glitchStrength}
-            glitchRatio={glitchRatio}
+            bloomIntensity={effectiveBloomIntensity}
+            bloomThreshold={controls.bloomThreshold}
+            bloomRadius={effectiveBloomRadius}
+            glitchStrength={controls.glitchStrength}
+            glitchRatio={controls.glitchRatio}
             hoverGlitch={hoverGlitch}
+            enableGlitch={enableGlitch}
+            lutEnabled={controls.lutEnabled}
+            lutBlend={controls.lutBlend}
           />
         </Suspense>
       </Canvas>

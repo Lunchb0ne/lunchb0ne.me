@@ -11,7 +11,7 @@ export const siteMeta: SiteMeta = {
   description:
     "Software Development Engineer specialized in building resilient distributed systems and cloud-native infrastructure.",
   url: "https://lunchb0ne.me",
-  image: "/icon.svg",
+  image: "/og-image.png",
   themeColor: "#050505",
 };
 

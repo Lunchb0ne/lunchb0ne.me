@@ -1,5 +1,8 @@
-import { Bloom, EffectComposer, Glitch, SMAA, ToneMapping } from "@react-three/postprocessing";
+import { useLoader } from "@react-three/fiber";
+import { Bloom, EffectComposer, Glitch, LUT, SMAA, ToneMapping } from "@react-three/postprocessing";
 import { useControls } from "leva";
+import { BlendFunction, LUTCubeLoader } from "postprocessing";
+import type { ComponentProps, ComponentType, ReactElement } from "react";
 import { memo, useEffect, useMemo } from "react";
 import * as THREE from "three";
 import { DEFAULT_POST_PROCESSING, GLITCH_DELAY, GLITCH_DURATION } from "./config";
@@ -12,6 +15,8 @@ export interface PostProcessingProps {
   glitchRatio: number;
   hoverGlitch: boolean;
   enableGlitch: boolean;
+  lutEnabled: boolean;
+  lutBlend: number;
 }
 
 export type PostProcessingControls = typeof DEFAULT_POST_PROCESSING;
@@ -25,26 +30,36 @@ export const PostProcessing = memo(
     glitchRatio,
     hoverGlitch,
     enableGlitch,
+    lutEnabled,
+    lutBlend,
   }: PostProcessingProps) => {
+    const lutTexture = useLoader(LUTCubeLoader, "/DwlG-F-6800-STD.cube");
     const glitchStrengthVec = useMemo(
       () => (enableGlitch ? new THREE.Vector2(0.2, glitchStrength) : new THREE.Vector2(0, 0)),
       [enableGlitch, glitchStrength],
     );
+    const LutEffect = LUT as unknown as ComponentType<ComponentProps<typeof LUT> & { opacity?: number }>;
+    const effects: ReactElement[] = [
+      <Bloom key="bloom" luminanceThreshold={bloomThreshold} mipmapBlur intensity={bloomIntensity} radius={bloomRadius} />,
+      <Glitch
+        key="glitch"
+        active={enableGlitch && hoverGlitch}
+        delay={GLITCH_DELAY}
+        duration={GLITCH_DURATION}
+        strength={glitchStrengthVec}
+        ratio={glitchRatio}
+      />,
+      <LutEffect
+        key="lut"
+        lut={lutTexture}
+        blendFunction={lutEnabled ? BlendFunction.NORMAL : BlendFunction.SKIP}
+        opacity={lutEnabled ? lutBlend : 0}
+      />,
+      <SMAA key="smaa" />,
+      <ToneMapping key="tone" />,
+    ];
 
-    return (
-      <EffectComposer multisampling={0}>
-        <Bloom luminanceThreshold={bloomThreshold} mipmapBlur intensity={bloomIntensity} radius={bloomRadius} />
-        <Glitch
-          active={enableGlitch && hoverGlitch}
-          delay={GLITCH_DELAY}
-          duration={GLITCH_DURATION}
-          strength={glitchStrengthVec}
-          ratio={glitchRatio}
-        />
-        <SMAA />
-        <ToneMapping />
-      </EffectComposer>
-    );
+    return <EffectComposer multisampling={0}>{effects}</EffectComposer>;
   },
 );
 
@@ -57,6 +72,8 @@ export const DevPostProcessingControls = ({ onChange }: { onChange: (next: PostP
     bloomRadius: { value: DEFAULT_POST_PROCESSING.bloomRadius, min: 0, max: 1, step: 0.05 },
     glitchStrength: { value: DEFAULT_POST_PROCESSING.glitchStrength, min: 0, max: 1, step: 0.1 },
     glitchRatio: { value: DEFAULT_POST_PROCESSING.glitchRatio, min: 0, max: 1, step: 0.05 },
+    lutEnabled: { value: DEFAULT_POST_PROCESSING.lutEnabled },
+    lutBlend: { value: DEFAULT_POST_PROCESSING.lutBlend, min: 0, max: 1, step: 0.05 },
   });
 
   useEffect(() => {

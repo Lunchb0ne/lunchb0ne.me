@@ -1,0 +1,81 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="none">
+  <defs>
+    <style>
+      :root {
+        color-scheme: light dark;
+        --favicon-bg: #f8fafc;
+        --favicon-glow-opacity: 0.12;
+        --favicon-mark-opacity: 0.72;
+      }
+
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --favicon-bg: #010101;
+          --favicon-glow-opacity: 0.18;
+          --favicon-mark-opacity: 0.75;
+        }
+      }
+
+      .favicon-bg {
+        fill: var(--favicon-bg);
+      }
+
+      .favicon-glow {
+        opacity: var(--favicon-glow-opacity);
+      }
+
+      .favicon-mark {
+        opacity: var(--favicon-mark-opacity);
+      }
+    </style>
+    <radialGradient id="rainbow" cx="256" cy="256" r="256" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.9" />
+      <stop offset="18%" stop-color="#ff6b6b" />
+      <stop offset="32%" stop-color="#f59e0b" />
+      <stop offset="46%" stop-color="#fde047" />
+      <stop offset="60%" stop-color="#22c55e" />
+      <stop offset="74%" stop-color="#38bdf8" />
+      <stop offset="88%" stop-color="#6366f1" />
+      <stop offset="100%" stop-color="#a855f7" />
+    </radialGradient>
+    <filter id="glow" x="-40%" y="-40%" width="180%" height="180%" color-interpolation-filters="sRGB">
+      <feGaussianBlur stdDeviation="12" result="blur" />
+      <feMerge>
+        <feMergeNode in="blur" />
+        <feMergeNode in="SourceGraphic" />
+      </feMerge>
+    </filter>
+    <filter id="softGlow" x="-60%" y="-60%" width="220%" height="220%" color-interpolation-filters="sRGB">
+      <feGaussianBlur stdDeviation="16" result="blur" />
+      <feMerge>
+        <feMergeNode in="blur" />
+      </feMerge>
+    </filter>
+    <g id="aa-mark" transform="translate(68 160) scale(1.15)">
+      <path
+        d="M10 224.384C30.9491 183.371 51.6194 145.82 71.4012 114M229 224.384C229 -55.3625 158.89 -26.7297 71.4012 114M100 224.384C198.944 30.6776 291.667 -85.8025 313.946 114M319 224.384C319 180.132 317.246 143.596 313.946 114M71.4012 114C209.965 46.1931 229 224.384 313.946 114"
+        fill="none"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+    </g>
+    <mask id="cutout" maskUnits="userSpaceOnUse">
+      <rect x="64" y="64" width="384" height="384" rx="72" fill="white" />
+      <use href="#aa-mark" stroke="black" stroke-width="30" />
+    </mask>
+  </defs>
+
+  <circle
+    class="favicon-glow"
+    cx="256"
+    cy="256"
+    r="180"
+    fill="url(#rainbow)"
+    filter="url(#softGlow)"
+  />
+  <rect x="64" y="64" width="384" height="384" rx="72" class="favicon-bg" mask="url(#cutout)" />
+
+  <g filter="url(#glow)">
+    <use href="#aa-mark" stroke="url(#rainbow)" stroke-width="34" class="favicon-mark" />
+  </g>
+</svg>

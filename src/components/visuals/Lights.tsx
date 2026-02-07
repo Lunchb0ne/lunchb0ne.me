@@ -8,8 +8,7 @@ interface LightsProps {
   warmIntensity?: number;
 }
 
-export const Lights = memo(
-  ({ keyIntensity = 4, glowIntensity = 2, warmIntensity = 2 }: LightsProps) => (
+export const Lights = memo(({ keyIntensity = 4, glowIntensity = 2, warmIntensity = 2 }: LightsProps) => (
   <Environment resolution={512}>
     <group rotation={[-Math.PI / 4, -0.3, 0]}>
       <Lightformer intensity={keyIntensity} rotation-x={Math.PI / 2} position={[0, 5, -9]} scale={[10, 10, 1]} />
@@ -29,7 +28,6 @@ export const Lights = memo(
       />
     </group>
   </Environment>
-),
-);
+));
 
 Lights.displayName = "Lights";

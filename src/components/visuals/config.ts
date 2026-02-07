@@ -23,8 +23,8 @@ export const CONFIG = {
     PRISM: "#e2e8f0",
   },
   COIN: {
-    RADIUS: 0.7,
-    DEPTH: 0.1,
+    RADIUS: 0.8,
+    DEPTH: 0.08,
     SEGMENTS: 64,
   },
   LOGO: {
@@ -37,7 +37,7 @@ export const CONFIG = {
     Z_OFFSET: 0.06,
   },
   ORBIT: {
-    RADIUS: 3.2,
+    RADIUS: 3.1,
     SPEED: 0.1,
     FLOAT_SPEED: 2,
     FLOAT_INTENSITY: 0.4,
@@ -47,10 +47,10 @@ export const CONFIG = {
     RESOLUTION: 256,
     TRANSMISSION: 0.95,
     ROUGHNESS: 0.05,
-    IOR: 1.6,
-    THICKNESS: 2.5,
-    CHROMATIC_ABERRATION: 0.4,
-    ANISOTROPY: 0.3,
+    IOR: 2.6,
+    THICKNESS: 1.5,
+    CHROMATIC_ABERRATION: 0.8,
+    ANISOTROPY: 0.4,
   },
   ANIMATION: {
     TRANSITION_SPEED: 0.1,
@@ -58,6 +58,8 @@ export const CONFIG = {
     TILT_INTENSITY: 0.5,
   },
 } as const;
+
+export const HERO_MARQUEE_FONT_SIZE = 3.5;
 
 // Full list of tech icons - random selection happens client-side in HeroContent
 export const ALL_TECH_ICONS = [
@@ -124,6 +126,8 @@ export const DEFAULT_POST_PROCESSING = {
   bloomRadius: 0.5,
   glitchStrength: 0.3,
   glitchRatio: 0.65,
+  lutEnabled: true,
+  lutBlend: 0.7,
 } as const;
 
 // Shared Geometries and Materials
