@@ -30,7 +30,6 @@
     },
     "rules": {
       "style": {
-        "useComponentExportOnlyModules": "warn",
         "useFragmentSyntax": "warn",
         "useSelfClosingElements": "warn"
       },
