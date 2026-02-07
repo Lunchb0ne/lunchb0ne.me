@@ -8,18 +8,20 @@ interface Position {
   y: number;
 }
 
+type PositionRef = React.MutableRefObject<Position>;
+
+const defaultPositionRef = { current: { x: -100, y: -100 } } as PositionRef;
+
 const CursorTypeContext = createContext<CursorType>("default");
 const CursorActionsContext = createContext<(type: CursorType) => void>(() => {});
-const CursorPositionContext = createContext<Position>({ x: 0, y: 0 });
-const CursorTrailPositionContext = createContext<Position>({ x: 0, y: 0 });
+const CursorPositionContext = createContext<PositionRef>(defaultPositionRef);
+const CursorTrailPositionContext = createContext<PositionRef>(defaultPositionRef);
 
 export const CursorProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [cursorType, setCursorType] = useState<CursorType>("default");
-  const [position, setPosition] = useState<Position>({ x: -100, y: -100 }); // Start off-screen to avoid cursor in corners on load
-  const [trailPosition, setTrailPosition] = useState<Position>({ x: -100, y: -100 });
   const rafRef = useRef<number | null>(null);
   const trailRafRef = useRef<number | null>(null);
-  const latestPositionRef = useRef<Position>({ x: 0, y: 0 });
+  const latestPositionRef = useRef<Position>({ x: -100, y: -100 });
   const trailPositionRef = useRef<Position>({ x: -100, y: -100 });
 
   useEffect(() => {
@@ -34,7 +36,6 @@ export const CursorProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         rafRef.current = window.requestAnimationFrame(() => {
           rafRef.current = null;
           const { x, y } = latestPositionRef.current;
-          setPosition(latestPositionRef.current);
 
           // Use elementFromPoint to detect elements regardless of pointer-events inheritance
           const elementUnderCursor = document.elementFromPoint(x, y) as HTMLElement | null;
@@ -61,7 +62,6 @@ export const CursorProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       };
 
       trailPositionRef.current = next;
-      setTrailPosition(next);
       trailRafRef.current = window.requestAnimationFrame(updateTrail);
     };
 
@@ -84,8 +84,8 @@ export const CursorProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   return (
     <CursorActionsContext.Provider value={setCursorType}>
       <CursorTypeContext.Provider value={cursorType}>
-        <CursorPositionContext.Provider value={position}>
-          <CursorTrailPositionContext.Provider value={trailPosition}>{children}</CursorTrailPositionContext.Provider>
+        <CursorPositionContext.Provider value={latestPositionRef}>
+          <CursorTrailPositionContext.Provider value={trailPositionRef}>{children}</CursorTrailPositionContext.Provider>
         </CursorPositionContext.Provider>
       </CursorTypeContext.Provider>
     </CursorActionsContext.Provider>

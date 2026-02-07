@@ -1,3 +1,4 @@
+import { useEffect, useRef } from "react";
 import { useCursorPosition, useCursorTrailPosition, useCursorType } from "@/hooks/useCursor";
 
 const CURSOR_STYLES = {
@@ -29,22 +30,56 @@ const CURSOR_TRANSITION =
 
 export const CustomCursor = () => {
   const cursorType = useCursorType();
-  const position = useCursorPosition();
-  const trailPosition = useCursorTrailPosition();
+  const positionRef = useCursorPosition();
+  const trailPositionRef = useCursorTrailPosition();
+  const trailRef = useRef<HTMLDivElement>(null);
+  const dotRef = useRef<HTMLDivElement>(null);
+
+  const style = CURSOR_STYLES[cursorType];
+  const isHover = cursorType === "hover";
+
+  useEffect(() => {
+    if (cursorType === "hidden") {
+      return undefined;
+    }
+
+    let frameId = 0;
+
+    const update = () => {
+      const trailEl = trailRef.current;
+      const dotEl = dotRef.current;
+      const trailPosition = trailPositionRef.current;
+      const position = positionRef.current;
+
+      if (trailEl) {
+        trailEl.style.transform = `translate(${trailPosition.x - style.width / 2}px, ${trailPosition.y - style.height / 2}px)`;
+      }
+
+      if (dotEl) {
+        dotEl.style.transform = `translate(${position.x - 2}px, ${position.y - 2}px)`;
+      }
+
+      frameId = window.requestAnimationFrame(update);
+    };
+
+    frameId = window.requestAnimationFrame(update);
+
+    return () => {
+      window.cancelAnimationFrame(frameId);
+    };
+  }, [cursorType, positionRef, trailPositionRef, style.height, style.width]);
 
   if (cursorType === "hidden") {
     return null;
   }
 
-  const style = CURSOR_STYLES[cursorType];
-  const isHover = cursorType === "hover";
-
   return (
     <>
       <div
+        ref={trailRef}
         className="pointer-events-none fixed top-0 left-0 z-9999"
         style={{
-          transform: `translate(${trailPosition.x - style.width / 2}px, ${trailPosition.y - style.height / 2}px)`,
+          transform: "translate(-100px, -100px)",
           width: style.width,
           height: style.height,
           borderRadius: style.borderRadius,
@@ -59,9 +94,10 @@ export const CustomCursor = () => {
         }}
       />
       <div
+        ref={dotRef}
         className="pointer-events-none fixed top-0 left-0 z-9999"
         style={{
-          transform: `translate(${position.x - 2}px, ${position.y - 2}px)`,
+          transform: "translate(-100px, -100px)",
           width: 4,
           height: 4,
           borderRadius: "999px",

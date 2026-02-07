@@ -8,17 +8,27 @@ const SPOTLIGHT_STYLE = {
 
 export const Spotlight = () => {
   const divRef = useRef<HTMLDivElement>(null);
-  const trailPosition = useCursorTrailPosition();
+  const trailPositionRef = useCursorTrailPosition();
 
   useEffect(() => {
     const div = divRef.current;
     if (!div) return;
+    let frameId = 0;
 
-    const { x, y } = trailPosition;
-    div.style.setProperty("--spotlight-x", `${x}px`);
-    div.style.setProperty("--spotlight-y", `${y}px`);
-    div.style.opacity = x < -50 || y < -50 ? "0" : "1";
-  }, [trailPosition]);
+    const update = () => {
+      const { x, y } = trailPositionRef.current;
+      div.style.setProperty("--spotlight-x", `${x}px`);
+      div.style.setProperty("--spotlight-y", `${y}px`);
+      div.style.opacity = x < -50 || y < -50 ? "0" : "1";
+      frameId = window.requestAnimationFrame(update);
+    };
+
+    frameId = window.requestAnimationFrame(update);
+
+    return () => {
+      window.cancelAnimationFrame(frameId);
+    };
+  }, [trailPositionRef]);
 
   return (
     <div

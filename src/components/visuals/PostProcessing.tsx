@@ -2,7 +2,7 @@ import { useLoader } from "@react-three/fiber";
 import { Bloom, EffectComposer, Glitch, LUT, SMAA, ToneMapping } from "@react-three/postprocessing";
 import { useControls } from "leva";
 import { BlendFunction, LUTCubeLoader } from "postprocessing";
-import type { ComponentProps, ComponentType, ReactElement } from "react";
+import type { ComponentProps, ComponentType } from "react";
 import { memo, useEffect, useMemo } from "react";
 import * as THREE from "three";
 import { DEFAULT_POST_PROCESSING, GLITCH_DELAY, GLITCH_DURATION } from "./config";
@@ -21,6 +21,15 @@ export interface PostProcessingProps {
 
 export type PostProcessingControls = typeof DEFAULT_POST_PROCESSING;
 
+const LutEffect = LUT as unknown as ComponentType<ComponentProps<typeof LUT> & { opacity?: number }>;
+
+const Noop = () => null;
+
+const LutPass = ({ blend }: { blend: number }) => {
+  const lutTexture = useLoader(LUTCubeLoader, "/DwlG-F-6800-STD.cube");
+  return <LutEffect lut={lutTexture} blendFunction={BlendFunction.NORMAL} opacity={blend} />;
+};
+
 export const PostProcessing = memo(
   ({
     bloomIntensity,
@@ -33,33 +42,26 @@ export const PostProcessing = memo(
     lutEnabled,
     lutBlend,
   }: PostProcessingProps) => {
-    const lutTexture = useLoader(LUTCubeLoader, "/DwlG-F-6800-STD.cube");
     const glitchStrengthVec = useMemo(
       () => (enableGlitch ? new THREE.Vector2(0.2, glitchStrength) : new THREE.Vector2(0, 0)),
       [enableGlitch, glitchStrength],
     );
-    const LutEffect = LUT as unknown as ComponentType<ComponentProps<typeof LUT> & { opacity?: number }>;
-    const effects: ReactElement[] = [
-      <Bloom key="bloom" luminanceThreshold={bloomThreshold} mipmapBlur intensity={bloomIntensity} radius={bloomRadius} />,
-      <Glitch
-        key="glitch"
-        active={enableGlitch && hoverGlitch}
-        delay={GLITCH_DELAY}
-        duration={GLITCH_DURATION}
-        strength={glitchStrengthVec}
-        ratio={glitchRatio}
-      />,
-      <LutEffect
-        key="lut"
-        lut={lutTexture}
-        blendFunction={lutEnabled ? BlendFunction.NORMAL : BlendFunction.SKIP}
-        opacity={lutEnabled ? lutBlend : 0}
-      />,
-      <SMAA key="smaa" />,
-      <ToneMapping key="tone" />,
-    ];
 
-    return <EffectComposer multisampling={0}>{effects}</EffectComposer>;
+    return (
+      <EffectComposer multisampling={0}>
+        <Bloom luminanceThreshold={bloomThreshold} mipmapBlur intensity={bloomIntensity} radius={bloomRadius} />
+        <Glitch
+          active={enableGlitch && hoverGlitch}
+          delay={GLITCH_DELAY}
+          duration={GLITCH_DURATION}
+          strength={glitchStrengthVec}
+          ratio={glitchRatio}
+        />
+        {lutEnabled ? <LutPass blend={lutBlend} /> : <Noop />}
+        <SMAA />
+        <ToneMapping />
+      </EffectComposer>
+    );
   },
 );
 
