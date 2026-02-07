@@ -3,7 +3,7 @@ import { useFrame } from "@react-three/fiber";
 import { useMemo, useRef } from "react";
 import type * as SI from "simple-icons";
 import * as THREE from "three";
-import { useCursor } from "@/hooks/useCursor";
+import { useSetCursorType } from "@/hooks/useCursor";
 import { COIN_MATERIALS, CONFIG, coinGeometry } from "./config";
 import { EmbossedLogo } from "./EmbossedLogo";
 
@@ -17,7 +17,7 @@ interface StickerProps {
 export const Sticker = ({ icon, index, total, materialType = "chrome" }: StickerProps) => {
   const meshRef = useRef<THREE.Group>(null);
   const hoveredRef = useRef(false); // Use ref to avoid stale closure in useFrame
-  const { setCursorType } = useCursor();
+  const setCursorType = useSetCursorType();
 
   // Memoize position calculation - only depends on index/total/config
   const { x, y, z } = useMemo(() => {

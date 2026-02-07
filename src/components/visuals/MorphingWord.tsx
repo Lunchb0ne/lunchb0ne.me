@@ -3,7 +3,7 @@ import { TextMorph } from "torph/react";
 import { cn } from "@/utils/cn";
 
 // Words that tie into the portfolio themes: distributed systems, open source, databases, innovation
-const WORDS = ["Future", "Resilient", "Distributed", "Scalable", "Next", "Edge", "OpenSource", "Innovative"] as const;
+const WORDS = ["Resilient", "Distributed", "Scalable", "Weird", "Open Source"] as const;
 const INTERVAL_MS = 2500;
 
 export const MorphingWord = ({ className }: { className?: string }) => {

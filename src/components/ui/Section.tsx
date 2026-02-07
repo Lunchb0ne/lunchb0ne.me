@@ -44,13 +44,11 @@ interface HeaderProps {
   className?: string;
 }
 
-const Header = ({ children, className = "" }: HeaderProps) => {
-  return (
-    <div className={cn("flex items-baseline gap-4 mb-16", className)}>
-      <h2 className="text-3xl font-light tracking-tight text-white/90">{children}</h2>
-      <span className="h-px flex-1 bg-white/10" />
-    </div>
-  );
-};
+const Header = ({ children, className = "" }: HeaderProps) => (
+  <div className={cn("mb-16 flex items-baseline gap-4", className)}>
+    <h2 className="font-light text-3xl text-white/90 tracking-tight">{children}</h2>
+    <span className="h-px flex-1 bg-white/10" />
+  </div>
+);
 
 Section.Header = Header;

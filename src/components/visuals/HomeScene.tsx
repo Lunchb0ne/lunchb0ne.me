@@ -1,77 +1,85 @@
 "use client";
 
-import { Environment, Lightformer } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
-import { Bloom, EffectComposer, Glitch, SMAA, ToneMapping } from "@react-three/postprocessing";
 import { Leva, useControls } from "leva";
-import { memo, Suspense, useMemo, useState } from "react";
-import * as THREE from "three";
+import { Suspense, useCallback, useEffect, useState } from "react";
+import { usePrefersReducedMotion } from "@/hooks/usePrefersReducedMotion";
+import {
+  BACKGROUND_COLOR,
+  CANVAS_GL_CONFIG,
+  CANVAS_PERFORMANCE_CONFIG,
+  CONFIG,
+  DEFAULT_POST_PROCESSING,
+} from "./config";
 import { HeroContent } from "./HeroContent";
+import { Lights } from "./Lights";
+import { DevPostProcessingControls, PostProcessing, type PostProcessingControls } from "./PostProcessing";
 
-const Lights = memo(() => (
-  <Environment resolution={512}>
-    <group rotation={[-Math.PI / 4, -0.3, 0]}>
-      <Lightformer intensity={4} rotation-x={Math.PI / 2} position={[0, 5, -9]} scale={[10, 10, 1]} />
-      <Lightformer intensity={2} rotation-y={Math.PI / 2} position={[-5, 1, -1]} scale={[20, 0.1, 1]} color="#a5f3fc" />
-      <Lightformer intensity={2} rotation-y={Math.PI / 2} position={[-5, -1, -1]} scale={[20, 0.1, 1]} color="#fcb69f" />
-    </group>
-  </Environment>
-));
-Lights.displayName = "Lights";
+const DEFAULT_SCENE_CONTROLS = {
+  prismColor: CONFIG.COLORS.PRISM,
+  prismTransmission: CONFIG.PRISM.TRANSMISSION,
+  prismIor: CONFIG.PRISM.IOR,
+  prismThickness: CONFIG.PRISM.THICKNESS,
+  keyLightIntensity: 4,
+  glowLightIntensity: 2,
+  warmLightIntensity: 2,
+} as const;
 
-const CANVAS_GL_CONFIG = { antialias: false, alpha: true };
-const CANVAS_PERFORMANCE_CONFIG = { min: 0.5 };
-const BACKGROUND_COLOR = ["#050505"] as [string];
-const GLITCH_DELAY = new THREE.Vector2(0, 0);
-const GLITCH_DURATION = new THREE.Vector2(0.1, 0.3);
+type SceneControls = typeof DEFAULT_SCENE_CONTROLS;
 
-interface PostProcessingProps {
-  bloomIntensity: number;
-  bloomThreshold: number;
-  bloomRadius: number;
-  glitchStrength: number;
-  glitchRatio: number;
-  hoverGlitch: boolean;
-}
+const DevSceneControls = ({ onChange }: { onChange: (next: SceneControls) => void }) => {
+  const controls = useControls("Scene", {
+    prismColor: { value: DEFAULT_SCENE_CONTROLS.prismColor },
+    prismTransmission: { value: DEFAULT_SCENE_CONTROLS.prismTransmission, min: 0, max: 1, step: 0.01 },
+    prismIor: { value: DEFAULT_SCENE_CONTROLS.prismIor, min: 1, max: 2.5, step: 0.01 },
+    prismThickness: { value: DEFAULT_SCENE_CONTROLS.prismThickness, min: 0.5, max: 5, step: 0.1 },
+  });
 
-const PostProcessing = memo(
-  ({ bloomIntensity, bloomThreshold, bloomRadius, glitchStrength, glitchRatio, hoverGlitch }: PostProcessingProps) => {
-    // Memoize Vector2 to avoid recreation on every render
-    const glitchStrengthVec = useMemo(() => new THREE.Vector2(0.2, glitchStrength), [glitchStrength]);
+  const lightControls = useControls("Lights", {
+    keyLightIntensity: { value: DEFAULT_SCENE_CONTROLS.keyLightIntensity, min: 0, max: 10, step: 0.1 },
+    glowLightIntensity: { value: DEFAULT_SCENE_CONTROLS.glowLightIntensity, min: 0, max: 10, step: 0.1 },
+    warmLightIntensity: { value: DEFAULT_SCENE_CONTROLS.warmLightIntensity, min: 0, max: 10, step: 0.1 },
+  });
 
-    return (
-      <EffectComposer multisampling={0}>
-        <Bloom luminanceThreshold={bloomThreshold} mipmapBlur intensity={bloomIntensity} radius={bloomRadius} />
-        <Glitch
-          active={hoverGlitch}
-          delay={GLITCH_DELAY}
-          duration={GLITCH_DURATION}
-          strength={glitchStrengthVec}
-          ratio={glitchRatio}
-        />
-        <SMAA />
-        <ToneMapping />
-      </EffectComposer>
-    );
-  },
-);
-PostProcessing.displayName = "PostProcessing";
+  useEffect(() => {
+    onChange({
+      ...controls,
+      ...lightControls,
+    } as SceneControls);
+  }, [controls, lightControls, onChange]);
+
+  return null;
+};
 
 export const HomeScene = () => {
   const [hoverGlitch, setHoverGlitch] = useState(false);
+  const prefersReducedMotion = usePrefersReducedMotion();
+  const [controls, setControls] = useState<PostProcessingControls>(DEFAULT_POST_PROCESSING);
+  const [sceneControls, setSceneControls] = useState<SceneControls>(DEFAULT_SCENE_CONTROLS);
+  const handleControlsChange = useCallback((next: PostProcessingControls) => setControls(next), []);
+  const handleSceneControlsChange = useCallback((next: SceneControls) => setSceneControls(next), []);
 
-  // Leva controls for debugging and tweaking
-  const { bloomIntensity, bloomThreshold, bloomRadius, glitchStrength, glitchRatio } = useControls("Post Processing", {
-    bloomIntensity: { value: 0.6, min: 0, max: 2, step: 0.1 },
-    bloomThreshold: { value: 1.5, min: 0, max: 3, step: 0.1 },
-    bloomRadius: { value: 0.6, min: 0, max: 1, step: 0.05 },
-    glitchStrength: { value: 0.4, min: 0, max: 1, step: 0.1 },
-    glitchRatio: { value: 0.85, min: 0, max: 1, step: 0.05 },
-  });
+  const effectiveBloomIntensity = prefersReducedMotion ? Math.min(0.25, controls.bloomIntensity) : controls.bloomIntensity;
+  const effectiveBloomRadius = prefersReducedMotion ? Math.min(0.2, controls.bloomRadius) : controls.bloomRadius;
+  const enableGlitch = !prefersReducedMotion;
 
   return (
     <>
-      <Leva hidden={import.meta.env.PROD} />
+      {import.meta.env.DEV ? (
+        <>
+          <Leva
+            titleBar={{
+              position: {
+                x: -30,
+                y: 620,
+              },
+            }}
+            hidden={false}
+          />
+          <DevPostProcessingControls onChange={handleControlsChange} />
+          <DevSceneControls onChange={handleSceneControlsChange} />
+        </>
+      ) : null}
       <Canvas
         camera={{ position: [0, 0, 8], fov: 45 }}
         dpr={[1, 1.5]}

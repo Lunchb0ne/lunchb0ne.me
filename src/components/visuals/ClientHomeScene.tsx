@@ -1,7 +1,13 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import { HomeScene } from "@/components/visuals/HomeScene";
+import { lazy, Suspense, useEffect, useRef, useState } from "react";
+
+const loadHomeScene = () => import("@/components/visuals/HomeScene");
+
+const HomeScene = lazy(async () => {
+  const module = await loadHomeScene();
+  return { default: module.HomeScene };
+});
 
 interface ClientHomeSceneProps {
   rootMargin?: string;
@@ -13,6 +19,10 @@ export const ClientHomeScene = ({ rootMargin = "100px", threshold = 0 }: ClientH
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    const preloadTimeout = window.setTimeout(() => {
+      void loadHomeScene();
+    }, 200);
+
     const container = containerRef.current;
     if (!container) return;
 
@@ -25,12 +35,19 @@ export const ClientHomeScene = ({ rootMargin = "100px", threshold = 0 }: ClientH
 
     observer.observe(container);
 
-    return () => observer.disconnect();
+    return () => {
+      window.clearTimeout(preloadTimeout);
+      observer.disconnect();
+    };
   }, [rootMargin, threshold]);
 
   return (
     <div ref={containerRef} className="absolute inset-0 z-0 overflow-hidden">
-      {shouldRender ? <HomeScene /> : null}
+      {shouldRender ? (
+        <Suspense fallback={null}>
+          <HomeScene />
+        </Suspense>
+      ) : null}
     </div>
   );
 };

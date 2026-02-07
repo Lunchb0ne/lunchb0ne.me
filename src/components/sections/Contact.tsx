@@ -1,59 +1,54 @@
-import { ArrowRight, Github, Linkedin, Mail, Twitter } from "lucide-react";
+import ArrowRight from "lucide-react/dist/esm/icons/arrow-right";
+import Github from "lucide-react/dist/esm/icons/github";
+import Linkedin from "lucide-react/dist/esm/icons/linkedin";
+import Mail from "lucide-react/dist/esm/icons/mail";
+import Twitter from "lucide-react/dist/esm/icons/twitter";
 import { MorphingWord } from "@/components/visuals/MorphingWord";
+import { CONTACT_CONTENT } from "@/content";
+import { cn } from "@/utils/cn";
 
-export const Contact = () => {
-  return (
-    <div className="text-center relative z-10">
-      <h2 className="text-4xl md:text-5xl font-bold text-white mb-6 tracking-tight">
-        Ready to build the <MorphingWord className="text-cyan-400" />?
-      </h2>
-      <p className="text-lg text-white/50 mb-12 max-w-2xl mx-auto leading-relaxed">
-        Whether you have a question about distributed systems, want to collaborate on an open-source project, or just want to say
-        hi, my inbox is always open.
-      </p>
+const SOCIAL_ICONS = {
+  github: Github,
+  linkedin: Linkedin,
+  twitter: Twitter,
+} as const;
 
-      <div className="flex flex-col sm:flex-row items-center justify-center gap-6 mb-20">
-        <a
-          href="mailto:hi@lunchb0ne.me"
-          className="group flex items-center gap-3 px-8 py-4 bg-white text-black font-bold rounded-full hover:bg-cyan-400 transition-colors duration-300"
-        >
-          <Mail className="w-5 h-5" />
-          <span>Say Hello</span>
-          <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-        </a>
-      </div>
+export const Contact = () => (
+  <div className="relative z-10 text-center">
+    <h2 className="mb-6 font-bold text-4xl text-white tracking-tight md:text-5xl">
+      Ready to build the <MorphingWord className="text-cyan-400" />?
+    </h2>
+    <p className="mx-auto mb-12 max-w-2xl text-lg text-white/50 leading-relaxed">{CONTACT_CONTENT.intro}</p>
 
-      <div className="flex justify-center gap-8">
-        <a
-          href="https://github.com/lunchb0ne"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="text-white/40 hover:text-white hover:scale-110 transition-all duration-300"
-        >
-          <Github className="w-6 h-6" />
-          <span className="sr-only">GitHub</span>
-        </a>
-        <a
-          href="https://linkedin.com/in/abhishek-aryan" // Assuming handle
-          target="_blank"
-          rel="noopener noreferrer"
-          className="text-white/40 hover:text-[#0077b5] hover:scale-110 transition-all duration-300"
-        >
-          <Linkedin className="w-6 h-6" />
-          <span className="sr-only">LinkedIn</span>
-        </a>
-        <a
-          href="https://twitter.com/lunchb0ne" // Assuming handle
-          target="_blank"
-          rel="noopener noreferrer"
-          className="text-white/40 hover:text-[#1DA1F2] hover:scale-110 transition-all duration-300"
-        >
-          <Twitter className="w-6 h-6" />
-          <span className="sr-only">Twitter</span>
-        </a>
-      </div>
-
-      <div className="mt-20 text-center text-white/20 text-sm font-mono">&copy; 2026 Abhishek Aryan. All rights reserved.</div>
+    <div className="mb-20 flex flex-col items-center justify-center gap-6 sm:flex-row">
+      <a
+        href={`mailto:${CONTACT_CONTENT.email}`}
+        className="group flex items-center gap-3 rounded-full bg-white px-8 py-4 font-bold text-black transition-colors duration-300 hover:bg-cyan-400"
+      >
+        <Mail className="h-5 w-5" />
+        <span>{CONTACT_CONTENT.ctaLabel}</span>
+        <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+      </a>
     </div>
-  );
-};
+
+    <div className="flex justify-center gap-8">
+      {CONTACT_CONTENT.socials.map((social) => {
+        const Icon = SOCIAL_ICONS[social.icon];
+        return (
+          <a
+            key={social.label}
+            href={social.href}
+            target="_blank"
+            rel="noopener noreferrer"
+            className={cn("text-white/40 transition-all duration-300 hover:scale-110", social.hoverClassName)}
+          >
+            <Icon className="h-6 w-6" />
+            <span className="sr-only">{social.label}</span>
+          </a>
+        );
+      })}
+    </div>
+
+    <div className="mt-20 text-center font-mono text-sm text-white/20">&copy; 2026 Abhishek Aryan. All rights reserved.</div>
+  </div>
+);
