@@ -1,5 +1,5 @@
-import { useEffect, useRef } from "react";
-import { useCursorTrailPosition } from "@/hooks/useCursor";
+import { useRef } from "react";
+import { useTrailSubscribe } from "@/hooks/useCursor";
 
 const SPOTLIGHT_STYLE = {
   background:
@@ -8,27 +8,14 @@ const SPOTLIGHT_STYLE = {
 
 export const Spotlight = () => {
   const divRef = useRef<HTMLDivElement>(null);
-  const trailPositionRef = useCursorTrailPosition();
 
-  useEffect(() => {
+  useTrailSubscribe((pos) => {
     const div = divRef.current;
     if (!div) return;
-    let frameId = 0;
-
-    const update = () => {
-      const { x, y } = trailPositionRef.current;
-      div.style.setProperty("--spotlight-x", `${x}px`);
-      div.style.setProperty("--spotlight-y", `${y}px`);
-      div.style.opacity = x < -50 || y < -50 ? "0" : "1";
-      frameId = window.requestAnimationFrame(update);
-    };
-
-    frameId = window.requestAnimationFrame(update);
-
-    return () => {
-      window.cancelAnimationFrame(frameId);
-    };
-  }, [trailPositionRef]);
+    div.style.setProperty("--spotlight-x", `${pos.x}px`);
+    div.style.setProperty("--spotlight-y", `${pos.y}px`);
+    div.style.opacity = pos.x < -50 || pos.y < -50 ? "0" : "1";
+  });
 
   return (
     <div

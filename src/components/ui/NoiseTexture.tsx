@@ -19,4 +19,5 @@ export const NoiseTexture = memo(() => (
     <rect width="100%" height="100%" filter="url(#noise)" />
   </svg>
 ));
+
 NoiseTexture.displayName = "NoiseTexture";

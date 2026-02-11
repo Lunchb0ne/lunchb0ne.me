@@ -1,5 +1,5 @@
 import { useEffect, useRef } from "react";
-import { useCursorPosition, useCursorTrailPosition, useCursorType } from "@/hooks/useCursor";
+import { useCursorPosition, useCursorType, useTrailSubscribe } from "@/hooks/useCursor";
 
 const CURSOR_STYLES = {
   default: {
@@ -31,47 +31,48 @@ const CURSOR_TRANSITION =
 export const CustomCursor = () => {
   const cursorType = useCursorType();
   const positionRef = useCursorPosition();
-  const trailPositionRef = useCursorTrailPosition();
   const trailRef = useRef<HTMLDivElement>(null);
   const dotRef = useRef<HTMLDivElement>(null);
+  const styleRef = useRef(CURSOR_STYLES[cursorType]);
+  styleRef.current = CURSOR_STYLES[cursorType];
 
-  const style = CURSOR_STYLES[cursorType];
-  const isHover = cursorType === "hover";
+  // Trail ring updates via the shared subscriber
+  useTrailSubscribe((pos) => {
+    const trailEl = trailRef.current;
+    if (!trailEl) return;
+    const style = styleRef.current;
+    trailEl.style.transform = `translate(${pos.x - style.width / 2}px, ${pos.y - style.height / 2}px)`;
+  });
 
+  // Dot follows the raw position (instant, no interpolation)
+  // Use a single rAF only for the dot since it uses raw position, not trail
   useEffect(() => {
-    if (cursorType === "hidden") {
-      return undefined;
-    }
+    if (cursorType === "hidden") return undefined;
 
     let frameId = 0;
 
-    const update = () => {
-      const trailEl = trailRef.current;
+    const updateDot = () => {
       const dotEl = dotRef.current;
-      const trailPosition = trailPositionRef.current;
-      const position = positionRef.current;
-
-      if (trailEl) {
-        trailEl.style.transform = `translate(${trailPosition.x - style.width / 2}px, ${trailPosition.y - style.height / 2}px)`;
-      }
-
       if (dotEl) {
+        const position = positionRef.current;
         dotEl.style.transform = `translate(${position.x - 2}px, ${position.y - 2}px)`;
       }
-
-      frameId = window.requestAnimationFrame(update);
+      frameId = window.requestAnimationFrame(updateDot);
     };
 
-    frameId = window.requestAnimationFrame(update);
+    frameId = window.requestAnimationFrame(updateDot);
 
     return () => {
       window.cancelAnimationFrame(frameId);
     };
-  }, [cursorType, positionRef, trailPositionRef, style.height, style.width]);
+  }, [cursorType, positionRef]);
 
   if (cursorType === "hidden") {
     return null;
   }
+
+  const style = CURSOR_STYLES[cursorType];
+  const isHover = cursorType === "hover";
 
   return (
     <>
