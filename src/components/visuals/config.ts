@@ -43,8 +43,8 @@ export const CONFIG = {
     FLOAT_INTENSITY: 0.4,
   },
   PRISM: {
-    SAMPLES: 4,
-    RESOLUTION: 256,
+    SAMPLES: 16,
+    RESOLUTION: 512,
     TRANSMISSION: 0.95,
     ROUGHNESS: 0.05,
     IOR: 2.6,
@@ -123,6 +123,14 @@ export const CANVAS_GL_CONFIG = {
 
 export const CANVAS_PERFORMANCE_CONFIG = { min: 0.5 } as const;
 export const BACKGROUND_COLOR = ["#050505"] as [string];
+
+export const DEFAULT_POST_PROCESSING = {
+  bloomIntensity: 0.7,
+  bloomThreshold: 1.2,
+  bloomRadius: 0.5,
+  lutEnabled: true,
+  lutBlend: 0.7,
+} as const;
 
 // Shared Geometries and Materials
 // We create these once here to avoid recreation on every render/mount if possible,
