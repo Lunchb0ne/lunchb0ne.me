@@ -2,20 +2,13 @@
 
 import { PerformanceMonitor } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
+import { useReducedMotion } from "framer-motion";
 import { Leva, useControls } from "leva";
-import { Suspense, useEffect, useState } from "react";
-import { usePrefersReducedMotion } from "@/hooks/usePrefersReducedMotion";
-import {
-  BACKGROUND_COLOR,
-  CANVAS_GL_CONFIG,
-  CANVAS_PERFORMANCE_CONFIG,
-  CONFIG,
-  DEFAULT_POST_PROCESSING,
-  IS_MOBILE,
-} from "./config";
+import { useEffect, useState } from "react";
+import * as THREE from "three";
+import { BACKGROUND_COLOR, CANVAS_GL_CONFIG, CANVAS_PERFORMANCE_CONFIG, CONFIG, IS_MOBILE } from "./config";
 import { Dodecahedron, HeroContent } from "./HeroContent";
 import { Lights } from "./Lights";
-import { DevPostProcessingControls, PostProcessing, type PostProcessingControls } from "./PostProcessing";
 
 const DEFAULT_SCENE_CONTROLS = {
   prismColor: CONFIG.COLORS.PRISM,
@@ -54,52 +47,37 @@ const DevSceneControls = ({ onChange }: { onChange: (next: SceneControls) => voi
 };
 
 export const HomeScene = () => {
-  const [hoverGlitch, setHoverGlitch] = useState(false);
-  const prefersReducedMotion = usePrefersReducedMotion();
-  const [controls, setControls] = useState<PostProcessingControls>(DEFAULT_POST_PROCESSING);
+  const prefersReducedMotion = useReducedMotion();
   const [sceneControls, setSceneControls] = useState<SceneControls>(DEFAULT_SCENE_CONTROLS);
   const [dpr, setDpr] = useState(IS_MOBILE ? 1 : 1.5);
-
-  const bloomLimit = prefersReducedMotion ? 0.25 : IS_MOBILE ? 0.3 : 2;
-  const effectiveBloomIntensity = Math.min(bloomLimit, controls.bloomIntensity);
-  const effectiveBloomRadius = Math.min(bloomLimit, controls.bloomRadius);
-  const enableGlitch = !prefersReducedMotion && !IS_MOBILE;
-
-  // Scaling factor for expensive materials based on performance (1.0 = full, 0.5 = low)
-  const [quality, setQuality] = useState(1);
 
   return (
     <>
       {import.meta.env.DEV && (
         <>
           <Leva titleBar={{ position: { x: -30, y: 620 } }} hidden={false} />
-          <DevPostProcessingControls onChange={setControls} />
           <DevSceneControls onChange={setSceneControls} />
         </>
       )}
       <Canvas
         camera={{ position: [0, 0, 8], fov: 45 }}
         dpr={dpr}
-        gl={CANVAS_GL_CONFIG}
+        gl={{
+          ...CANVAS_GL_CONFIG,
+          toneMapping: THREE.ACESFilmicToneMapping,
+          toneMappingExposure: 1.2,
+        }}
         performance={CANVAS_PERFORMANCE_CONFIG}
         frameloop="always"
       >
-        <PerformanceMonitor
-          onIncline={() => setQuality(1)}
-          onDecline={() => setQuality(0.5)}
-          onChange={({ factor }) => setDpr(IS_MOBILE ? 1 : 1 + 0.5 * factor)}
-        />
+        <PerformanceMonitor onChange={({ factor }) => setDpr(IS_MOBILE ? 1 : 1 + 0.5 * factor)} />
         <color attach="background" args={BACKGROUND_COLOR} />
         <Dodecahedron
-          onHover={setHoverGlitch}
           prism={{
             color: sceneControls.prismColor,
             transmission: sceneControls.prismTransmission,
             ior: sceneControls.prismIor,
             thickness: sceneControls.prismThickness,
-            // Scale expensive material properties
-            samples: Math.round(CONFIG.PRISM.SAMPLES * quality),
-            resolution: Math.round(CONFIG.PRISM.RESOLUTION * quality),
           }}
         />
         <Lights
@@ -108,19 +86,6 @@ export const HomeScene = () => {
           warmIntensity={sceneControls.warmLightIntensity}
         />
         <HeroContent sparklesEnabled={!prefersReducedMotion && !IS_MOBILE} />
-        <Suspense fallback={null}>
-          <PostProcessing
-            bloomIntensity={effectiveBloomIntensity}
-            bloomThreshold={controls.bloomThreshold}
-            bloomRadius={effectiveBloomRadius}
-            glitchStrength={controls.glitchStrength}
-            glitchRatio={controls.glitchRatio}
-            hoverGlitch={hoverGlitch}
-            enableGlitch={enableGlitch}
-            lutEnabled={!IS_MOBILE && controls.lutEnabled}
-            lutBlend={controls.lutBlend}
-          />
-        </Suspense>
       </Canvas>
     </>
   );

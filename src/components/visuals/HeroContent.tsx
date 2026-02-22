@@ -15,6 +15,7 @@ import {
   HERO_TAGLINE_INTERVAL_MS,
   HERO_TAGLINE_Y_OFFSET,
   ICON_COUNT,
+  IS_MOBILE,
   TAGLINES,
 } from "./config";
 import { MarqueeText } from "./MarqueeText";
@@ -71,21 +72,12 @@ const PrismMaterial = memo(
 );
 PrismMaterial.displayName = "PrismMaterial";
 
-export const Dodecahedron = ({ onHover, prism }: { onHover: (hover: boolean) => void; prism?: PrismSettings }) => {
+export const Dodecahedron = ({ prism }: { prism?: PrismSettings }) => {
   const setCursorType = useSetCursorType();
 
   return (
     <Float speed={5} rotationIntensity={1} floatIntensity={0.5}>
-      <mesh
-        onPointerOver={() => {
-          setCursorType("hover");
-          onHover(true);
-        }}
-        onPointerOut={() => {
-          setCursorType("default");
-          onHover(false);
-        }}
-      >
+      <mesh onPointerOver={() => setCursorType("hover")} onPointerOut={() => setCursorType("default")}>
         <dodecahedronGeometry args={[1.4, 0]} />
         <PrismMaterial {...prism} />
       </mesh>
@@ -97,19 +89,14 @@ export const HeroContent = ({ sparklesEnabled = true }: { sparklesEnabled?: bool
   const orbitRef = useRef<Group>(null);
   const [taglineIndex, setTaglineIndex] = useState(0);
 
-  // Random icon selection on mount (client-side only)
-  const groupedIcons = useMemo(() => {
-    const selected = shuffleArray(ALL_TECH_ICONS)
-      .slice(0, ICON_COUNT)
-      .map((icon) => ({ ...icon, material: randomMaterial() }));
-
-    return COIN_MATERIAL_KEYS.map((matKey) => ({
-      matKey,
-      icons: selected
-        .filter((tech) => tech.material === matKey)
-        .map((tech) => ({ ...tech, globalIndex: selected.indexOf(tech) })),
-    }));
-  }, []);
+  // Simple, readable selection of icons
+  const selectedIcons = useMemo(
+    () =>
+      shuffleArray(ALL_TECH_ICONS)
+        .slice(0, ICON_COUNT)
+        .map((icon) => ({ ...icon, material: randomMaterial() })),
+    [],
+  );
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -149,16 +136,27 @@ export const HeroContent = ({ sparklesEnabled = true }: { sparklesEnabled?: bool
       </group>
 
       <group ref={orbitRef}>
-        {groupedIcons.map(({ matKey, icons }) => (
+        {COIN_MATERIAL_KEYS.map((matKey) => (
           <Instances key={matKey} geometry={coinGeometry} material={COIN_MATERIALS[matKey]}>
-            {icons.map((tech) => (
-              <Sticker key={tech.slug} icon={tech.icon} index={tech.globalIndex} total={ICON_COUNT} />
-            ))}
+            {selectedIcons
+              .filter((tech) => tech.material === matKey)
+              .map((tech) => (
+                <Sticker key={tech.slug} icon={tech.icon} index={selectedIcons.indexOf(tech)} total={ICON_COUNT} />
+              ))}
           </Instances>
         ))}
       </group>
 
-      {sparklesEnabled && <Sparkles count={50} scale={8} size={2} speed={0.2} opacity={0.3} color="white" />}
+      {sparklesEnabled && (
+        <Sparkles
+          count={IS_MOBILE ? 20 : 50}
+          scale={8}
+          size={IS_MOBILE ? 1.5 : 2}
+          speed={0.2}
+          opacity={0.3}
+          color="white"
+        />
+      )}
     </group>
   );
 };

@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useRef } from "react";
 import { useCursorPosition, useCursorType, useHasFinePointer, useTrailSubscribe } from "@/hooks/useCursor";
 
 const CURSOR_STYLES = {
@@ -37,36 +37,21 @@ export const CustomCursor = () => {
   const styleRef = useRef(CURSOR_STYLES[cursorType]);
   styleRef.current = CURSOR_STYLES[cursorType];
 
-  // Trail ring updates via the shared subscriber
+  // Synchronized updates for both trail and dot via shared subscriber
   useTrailSubscribe((pos) => {
     const trailEl = trailRef.current;
-    if (!trailEl) return;
+    const dotEl = dotRef.current;
     const style = styleRef.current;
-    trailEl.style.transform = `translate(${pos.x - style.width / 2}px, ${pos.y - style.height / 2}px)`;
+
+    if (trailEl) {
+      trailEl.style.transform = `translate(${pos.x - style.width / 2}px, ${pos.y - style.height / 2}px)`;
+    }
+
+    if (dotEl) {
+      const rawPos = positionRef.current;
+      dotEl.style.transform = `translate(${rawPos.x - 2}px, ${rawPos.y - 2}px)`;
+    }
   });
-
-  // Dot follows the raw position (instant, no interpolation)
-  // Use a single rAF only for the dot since it uses raw position, not trail
-  useEffect(() => {
-    if (cursorType === "hidden") return undefined;
-
-    let frameId = 0;
-
-    const updateDot = () => {
-      const dotEl = dotRef.current;
-      if (dotEl) {
-        const position = positionRef.current;
-        dotEl.style.transform = `translate(${position.x - 2}px, ${position.y - 2}px)`;
-      }
-      frameId = window.requestAnimationFrame(updateDot);
-    };
-
-    frameId = window.requestAnimationFrame(updateDot);
-
-    return () => {
-      window.cancelAnimationFrame(frameId);
-    };
-  }, [cursorType, positionRef]);
 
   if (!hasFinePointer || cursorType === "hidden") {
     return null;
@@ -85,13 +70,9 @@ export const CustomCursor = () => {
           width: style.width,
           height: style.height,
           borderRadius: style.borderRadius,
-          background: "rgba(255, 255, 255, 0.1)",
-          backdropFilter: "blur(8px)",
-          WebkitBackdropFilter: "blur(8px)",
-          border: "1px solid rgba(255, 255, 255, 0.2)",
-          boxShadow: isHover
-            ? "0 0 12px rgba(34, 211, 238, 0.2), inset 0 0 15px rgba(255, 255, 255, 0.05)"
-            : "inset 0 0 10px rgba(255, 255, 255, 0.05)",
+          background: "rgba(255, 255, 255, 0.05)",
+          border: "1px solid rgba(255, 255, 255, 0.3)",
+          boxShadow: isHover ? "0 0 15px rgba(34, 211, 238, 0.15), inset 0 0 10px rgba(255, 255, 255, 0.02)" : "none",
           transition: CURSOR_TRANSITION,
         }}
       />

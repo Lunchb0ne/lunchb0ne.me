@@ -18,7 +18,7 @@ export const Navigation = () => {
   };
 
   return (
-    <nav className="pointer-events-none fixed inset-x-0 top-0 z-40 flex items-center justify-between rounded-b-2xl bg-black/20 px-4 py-2 bg-blend-darken backdrop-blur-lg">
+    <nav className="pointer-events-none fixed inset-x-0 top-0 z-40 flex items-center justify-between rounded-b-2xl border-white/10 border-b bg-black/60 px-4 py-2 backdrop-blur-md transition-all duration-300">
       <Link to="/" onClick={scrollToTop} className="pointer-events-auto flex cursor-pointer select-none items-center">
         <img
           src="/icon.svg"

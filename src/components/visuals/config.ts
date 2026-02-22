@@ -115,22 +115,14 @@ export const HERO_TAGLINE_CONTAINER_STYLE = {
 
 export const IS_MOBILE = typeof window !== "undefined" ? window.matchMedia("(max-width: 768px)").matches : false;
 
-export const CANVAS_GL_CONFIG = { antialias: false, alpha: true, powerPreference: "high-performance" } as const;
+export const CANVAS_GL_CONFIG = {
+  antialias: false,
+  alpha: true,
+  powerPreference: "high-performance",
+} as const;
+
 export const CANVAS_PERFORMANCE_CONFIG = { min: 0.5 } as const;
 export const BACKGROUND_COLOR = ["#050505"] as [string];
-
-export const GLITCH_DELAY = new THREE.Vector2(0, 0);
-export const GLITCH_DURATION = new THREE.Vector2(0.1, 0.3);
-
-export const DEFAULT_POST_PROCESSING = {
-  bloomIntensity: 0.7,
-  bloomThreshold: 1.2,
-  bloomRadius: 0.5,
-  glitchStrength: 0.3,
-  glitchRatio: 0.65,
-  lutEnabled: true,
-  lutBlend: 0.7,
-} as const;
 
 // Shared Geometries and Materials
 // We create these once here to avoid recreation on every render/mount if possible,

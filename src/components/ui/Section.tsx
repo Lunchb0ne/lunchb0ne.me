@@ -25,13 +25,18 @@ export const Section = ({ children, className = "", id, delay = 0, maxWidth = "6
           opacity: 1,
           y: 0,
           transition: {
-            duration: prefersReducedMotion ? 0 : 0.6,
+            type: "spring",
+            stiffness: 100,
+            damping: 20,
+            duration: prefersReducedMotion ? 0 : 0.8,
             delay: prefersReducedMotion ? 0 : delay,
-            ease: "easeOut",
             staggerChildren: prefersReducedMotion ? 0 : 0.1,
           },
         },
-        hidden: { opacity: prefersReducedMotion ? 1 : 0, y: prefersReducedMotion ? 0 : 20 },
+        hidden: {
+          opacity: prefersReducedMotion ? 1 : 0,
+          y: prefersReducedMotion ? 0 : 40,
+        },
       }}
       className={cn("relative z-10 bg-surface px-8 py-32", className)}
     >

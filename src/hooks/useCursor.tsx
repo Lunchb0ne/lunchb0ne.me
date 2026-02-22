@@ -26,105 +26,56 @@ const HasFinePointerContext = createContext<boolean>(false);
 export const CursorProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [cursorType, setCursorType] = useState<CursorType>("default");
   const [hasFinePointer, setHasFinePointer] = useState(false);
-  const rafRef = useRef<number | null>(null);
-  const trailRafRef = useRef<number | null>(null);
   const latestPositionRef = useRef<Position>({ x: -100, y: -100 });
   const trailPositionRef = useRef<Position>({ x: -100, y: -100 });
   const subscribersRef = useRef<Set<TrailSubscriber>>(new Set());
-  const isIdleRef = useRef(true);
 
   useEffect(() => {
-    // Detect fine pointer (mouse) — skip custom cursor on touch/coarse devices
     const finePointerQuery = window.matchMedia("(pointer: fine)");
     setHasFinePointer(finePointerQuery.matches);
 
     const handlePointerChange = (e: MediaQueryListEvent) => setHasFinePointer(e.matches);
     finePointerQuery.addEventListener("change", handlePointerChange);
 
-    if (!finePointerQuery.matches) {
-      return () => finePointerQuery.removeEventListener("change", handlePointerChange);
-    }
-
-    // Standard interactive elements + .group (Tailwind hover pattern) + [data-interactive] for explicit marking
     const interactiveSelector =
       'a, button, input, textarea, select, [role="button"], [tabindex]:not([tabindex="-1"]), .group, [data-interactive]';
 
-    const startTrailLoop = () => {
-      if (trailRafRef.current !== null) return; // already running
-      isIdleRef.current = false;
+    const updateTrail = () => {
+      const target = latestPositionRef.current;
+      const current = trailPositionRef.current;
+      const dx = target.x - current.x;
+      const dy = target.y - current.y;
 
-      const updateTrail = () => {
-        const target = latestPositionRef.current;
-        const current = trailPositionRef.current;
-        const dx = target.x - current.x;
-        const dy = target.y - current.y;
-
-        // If close enough, snap and go idle
-        if (Math.abs(dx) < 0.5 && Math.abs(dy) < 0.5) {
-          trailPositionRef.current = { x: target.x, y: target.y };
-          // Notify subscribers one last time with the final position
-          for (const sub of subscribersRef.current) {
-            sub(trailPositionRef.current);
-          }
-          trailRafRef.current = null;
-          isIdleRef.current = true;
-          return;
-        }
-
-        trailPositionRef.current = {
-          x: current.x + dx * 0.18,
-          y: current.y + dy * 0.18,
-        };
-
-        // Notify all subscribers inline
-        for (const sub of subscribersRef.current) {
-          sub(trailPositionRef.current);
-        }
-
-        trailRafRef.current = window.requestAnimationFrame(updateTrail);
+      // Simple interpolation for the trail
+      trailPositionRef.current = {
+        x: current.x + dx * 0.18,
+        y: current.y + dy * 0.18,
       };
 
-      trailRafRef.current = window.requestAnimationFrame(updateTrail);
+      for (const sub of subscribersRef.current) {
+        sub(trailPositionRef.current);
+      }
+
+      requestAnimationFrame(updateTrail);
     };
 
     const handleMouseMove = (e: MouseEvent) => {
       latestPositionRef.current = { x: e.clientX, y: e.clientY };
 
-      // Wake up the trail loop if idle
-      if (isIdleRef.current) {
-        startTrailLoop();
-      }
+      const elementUnderCursor = document.elementFromPoint(e.clientX, e.clientY);
+      if (elementUnderCursor?.tagName === "CANVAS") return;
 
-      if (rafRef.current === null) {
-        rafRef.current = window.requestAnimationFrame(() => {
-          rafRef.current = null;
-          const { x, y } = latestPositionRef.current;
-
-          // elementFromPoint can be expensive, only run if mouse moved enough or on a schedule
-          const elementUnderCursor = document.elementFromPoint(x, y);
-          if (elementUnderCursor?.tagName === "CANVAS") return;
-
-          const isInteractive = elementUnderCursor?.closest(interactiveSelector);
-          setCursorType(isInteractive ? "hover" : "default");
-        });
-      }
+      const isInteractive = elementUnderCursor?.closest(interactiveSelector);
+      setCursorType(isInteractive ? "hover" : "default");
     };
 
-    // Start the trail loop initially to handle any early subscribers
-    startTrailLoop();
-
+    const trailId = requestAnimationFrame(updateTrail);
     window.addEventListener("mousemove", handleMouseMove, { passive: true });
+
     return () => {
       finePointerQuery.removeEventListener("change", handlePointerChange);
       window.removeEventListener("mousemove", handleMouseMove);
-      if (rafRef.current !== null) {
-        window.cancelAnimationFrame(rafRef.current);
-        rafRef.current = null;
-      }
-      if (trailRafRef.current !== null) {
-        window.cancelAnimationFrame(trailRafRef.current);
-        trailRafRef.current = null;
-      }
+      cancelAnimationFrame(trailId);
     };
   }, []);
 
