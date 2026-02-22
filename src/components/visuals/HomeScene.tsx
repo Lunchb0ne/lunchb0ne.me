@@ -11,7 +11,7 @@ import {
   CONFIG,
   DEFAULT_POST_PROCESSING,
 } from "./config";
-import { HeroContent } from "./HeroContent";
+import { Dodecahedron, HeroContent } from "./HeroContent";
 import { Lights } from "./Lights";
 import { DevPostProcessingControls, PostProcessing, type PostProcessingControls } from "./PostProcessing";
 
@@ -51,20 +51,29 @@ const DevSceneControls = ({ onChange }: { onChange: (next: SceneControls) => voi
   return null;
 };
 
-export const HomeScene = () => {
+export const HomeScene = ({ frameloop = "always" }: { frameloop?: "always" | "demand" | "never" }) => {
   const [hoverGlitch, setHoverGlitch] = useState(false);
   const prefersReducedMotion = usePrefersReducedMotion();
   const [controls, setControls] = useState<PostProcessingControls>(DEFAULT_POST_PROCESSING);
   const [sceneControls, setSceneControls] = useState<SceneControls>(DEFAULT_SCENE_CONTROLS);
   const handleControlsChange = useCallback((next: PostProcessingControls) => setControls(next), []);
   const handleSceneControlsChange = useCallback((next: SceneControls) => setSceneControls(next), []);
+  const [isMobile] = useState(() =>
+    typeof window !== "undefined" ? window.matchMedia("(max-width: 768px)").matches : false,
+  );
 
   const effectiveBloomIntensity = prefersReducedMotion
     ? Math.min(0.25, controls.bloomIntensity)
-    : controls.bloomIntensity;
+    : isMobile
+      ? Math.min(0.3, controls.bloomIntensity)
+      : controls.bloomIntensity;
 
-  const effectiveBloomRadius = prefersReducedMotion ? Math.min(0.2, controls.bloomRadius) : controls.bloomRadius;
-  const enableGlitch = !prefersReducedMotion;
+  const effectiveBloomRadius = prefersReducedMotion
+    ? Math.min(0.2, controls.bloomRadius)
+    : isMobile
+      ? Math.min(0.3, controls.bloomRadius)
+      : controls.bloomRadius;
+  const enableGlitch = !prefersReducedMotion && !isMobile;
 
   return (
     <>
@@ -85,27 +94,29 @@ export const HomeScene = () => {
       ) : null}
       <Canvas
         camera={{ position: [0, 0, 8], fov: 45 }}
-        dpr={[1, 1.5]}
+        dpr={isMobile ? [1, 1] : [1, 1.5]}
         gl={CANVAS_GL_CONFIG}
         performance={CANVAS_PERFORMANCE_CONFIG}
+        frameloop={frameloop}
       >
         <color attach="background" args={BACKGROUND_COLOR} />
+        {/* Synchronous scene — renders immediately, no async resources */}
+        <Dodecahedron
+          onHover={setHoverGlitch}
+          prism={{
+            color: sceneControls.prismColor,
+            transmission: sceneControls.prismTransmission,
+            ior: sceneControls.prismIor,
+            thickness: sceneControls.prismThickness,
+          }}
+        />
+        <Lights
+          keyIntensity={sceneControls.keyLightIntensity}
+          glowIntensity={sceneControls.glowLightIntensity}
+          warmIntensity={sceneControls.warmLightIntensity}
+        />
+        <HeroContent sparklesEnabled={!prefersReducedMotion && !isMobile} />
         <Suspense fallback={null}>
-          <HeroContent
-            onHover={setHoverGlitch}
-            sparklesEnabled={!prefersReducedMotion}
-            prism={{
-              color: sceneControls.prismColor,
-              transmission: sceneControls.prismTransmission,
-              ior: sceneControls.prismIor,
-              thickness: sceneControls.prismThickness,
-            }}
-          />
-          <Lights
-            keyIntensity={sceneControls.keyLightIntensity}
-            glowIntensity={sceneControls.glowLightIntensity}
-            warmIntensity={sceneControls.warmLightIntensity}
-          />
           <PostProcessing
             bloomIntensity={effectiveBloomIntensity}
             bloomThreshold={controls.bloomThreshold}
@@ -114,7 +125,7 @@ export const HomeScene = () => {
             glitchRatio={controls.glitchRatio}
             hoverGlitch={hoverGlitch}
             enableGlitch={enableGlitch}
-            lutEnabled={controls.lutEnabled}
+            lutEnabled={!isMobile && controls.lutEnabled}
             lutBlend={controls.lutBlend}
           />
         </Suspense>

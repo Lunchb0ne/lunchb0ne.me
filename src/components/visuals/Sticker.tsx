@@ -1,25 +1,25 @@
-import { Float } from "@react-three/drei";
+import { Instance } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
 import { useMemo, useRef } from "react";
 import type * as SI from "simple-icons";
 import * as THREE from "three";
 import { useSetCursorType } from "@/hooks/useCursor";
-import { COIN_MATERIALS, CONFIG, coinGeometry } from "./config";
+import { CONFIG } from "./config";
 import { EmbossedLogo } from "./EmbossedLogo";
 
 interface StickerProps {
   icon: SI.SimpleIcon;
   index: number;
   total: number;
-  materialType?: keyof typeof COIN_MATERIALS;
 }
 
-export const Sticker = ({ icon, index, total, materialType = "chrome" }: StickerProps) => {
+export const Sticker = ({ icon, index, total }: StickerProps) => {
   const meshRef = useRef<THREE.Group>(null);
-  const hoveredRef = useRef(false); // Use ref to avoid stale closure in useFrame
+  const coinRef = useRef<THREE.Mesh>(null);
+  const hoveredRef = useRef(false);
   const setCursorType = useSetCursorType();
 
-  // Memoize position calculation - only depends on index/total/config
+  // Memoize position calculation
   const { x, y, z } = useMemo(() => {
     const angle = (index / total) * Math.PI * 2;
     return {
@@ -46,6 +46,12 @@ export const Sticker = ({ icon, index, total, materialType = "chrome" }: Sticker
   useFrame((state) => {
     if (!meshRef.current) return;
 
+    const t = state.clock.getElapsedTime();
+    
+    // Handle Floating Animation (replacing Drei's <Float>)
+    const floatY = Math.sin(t * CONFIG.ORBIT.FLOAT_SPEED + index) * CONFIG.ORBIT.FLOAT_INTENSITY;
+    meshRef.current.position.y = y + floatY;
+
     // Handle Scale
     const targetScale = hoveredRef.current ? CONFIG.ANIMATION.HOVER_SCALE : 1;
     tempVec.set(targetScale, targetScale, targetScale);
@@ -67,32 +73,26 @@ export const Sticker = ({ icon, index, total, materialType = "chrome" }: Sticker
 
   return (
     <group position={[x, y, z]}>
-      <Float
-        speed={CONFIG.ORBIT.FLOAT_SPEED}
-        rotationIntensity={CONFIG.ORBIT.FLOAT_INTENSITY}
-        floatIntensity={CONFIG.ORBIT.FLOAT_INTENSITY}
+      <group
+        ref={meshRef}
+        onPointerOver={(e) => {
+          e.stopPropagation();
+          hoveredRef.current = true;
+          setCursorType("hover");
+        }}
+        onPointerOut={() => {
+          hoveredRef.current = false;
+          setCursorType("default");
+        }}
       >
-        <group
-          ref={meshRef}
-          onPointerOver={(e) => {
-            e.stopPropagation();
-            hoveredRef.current = true;
-            setCursorType("hover");
-          }}
-          onPointerOut={() => {
-            hoveredRef.current = false;
-            setCursorType("default");
-          }}
-        >
-          <mesh rotation={[Math.PI / 2, 0, 0]} geometry={coinGeometry} material={COIN_MATERIALS[materialType]} />
-          <group position={[0, 0, CONFIG.LOGO.Z_OFFSET]}>
-            <EmbossedLogo svgContent={icon.svg} />
-          </group>
-          <group position={[0, 0, -CONFIG.LOGO.Z_OFFSET]} rotation={[0, Math.PI, 0]}>
-            <EmbossedLogo svgContent={icon.svg} />
-          </group>
+        <Instance ref={coinRef} rotation={[Math.PI / 2, 0, 0]} />
+        <group position={[0, 0, CONFIG.LOGO.Z_OFFSET]}>
+          <EmbossedLogo svgContent={icon.svg} />
         </group>
-      </Float>
+        <group position={[0, 0, -CONFIG.LOGO.Z_OFFSET]} rotation={[0, Math.PI, 0]}>
+          <EmbossedLogo svgContent={icon.svg} />
+        </group>
+      </group>
     </group>
   );
 };

@@ -1,4 +1,4 @@
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import type { ReactNode } from "react";
 import { cn } from "@/utils/cn";
 
@@ -12,6 +12,7 @@ interface SectionProps {
 
 export const Section = ({ children, className = "", id, delay = 0, maxWidth = "6xl" }: SectionProps) => {
   const maxWidthClass = maxWidth === "4xl" ? "max-w-4xl" : "max-w-6xl";
+  const prefersReducedMotion = useReducedMotion();
 
   return (
     <motion.section
@@ -24,15 +25,15 @@ export const Section = ({ children, className = "", id, delay = 0, maxWidth = "6
           opacity: 1,
           y: 0,
           transition: {
-            duration: 0.6,
-            delay,
+            duration: prefersReducedMotion ? 0 : 0.6,
+            delay: prefersReducedMotion ? 0 : delay,
             ease: "easeOut",
-            staggerChildren: 0.1,
+            staggerChildren: prefersReducedMotion ? 0 : 0.1,
           },
         },
-        hidden: { opacity: 0, y: 20 },
+        hidden: { opacity: prefersReducedMotion ? 1 : 0, y: prefersReducedMotion ? 0 : 20 },
       }}
-      className={cn("relative z-10 bg-[#050505] px-8 py-32", className)}
+      className={cn("relative z-10 bg-surface px-8 py-32", className)}
     >
       <div className={cn(maxWidthClass, "mx-auto")}>{children}</div>
     </motion.section>
@@ -46,7 +47,7 @@ interface HeaderProps {
 
 const Header = ({ children, className = "" }: HeaderProps) => (
   <div className={cn("mb-16 flex items-baseline gap-4", className)}>
-    <h2 className="font-light text-3xl text-white/90 tracking-tight">{children}</h2>
+    <h2 className="font-light text-4xl text-white/90 tracking-tighter md:text-5xl">{children}</h2>
     <span className="h-px flex-1 bg-white/10" />
   </div>
 );

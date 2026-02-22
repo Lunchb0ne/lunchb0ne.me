@@ -25,7 +25,7 @@ function Home() {
   return (
     <main
       className={cn(
-        "relative min-h-screen w-full bg-[#050505] text-white transition-colors duration-500 selection:bg-cyan-500/30 selection:text-cyan-200",
+        "relative min-h-screen w-full bg-surface text-white transition-colors duration-500 selection:bg-cyan-500/30 selection:text-cyan-200",
         cursorType === "hover" && "cursor-none",
       )}
     >

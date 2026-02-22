@@ -1,21 +1,23 @@
-import Bot from "lucide-react/dist/esm/icons/bot";
-import Cpu from "lucide-react/dist/esm/icons/cpu";
-import Database from "lucide-react/dist/esm/icons/database";
-import GitFork from "lucide-react/dist/esm/icons/git-fork";
-import HardDrive from "lucide-react/dist/esm/icons/hard-drive";
-import Layout from "lucide-react/dist/esm/icons/layout";
-import Network from "lucide-react/dist/esm/icons/network";
-import Server from "lucide-react/dist/esm/icons/server";
+import {
+  CpuIcon,
+  DatabaseIcon,
+  DesktopTowerIcon,
+  GitForkIcon,
+  HardDriveIcon,
+  LayoutIcon,
+  NetworkIcon,
+  RobotIcon,
+} from "@phosphor-icons/react";
 
 export const PROJECTS_CONTENT = {
   systemsHeader: {
     title: "System Architecture & AWS",
-    icon: Cpu,
+    icon: CpuIcon,
     className: "text-cyan-400/60",
   },
   openSourceHeader: {
-    title: "Open Source Impact",
-    icon: GitFork,
+    title: "Open Source",
+    icon: GitForkIcon,
     className: "text-green-400/60",
   },
   systems: [
@@ -27,7 +29,7 @@ export const PROJECTS_CONTENT = {
       description:
         "Architected failover detection using a fork of orchestrator/patroni. Implemented Raft consensus for high availability in RDS Three AZ clusters.",
       tech: ["Go", "Raft", "Distributed Systems", "Provenance"],
-      icon: Network,
+      icon: NetworkIcon,
       highlight: true,
     },
     {
@@ -38,7 +40,7 @@ export const PROJECTS_CONTENT = {
       description:
         "Decoupled WAL I/O from data page I/O by offloading to dedicated EBS volumes. Reduced latency jitter significantly for I/O-intensive workloads.",
       tech: ["C++", "Storage Engine", "AWS EBS", "Aurora"],
-      icon: HardDrive,
+      icon: HardDriveIcon,
     },
     {
       title: "Control Plane Orchestration",
@@ -48,7 +50,7 @@ export const PROJECTS_CONTENT = {
       description:
         "End-to-end orchestration for database placement, setup, and self-healing. Managed Data Plane components including SystemRPM and HostManager.",
       tech: ["Java", "Workflow Engines", "HostManager"],
-      icon: Server,
+      icon: DesktopTowerIcon,
     },
   ],
   openSource: [
@@ -59,7 +61,7 @@ export const PROJECTS_CONTENT = {
       description:
         "Contributor to the autonomous coding agent. Implemented AWS Bedrock authentication and various agent skills. Enabling a full dev team in VS Code.",
       tech: ["TypeScript", "LLM", "VS Code API"],
-      icon: Bot,
+      icon: RobotIcon,
       link: "https://github.com/RooCodeInc/Roo-Code",
       highlight: true,
     },
@@ -70,7 +72,7 @@ export const PROJECTS_CONTENT = {
       description:
         "Maintainer of the portable console emulator for Windows. Improving the terminal experience for millions of developers with better shell integration.",
       tech: ["C++", "PowerShell", "Shell"],
-      icon: Layout,
+      icon: LayoutIcon,
       link: "https://github.com/cmderdev/cmder",
     },
     {
@@ -80,7 +82,7 @@ export const PROJECTS_CONTENT = {
       description:
         "Built a drift-corrected database stress testing tool with a real-time TUI dashboard for identifying performance bottlenecks in PostgreSQL/MySQL.",
       tech: ["Python", "Rich TUI", "PostgreSQL", "MySQL"],
-      icon: Database,
+      icon: DatabaseIcon,
       link: "https://github.com/Lunchb0ne/sql-stress",
     },
   ],

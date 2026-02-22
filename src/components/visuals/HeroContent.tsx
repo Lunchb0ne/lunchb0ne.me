@@ -1,4 +1,4 @@
-import { Float, Html, MeshTransmissionMaterial, Sparkles } from "@react-three/drei";
+import { Float, Html, Instances, MeshTransmissionMaterial, Sparkles } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
 import { memo, useEffect, useRef, useState } from "react";
 import type { Group } from "three";
@@ -7,8 +7,9 @@ import { useSetCursorType } from "@/hooks/useCursor";
 import {
   ALL_TECH_ICONS,
   COIN_MATERIAL_KEYS,
-  type COIN_MATERIALS,
+  COIN_MATERIALS,
   CONFIG,
+  coinGeometry,
   HERO_MARQUEE_FONT_SIZE,
   HERO_TAGLINE_CONTAINER_STYLE,
   HERO_TAGLINE_INTERVAL_MS,
@@ -34,7 +35,7 @@ function randomMaterial(): keyof typeof COIN_MATERIALS {
   return COIN_MATERIAL_KEYS[Math.floor(Math.random() * COIN_MATERIAL_KEYS.length)];
 }
 
-interface PrismSettings {
+export interface PrismSettings {
   color?: string;
   transmission?: number;
   ior?: number;
@@ -70,17 +71,39 @@ const PrismMaterial = memo(
 );
 PrismMaterial.displayName = "PrismMaterial";
 
-export const HeroContent = ({
-  onHover,
-  sparklesEnabled = true,
-  prism,
-}: {
-  onHover: (hover: boolean) => void;
-  sparklesEnabled?: boolean;
-  prism?: PrismSettings;
-}) => {
-  const orbitRef = useRef<Group>(null);
+export const Dodecahedron = ({ onHover, prism }: { onHover: (hover: boolean) => void; prism?: PrismSettings }) => {
   const setCursorType = useSetCursorType();
+  const meshRef = useRef<THREE.Mesh>(null);
+
+  useFrame((state) => {
+    if (meshRef.current) {
+      const t = state.clock.getElapsedTime();
+      meshRef.current.rotation.y = t * 0.2;
+      meshRef.current.rotation.x = t * 0.1;
+      meshRef.current.position.y = Math.sin(t * 1.5) * 0.2;
+    }
+  });
+
+  return (
+    <mesh
+      ref={meshRef}
+      onPointerOver={() => {
+        setCursorType("hover");
+        onHover(true);
+      }}
+      onPointerOut={() => {
+        setCursorType("default");
+        onHover(false);
+      }}
+    >
+      <dodecahedronGeometry args={[1.4, 0]} />
+      <PrismMaterial {...prism} />
+    </mesh>
+  );
+};
+
+export const HeroContent = ({ sparklesEnabled = true }: { sparklesEnabled?: boolean }) => {
+  const orbitRef = useRef<Group>(null);
   const [taglineIndex, setTaglineIndex] = useState(0);
 
   // Random icon selection on mount (client-side only)
@@ -127,31 +150,20 @@ export const HeroContent = ({
         </Html>
       </group>
 
-      <Float speed={5} rotationIntensity={1} floatIntensity={0.5}>
-        <mesh
-          onPointerOver={() => {
-            setCursorType("hover");
-            onHover(true);
-          }}
-          onPointerOut={() => {
-            setCursorType("default");
-            onHover(false);
-          }}
-        >
-          <dodecahedronGeometry args={[1.4, 0]} />
-          <PrismMaterial {...prism} />
-        </mesh>
-      </Float>
-
       <group ref={orbitRef}>
-        {selectedIcons.map((tech, i) => (
-          <Sticker
-            key={tech.slug}
-            icon={tech.icon}
-            index={i}
-            total={selectedIcons.length}
-            materialType={tech.material}
-          />
+        {COIN_MATERIAL_KEYS.map((matKey) => (
+          <Instances key={matKey} geometry={coinGeometry} material={COIN_MATERIALS[matKey]}>
+            {selectedIcons
+              .filter((tech) => tech.material === matKey)
+              .map((tech) => (
+                <Sticker
+                  key={tech.slug}
+                  icon={tech.icon}
+                  index={selectedIcons.indexOf(tech)}
+                  total={selectedIcons.length}
+                />
+              ))}
+          </Instances>
         ))}
       </group>
 

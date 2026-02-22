@@ -67,7 +67,7 @@ export const Route = createRootRoute({
 
   shellComponent: RootDocument,
   errorComponent: (props) => (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-neutral-950 p-4 text-center text-white">
+    <div className="flex min-h-dvh flex-col items-center justify-center bg-surface p-4 text-center text-white">
       <h1 className="mb-4 font-bold text-4xl text-red-500">Something went wrong</h1>
       <p className="mb-8 max-w-md text-neutral-400">{props.error.message}</p>
       <button
@@ -80,7 +80,7 @@ export const Route = createRootRoute({
     </div>
   ),
   notFoundComponent: () => (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-neutral-950 p-4 text-center text-white">
+    <div className="flex min-h-dvh flex-col items-center justify-center bg-surface p-4 text-center text-white">
       <h1 className="mb-4 font-bold text-9xl text-neutral-800">404</h1>
       <h2 className="mb-4 font-semibold text-2xl">Page Not Found</h2>
       <p className="mb-8 max-w-md text-neutral-400">The page you are looking for does not exist or has been moved.</p>

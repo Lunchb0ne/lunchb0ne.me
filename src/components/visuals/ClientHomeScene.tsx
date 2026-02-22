@@ -4,7 +4,7 @@ import { lazy, Suspense, useEffect, useRef, useState } from "react";
 
 const loadHomeScene = () => import("@/components/visuals/HomeScene");
 
-const HomeScene = lazy(async () => {
+const HomeScene = lazy<typeof import("@/components/visuals/HomeScene").HomeScene>(async () => {
   const module = await loadHomeScene();
   return { default: module.HomeScene };
 });
@@ -16,19 +16,21 @@ interface ClientHomeSceneProps {
 
 export const ClientHomeScene = ({ rootMargin = "100px", threshold = 0 }: ClientHomeSceneProps) => {
   const [shouldRender, setShouldRender] = useState(false);
+  const [isVisible, setIsVisible] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const preloadTimeout = window.setTimeout(() => {
-      void loadHomeScene();
-    }, 200);
+    void loadHomeScene();
 
     const container = containerRef.current;
     if (!container) return;
 
     const observer = new IntersectionObserver(
       ([entry]) => {
-        setShouldRender(entry.isIntersecting);
+        setIsVisible(entry.isIntersecting);
+        if (entry.isIntersecting) {
+          setShouldRender(true);
+        }
       },
       { threshold, rootMargin },
     );
@@ -36,16 +38,17 @@ export const ClientHomeScene = ({ rootMargin = "100px", threshold = 0 }: ClientH
     observer.observe(container);
 
     return () => {
-      window.clearTimeout(preloadTimeout);
       observer.disconnect();
     };
   }, [rootMargin, threshold]);
+
+  const frameloop = isVisible ? "always" : ("never" as const);
 
   return (
     <div ref={containerRef} className="absolute inset-0 z-0 overflow-hidden">
       {shouldRender ? (
         <Suspense fallback={null}>
-          <HomeScene />
+          <HomeScene frameloop={frameloop} />
         </Suspense>
       ) : null}
     </div>

@@ -20,8 +20,8 @@ export const Spotlight = () => {
   return (
     <div
       ref={divRef}
-      className="pointer-events-none fixed inset-0 z-30 opacity-0 transition-opacity duration-300"
-      style={SPOTLIGHT_STYLE}
+      className="pointer-events-none fixed inset-0 z-30 transition-opacity duration-300"
+      style={{ ...SPOTLIGHT_STYLE, "--spotlight-x": "50%", "--spotlight-y": "50%" } as React.CSSProperties}
     />
   );
 };

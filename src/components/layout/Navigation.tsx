@@ -18,7 +18,7 @@ export const Navigation = () => {
   };
 
   return (
-    <nav className="pointer-events-none fixed inset-x-0 top-0 z-50 flex items-center justify-between rounded-b-2xl bg-black/20 px-4 py-2 bg-blend-darken backdrop-blur-lg">
+    <nav className="pointer-events-none fixed inset-x-0 top-0 z-40 flex items-center justify-between rounded-b-2xl bg-black/20 px-4 py-2 bg-blend-darken backdrop-blur-lg">
       <Link to="/" onClick={scrollToTop} className="pointer-events-auto flex cursor-pointer select-none items-center">
         <img
           src="/icon.svg"
@@ -32,7 +32,7 @@ export const Navigation = () => {
             key={link.label}
             to="/"
             hash={link.hash}
-            className="cursor-pointer transition-colors hover:text-cyan-400"
+            className="cursor-pointer transition-colors hover:text-cyan-400 active:scale-[0.98]"
           >
             {link.label}
           </Link>

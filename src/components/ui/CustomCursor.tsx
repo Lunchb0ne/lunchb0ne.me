@@ -1,5 +1,5 @@
 import { useEffect, useRef } from "react";
-import { useCursorPosition, useCursorType, useTrailSubscribe } from "@/hooks/useCursor";
+import { useCursorPosition, useCursorType, useHasFinePointer, useTrailSubscribe } from "@/hooks/useCursor";
 
 const CURSOR_STYLES = {
   default: {
@@ -30,6 +30,7 @@ const CURSOR_TRANSITION =
 
 export const CustomCursor = () => {
   const cursorType = useCursorType();
+  const hasFinePointer = useHasFinePointer();
   const positionRef = useCursorPosition();
   const trailRef = useRef<HTMLDivElement>(null);
   const dotRef = useRef<HTMLDivElement>(null);
@@ -67,7 +68,7 @@ export const CustomCursor = () => {
     };
   }, [cursorType, positionRef]);
 
-  if (cursorType === "hidden") {
+  if (!hasFinePointer || cursorType === "hidden") {
     return null;
   }
 

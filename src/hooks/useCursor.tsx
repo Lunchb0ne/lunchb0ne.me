@@ -8,22 +8,24 @@ interface Position {
   y: number;
 }
 
-type PositionRef = React.MutableRefObject<Position>;
+type PositionRef = React.RefObject<Position>;
 type TrailSubscriber = (pos: Position) => void;
 
 const defaultPositionRef = { current: { x: -100, y: -100 } } as PositionRef;
 const defaultSubscribersRef = {
   current: new Set<TrailSubscriber>(),
-} as React.MutableRefObject<Set<TrailSubscriber>>;
+} as React.RefObject<Set<TrailSubscriber>>;
 
 const CursorTypeContext = createContext<CursorType>("default");
 const CursorActionsContext = createContext<(type: CursorType) => void>(() => {});
 const CursorPositionContext = createContext<PositionRef>(defaultPositionRef);
 const CursorTrailPositionContext = createContext<PositionRef>(defaultPositionRef);
-const TrailSubscribersContext = createContext<React.MutableRefObject<Set<TrailSubscriber>>>(defaultSubscribersRef);
+const TrailSubscribersContext = createContext<React.RefObject<Set<TrailSubscriber>>>(defaultSubscribersRef);
+const HasFinePointerContext = createContext<boolean>(false);
 
 export const CursorProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [cursorType, setCursorType] = useState<CursorType>("default");
+  const [hasFinePointer, setHasFinePointer] = useState(false);
   const rafRef = useRef<number | null>(null);
   const trailRafRef = useRef<number | null>(null);
   const latestPositionRef = useRef<Position>({ x: -100, y: -100 });
@@ -32,6 +34,17 @@ export const CursorProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   const isIdleRef = useRef(true);
 
   useEffect(() => {
+    // Detect fine pointer (mouse) — skip custom cursor on touch/coarse devices
+    const finePointerQuery = window.matchMedia("(pointer: fine)");
+    setHasFinePointer(finePointerQuery.matches);
+
+    const handlePointerChange = (e: MediaQueryListEvent) => setHasFinePointer(e.matches);
+    finePointerQuery.addEventListener("change", handlePointerChange);
+
+    if (!finePointerQuery.matches) {
+      return () => finePointerQuery.removeEventListener("change", handlePointerChange);
+    }
+
     // Standard interactive elements + .group (Tailwind hover pattern) + [data-interactive] for explicit marking
     const interactiveSelector =
       'a, button, input, textarea, select, [role="button"], [tabindex]:not([tabindex="-1"]), .group, [data-interactive]';
@@ -108,6 +121,7 @@ export const CursorProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 
     window.addEventListener("mousemove", handleMouseMove, { passive: true });
     return () => {
+      finePointerQuery.removeEventListener("change", handlePointerChange);
       window.removeEventListener("mousemove", handleMouseMove);
       if (rafRef.current !== null) {
         window.cancelAnimationFrame(rafRef.current);
@@ -121,15 +135,17 @@ export const CursorProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   }, []);
 
   return (
-    <CursorActionsContext.Provider value={setCursorType}>
-      <CursorTypeContext.Provider value={cursorType}>
-        <CursorPositionContext.Provider value={latestPositionRef}>
-          <CursorTrailPositionContext.Provider value={trailPositionRef}>
-            <TrailSubscribersContext.Provider value={subscribersRef}>{children}</TrailSubscribersContext.Provider>
-          </CursorTrailPositionContext.Provider>
-        </CursorPositionContext.Provider>
-      </CursorTypeContext.Provider>
-    </CursorActionsContext.Provider>
+    <HasFinePointerContext.Provider value={hasFinePointer}>
+      <CursorActionsContext.Provider value={setCursorType}>
+        <CursorTypeContext.Provider value={cursorType}>
+          <CursorPositionContext.Provider value={latestPositionRef}>
+            <CursorTrailPositionContext.Provider value={trailPositionRef}>
+              <TrailSubscribersContext.Provider value={subscribersRef}>{children}</TrailSubscribersContext.Provider>
+            </CursorTrailPositionContext.Provider>
+          </CursorPositionContext.Provider>
+        </CursorTypeContext.Provider>
+      </CursorActionsContext.Provider>
+    </HasFinePointerContext.Provider>
   );
 };
 
@@ -137,6 +153,7 @@ export const useCursorType = () => use(CursorTypeContext);
 export const useSetCursorType = () => use(CursorActionsContext);
 export const useCursorPosition = () => use(CursorPositionContext);
 export const useCursorTrailPosition = () => use(CursorTrailPositionContext);
+export const useHasFinePointer = () => use(HasFinePointerContext);
 
 /**
  * Subscribe a callback to be called on every cursor trail animation frame.
