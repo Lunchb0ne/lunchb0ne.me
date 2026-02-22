@@ -49,6 +49,8 @@ export const Contact = () => (
       })}
     </div>
 
-    <div className="mt-20 text-center font-mono text-sm text-white/20">&copy; 2026 Abhishek Aryan. All rights reserved.</div>
+    <div className="mt-20 text-center font-mono text-sm text-white/20">
+      &copy; 2026 Abhishek Aryan. All rights reserved.
+    </div>
   </div>
 );

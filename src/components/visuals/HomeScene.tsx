@@ -4,7 +4,13 @@ import { Canvas } from "@react-three/fiber";
 import { Leva, useControls } from "leva";
 import { Suspense, useCallback, useEffect, useState } from "react";
 import { usePrefersReducedMotion } from "@/hooks/usePrefersReducedMotion";
-import { BACKGROUND_COLOR, CANVAS_GL_CONFIG, CANVAS_PERFORMANCE_CONFIG, CONFIG, DEFAULT_POST_PROCESSING } from "./config";
+import {
+  BACKGROUND_COLOR,
+  CANVAS_GL_CONFIG,
+  CANVAS_PERFORMANCE_CONFIG,
+  CONFIG,
+  DEFAULT_POST_PROCESSING,
+} from "./config";
 import { HeroContent } from "./HeroContent";
 import { Lights } from "./Lights";
 import { DevPostProcessingControls, PostProcessing, type PostProcessingControls } from "./PostProcessing";
@@ -53,7 +59,10 @@ export const HomeScene = () => {
   const handleControlsChange = useCallback((next: PostProcessingControls) => setControls(next), []);
   const handleSceneControlsChange = useCallback((next: SceneControls) => setSceneControls(next), []);
 
-  const effectiveBloomIntensity = prefersReducedMotion ? Math.min(0.25, controls.bloomIntensity) : controls.bloomIntensity;
+  const effectiveBloomIntensity = prefersReducedMotion
+    ? Math.min(0.25, controls.bloomIntensity)
+    : controls.bloomIntensity;
+
   const effectiveBloomRadius = prefersReducedMotion ? Math.min(0.2, controls.bloomRadius) : controls.bloomRadius;
   const enableGlitch = !prefersReducedMotion;
 

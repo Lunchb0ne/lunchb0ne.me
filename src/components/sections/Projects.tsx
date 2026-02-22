@@ -110,7 +110,9 @@ function ProjectCard({
           )}
         </div>
 
-        <div className="relative z-10 mb-3 font-mono text-white/40 text-xs uppercase tracking-widest">{project.category}</div>
+        <div className="relative z-10 mb-3 font-mono text-white/40 text-xs uppercase tracking-widest">
+          {project.category}
+        </div>
         <h3 className="relative z-10 mb-3 font-bold text-2xl text-white transition-colors group-hover:text-cyan-100">
           {project.title}
         </h3>

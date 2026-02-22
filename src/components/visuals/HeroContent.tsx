@@ -145,7 +145,13 @@ export const HeroContent = ({
 
       <group ref={orbitRef}>
         {selectedIcons.map((tech, i) => (
-          <Sticker key={tech.slug} icon={tech.icon} index={i} total={selectedIcons.length} materialType={tech.material} />
+          <Sticker
+            key={tech.slug}
+            icon={tech.icon}
+            index={i}
+            total={selectedIcons.length}
+            materialType={tech.material}
+          />
         ))}
       </group>
 
