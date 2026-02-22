@@ -1,8 +1,9 @@
 "use client";
 
+import { PerformanceMonitor } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
 import { Leva, useControls } from "leva";
-import { Suspense, useCallback, useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { usePrefersReducedMotion } from "@/hooks/usePrefersReducedMotion";
 import {
   BACKGROUND_COLOR,
@@ -10,6 +11,7 @@ import {
   CANVAS_PERFORMANCE_CONFIG,
   CONFIG,
   DEFAULT_POST_PROCESSING,
+  IS_MOBILE,
 } from "./config";
 import { Dodecahedron, HeroContent } from "./HeroContent";
 import { Lights } from "./Lights";
@@ -51,56 +53,43 @@ const DevSceneControls = ({ onChange }: { onChange: (next: SceneControls) => voi
   return null;
 };
 
-export const HomeScene = ({ frameloop = "always" }: { frameloop?: "always" | "demand" | "never" }) => {
+export const HomeScene = () => {
   const [hoverGlitch, setHoverGlitch] = useState(false);
   const prefersReducedMotion = usePrefersReducedMotion();
   const [controls, setControls] = useState<PostProcessingControls>(DEFAULT_POST_PROCESSING);
   const [sceneControls, setSceneControls] = useState<SceneControls>(DEFAULT_SCENE_CONTROLS);
-  const handleControlsChange = useCallback((next: PostProcessingControls) => setControls(next), []);
-  const handleSceneControlsChange = useCallback((next: SceneControls) => setSceneControls(next), []);
-  const [isMobile] = useState(() =>
-    typeof window !== "undefined" ? window.matchMedia("(max-width: 768px)").matches : false,
-  );
+  const [dpr, setDpr] = useState(IS_MOBILE ? 1 : 1.5);
 
-  const effectiveBloomIntensity = prefersReducedMotion
-    ? Math.min(0.25, controls.bloomIntensity)
-    : isMobile
-      ? Math.min(0.3, controls.bloomIntensity)
-      : controls.bloomIntensity;
+  const bloomLimit = prefersReducedMotion ? 0.25 : IS_MOBILE ? 0.3 : 2;
+  const effectiveBloomIntensity = Math.min(bloomLimit, controls.bloomIntensity);
+  const effectiveBloomRadius = Math.min(bloomLimit, controls.bloomRadius);
+  const enableGlitch = !prefersReducedMotion && !IS_MOBILE;
 
-  const effectiveBloomRadius = prefersReducedMotion
-    ? Math.min(0.2, controls.bloomRadius)
-    : isMobile
-      ? Math.min(0.3, controls.bloomRadius)
-      : controls.bloomRadius;
-  const enableGlitch = !prefersReducedMotion && !isMobile;
+  // Scaling factor for expensive materials based on performance (1.0 = full, 0.5 = low)
+  const [quality, setQuality] = useState(1);
 
   return (
     <>
-      {import.meta.env.DEV ? (
+      {import.meta.env.DEV && (
         <>
-          <Leva
-            titleBar={{
-              position: {
-                x: -30,
-                y: 620,
-              },
-            }}
-            hidden={false}
-          />
-          <DevPostProcessingControls onChange={handleControlsChange} />
-          <DevSceneControls onChange={handleSceneControlsChange} />
+          <Leva titleBar={{ position: { x: -30, y: 620 } }} hidden={false} />
+          <DevPostProcessingControls onChange={setControls} />
+          <DevSceneControls onChange={setSceneControls} />
         </>
-      ) : null}
+      )}
       <Canvas
         camera={{ position: [0, 0, 8], fov: 45 }}
-        dpr={isMobile ? [1, 1] : [1, 1.5]}
+        dpr={dpr}
         gl={CANVAS_GL_CONFIG}
         performance={CANVAS_PERFORMANCE_CONFIG}
-        frameloop={frameloop}
+        frameloop="always"
       >
+        <PerformanceMonitor
+          onIncline={() => setQuality(1)}
+          onDecline={() => setQuality(0.5)}
+          onChange={({ factor }) => setDpr(IS_MOBILE ? 1 : 1 + 0.5 * factor)}
+        />
         <color attach="background" args={BACKGROUND_COLOR} />
-        {/* Synchronous scene — renders immediately, no async resources */}
         <Dodecahedron
           onHover={setHoverGlitch}
           prism={{
@@ -108,6 +97,9 @@ export const HomeScene = ({ frameloop = "always" }: { frameloop?: "always" | "de
             transmission: sceneControls.prismTransmission,
             ior: sceneControls.prismIor,
             thickness: sceneControls.prismThickness,
+            // Scale expensive material properties
+            samples: Math.round(CONFIG.PRISM.SAMPLES * quality),
+            resolution: Math.round(CONFIG.PRISM.RESOLUTION * quality),
           }}
         />
         <Lights
@@ -115,7 +107,7 @@ export const HomeScene = ({ frameloop = "always" }: { frameloop?: "always" | "de
           glowIntensity={sceneControls.glowLightIntensity}
           warmIntensity={sceneControls.warmLightIntensity}
         />
-        <HeroContent sparklesEnabled={!prefersReducedMotion && !isMobile} />
+        <HeroContent sparklesEnabled={!prefersReducedMotion && !IS_MOBILE} />
         <Suspense fallback={null}>
           <PostProcessing
             bloomIntensity={effectiveBloomIntensity}
@@ -125,7 +117,7 @@ export const HomeScene = ({ frameloop = "always" }: { frameloop?: "always" | "de
             glitchRatio={controls.glitchRatio}
             hoverGlitch={hoverGlitch}
             enableGlitch={enableGlitch}
-            lutEnabled={!isMobile && controls.lutEnabled}
+            lutEnabled={!IS_MOBILE && controls.lutEnabled}
             lutBlend={controls.lutBlend}
           />
         </Suspense>

@@ -113,7 +113,9 @@ export const HERO_TAGLINE_CONTAINER_STYLE = {
   minHeight: "3em",
 } as const;
 
-export const CANVAS_GL_CONFIG = { antialias: false, alpha: true } as const;
+export const IS_MOBILE = typeof window !== "undefined" ? window.matchMedia("(max-width: 768px)").matches : false;
+
+export const CANVAS_GL_CONFIG = { antialias: false, alpha: true, powerPreference: "high-performance" } as const;
 export const CANVAS_PERFORMANCE_CONFIG = { min: 0.5 } as const;
 export const BACKGROUND_COLOR = ["#050505"] as [string];
 

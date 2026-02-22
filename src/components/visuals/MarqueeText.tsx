@@ -29,6 +29,7 @@ export const MarqueeText = ({ children, speed = 2, ...props }: MarqueeTextProps)
   });
 
   const onSync = (scene: THREE.Object3D) => {
+    // Force compute bounding box to get accurate width
     tempBox.setFromObject(scene);
     const w = tempBox.max.x - tempBox.min.x;
     if (w > 0 && Math.abs(w - widthRef.current) > 0.1) {
@@ -42,9 +43,22 @@ export const MarqueeText = ({ children, speed = 2, ...props }: MarqueeTextProps)
       <Text anchorX="center" anchorY="middle" onSync={onSync} {...props}>
         {children}
       </Text>
-      <Text anchorX="center" anchorY="middle" position={[width, 0, 0]} {...props}>
-        {children}
-      </Text>
+      {width > 0 && (
+        <>
+          <Text anchorX="center" anchorY="middle" position={[width, 0, 0]} {...props}>
+            {children}
+          </Text>
+          <Text anchorX="center" anchorY="middle" position={[width * 2, 0, 0]} {...props}>
+            {children}
+          </Text>
+          <Text anchorX="center" anchorY="middle" position={[-width, 0, 0]} {...props}>
+            {children}
+          </Text>
+          <Text anchorX="center" anchorY="middle" position={[-width * 2, 0, 0]} {...props}>
+            {children}
+          </Text>
+        </>
+      )}
     </group>
   );
 };

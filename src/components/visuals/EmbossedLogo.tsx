@@ -19,7 +19,7 @@ export const EmbossedLogo = ({ svgContent }: { svgContent: string }) => {
 
     const cachedShapes = shapeCache.get(svgContent);
     let shapes: THREE.Shape[];
-    
+
     if (cachedShapes) {
       shapes = cachedShapes;
     } else {
@@ -46,7 +46,5 @@ export const EmbossedLogo = ({ svgContent }: { svgContent: string }) => {
     return geo;
   }, [svgContent]);
 
-  return (
-    <mesh material={logoMaterial} rotation={[Math.PI, 0, 0]} geometry={geometry} />
-  );
+  return <mesh material={logoMaterial} rotation={[Math.PI, 0, 0]} geometry={geometry} />;
 };

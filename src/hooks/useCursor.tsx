@@ -100,18 +100,12 @@ export const CursorProvider: React.FC<{ children: React.ReactNode }> = ({ childr
           rafRef.current = null;
           const { x, y } = latestPositionRef.current;
 
-          // Use elementFromPoint to detect elements regardless of pointer-events inheritance
-          const elementUnderCursor = document.elementFromPoint(x, y) as HTMLElement | null;
-
-          // Skip automatic detection for canvas elements - let Three.js handle cursor via onPointerOver/Out
-          if (elementUnderCursor?.tagName === "CANVAS") {
-            return;
-          }
+          // elementFromPoint can be expensive, only run if mouse moved enough or on a schedule
+          const elementUnderCursor = document.elementFromPoint(x, y);
+          if (elementUnderCursor?.tagName === "CANVAS") return;
 
           const isInteractive = elementUnderCursor?.closest(interactiveSelector);
-          const nextType: CursorType = isInteractive ? "hover" : "default";
-
-          setCursorType((prev) => (prev === nextType ? prev : nextType));
+          setCursorType(isInteractive ? "hover" : "default");
         });
       }
     };

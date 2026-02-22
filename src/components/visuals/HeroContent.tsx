@@ -1,6 +1,6 @@
 import { Float, Html, Instances, MeshTransmissionMaterial, Sparkles } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
-import { memo, useEffect, useRef, useState } from "react";
+import { memo, useEffect, useMemo, useRef, useState } from "react";
 import type { Group } from "three";
 import { TextMorph } from "torph/react";
 import { useSetCursorType } from "@/hooks/useCursor";
@@ -73,32 +73,23 @@ PrismMaterial.displayName = "PrismMaterial";
 
 export const Dodecahedron = ({ onHover, prism }: { onHover: (hover: boolean) => void; prism?: PrismSettings }) => {
   const setCursorType = useSetCursorType();
-  const meshRef = useRef<THREE.Mesh>(null);
-
-  useFrame((state) => {
-    if (meshRef.current) {
-      const t = state.clock.getElapsedTime();
-      meshRef.current.rotation.y = t * 0.2;
-      meshRef.current.rotation.x = t * 0.1;
-      meshRef.current.position.y = Math.sin(t * 1.5) * 0.2;
-    }
-  });
 
   return (
-    <mesh
-      ref={meshRef}
-      onPointerOver={() => {
-        setCursorType("hover");
-        onHover(true);
-      }}
-      onPointerOut={() => {
-        setCursorType("default");
-        onHover(false);
-      }}
-    >
-      <dodecahedronGeometry args={[1.4, 0]} />
-      <PrismMaterial {...prism} />
-    </mesh>
+    <Float speed={5} rotationIntensity={1} floatIntensity={0.5}>
+      <mesh
+        onPointerOver={() => {
+          setCursorType("hover");
+          onHover(true);
+        }}
+        onPointerOut={() => {
+          setCursorType("default");
+          onHover(false);
+        }}
+      >
+        <dodecahedronGeometry args={[1.4, 0]} />
+        <PrismMaterial {...prism} />
+      </mesh>
+    </Float>
   );
 };
 
@@ -107,11 +98,18 @@ export const HeroContent = ({ sparklesEnabled = true }: { sparklesEnabled?: bool
   const [taglineIndex, setTaglineIndex] = useState(0);
 
   // Random icon selection on mount (client-side only)
-  const [selectedIcons] = useState(() =>
-    shuffleArray(ALL_TECH_ICONS)
+  const groupedIcons = useMemo(() => {
+    const selected = shuffleArray(ALL_TECH_ICONS)
       .slice(0, ICON_COUNT)
-      .map((icon) => ({ ...icon, material: randomMaterial() })),
-  );
+      .map((icon) => ({ ...icon, material: randomMaterial() }));
+
+    return COIN_MATERIAL_KEYS.map((matKey) => ({
+      matKey,
+      icons: selected
+        .filter((tech) => tech.material === matKey)
+        .map((tech) => ({ ...tech, globalIndex: selected.indexOf(tech) })),
+    }));
+  }, []);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -122,7 +120,7 @@ export const HeroContent = ({ sparklesEnabled = true }: { sparklesEnabled?: bool
 
   useFrame((state) => {
     if (orbitRef.current) {
-      orbitRef.current.rotation.y = state.clock.getElapsedTime() * 0.1;
+      orbitRef.current.rotation.y = -state.clock.getElapsedTime() * 0.1;
     }
   });
 
@@ -151,23 +149,16 @@ export const HeroContent = ({ sparklesEnabled = true }: { sparklesEnabled?: bool
       </group>
 
       <group ref={orbitRef}>
-        {COIN_MATERIAL_KEYS.map((matKey) => (
+        {groupedIcons.map(({ matKey, icons }) => (
           <Instances key={matKey} geometry={coinGeometry} material={COIN_MATERIALS[matKey]}>
-            {selectedIcons
-              .filter((tech) => tech.material === matKey)
-              .map((tech) => (
-                <Sticker
-                  key={tech.slug}
-                  icon={tech.icon}
-                  index={selectedIcons.indexOf(tech)}
-                  total={selectedIcons.length}
-                />
-              ))}
+            {icons.map((tech) => (
+              <Sticker key={tech.slug} icon={tech.icon} index={tech.globalIndex} total={ICON_COUNT} />
+            ))}
           </Instances>
         ))}
       </group>
 
-      {sparklesEnabled ? <Sparkles count={50} scale={8} size={2} speed={0.2} opacity={0.3} color="white" /> : null}
+      {sparklesEnabled && <Sparkles count={50} scale={8} size={2} speed={0.2} opacity={0.3} color="white" />}
     </group>
   );
 };

@@ -5,7 +5,7 @@ export const Hero = () => {
   return (
     <div className="relative min-h-dvh w-full overflow-hidden bg-surface">
       {/* Combined Scene */}
-      <ClientHomeScene rootMargin="1200px" />
+      <ClientHomeScene />
       {/* Scroll Indicator */}
       <ScrollIndicator />
     </div>

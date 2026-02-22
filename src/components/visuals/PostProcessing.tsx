@@ -21,12 +21,14 @@ export interface PostProcessingProps {
 
 export type PostProcessingControls = typeof DEFAULT_POST_PROCESSING;
 
+const LUT_URL = "/DwlG-F-6800-STD.cube";
+// Preload for faster initialization
+useLoader.preload(LUTCubeLoader, LUT_URL);
+
 const LutEffect = LUT as unknown as ComponentType<ComponentProps<typeof LUT> & { opacity?: number }>;
 
-const Noop = () => null;
-
 const LutPass = ({ blend }: { blend: number }) => {
-  const lutTexture = useLoader(LUTCubeLoader, "/DwlG-F-6800-STD.cube");
+  const lutTexture = useLoader(LUTCubeLoader, LUT_URL);
   return <LutEffect lut={lutTexture} blendFunction={BlendFunction.NORMAL} opacity={blend} />;
 };
 
@@ -57,7 +59,7 @@ export const PostProcessing = memo(
           strength={glitchStrengthVec}
           ratio={glitchRatio}
         />
-        {lutEnabled ? <LutPass blend={lutBlend} /> : <Noop />}
+        {lutEnabled && <LutPass blend={lutBlend} />}
         <SMAA />
         <ToneMapping />
       </EffectComposer>

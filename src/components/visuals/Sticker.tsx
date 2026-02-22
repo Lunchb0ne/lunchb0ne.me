@@ -15,7 +15,6 @@ interface StickerProps {
 
 export const Sticker = ({ icon, index, total }: StickerProps) => {
   const meshRef = useRef<THREE.Group>(null);
-  const coinRef = useRef<THREE.Mesh>(null);
   const hoveredRef = useRef(false);
   const setCursorType = useSetCursorType();
 
@@ -47,9 +46,9 @@ export const Sticker = ({ icon, index, total }: StickerProps) => {
     if (!meshRef.current) return;
 
     const t = state.clock.getElapsedTime();
-    
-    // Handle Floating Animation (replacing Drei's <Float>)
-    const floatY = Math.sin(t * CONFIG.ORBIT.FLOAT_SPEED + index) * CONFIG.ORBIT.FLOAT_INTENSITY;
+
+    // Handle Floating Animation (Consolidated lil bit of float)
+    const floatY = Math.sin(t * CONFIG.ORBIT.FLOAT_SPEED + index) * 0.05;
     meshRef.current.position.y = y + floatY;
 
     // Handle Scale
@@ -85,7 +84,7 @@ export const Sticker = ({ icon, index, total }: StickerProps) => {
           setCursorType("default");
         }}
       >
-        <Instance ref={coinRef} rotation={[Math.PI / 2, 0, 0]} />
+        <Instance rotation={[Math.PI / 2, 0, 0]} />
         <group position={[0, 0, CONFIG.LOGO.Z_OFFSET]}>
           <EmbossedLogo svgContent={icon.svg} />
         </group>
