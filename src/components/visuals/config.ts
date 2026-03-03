@@ -132,6 +132,16 @@ export const DEFAULT_POST_PROCESSING = {
   lutBlend: 0.7,
 } as const;
 
+export const DEFAULT_SCENE_CONTROLS = {
+  prismColor: CONFIG.COLORS.PRISM,
+  prismTransmission: CONFIG.PRISM.TRANSMISSION,
+  prismIor: CONFIG.PRISM.IOR,
+  prismThickness: CONFIG.PRISM.THICKNESS,
+  keyLightIntensity: 4,
+  glowLightIntensity: 2,
+  warmLightIntensity: 2,
+} as const;
+
 // Shared Geometries and Materials
 // We create these once here to avoid recreation on every render/mount if possible,
 // or at least have a central definition.
