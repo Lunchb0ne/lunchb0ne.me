@@ -1,7 +1,8 @@
 import { Float, Html, Instances, MeshTransmissionMaterial, Sparkles } from "@react-three/drei";
-import { useFrame } from "@react-three/fiber";
+import { type ThreeEvent, useFrame } from "@react-three/fiber";
 import { memo, useEffect, useMemo, useRef, useState } from "react";
-import type { Group } from "three";
+import type { Group, Mesh } from "three";
+import * as THREE from "three";
 import { TextMorph } from "torph/react";
 import { useSetCursorType } from "@/hooks/useCursor";
 import {
@@ -46,6 +47,16 @@ export interface PrismSettings {
   anisotropy?: number;
 }
 
+export interface DodecahedronControls {
+  dragRotate: boolean;
+  inertia: number;
+}
+
+export const DEFAULT_DODECAHEDRON_CONTROLS: DodecahedronControls = {
+  dragRotate: true,
+  inertia: 0.92,
+};
+
 const PrismMaterial = memo(
   ({
     color = CONFIG.COLORS.PRISM,
@@ -72,13 +83,69 @@ const PrismMaterial = memo(
 );
 PrismMaterial.displayName = "PrismMaterial";
 
-export const Dodecahedron = ({ prism }: { prism?: PrismSettings }) => {
+export const Dodecahedron = ({
+  prism,
+  controls = DEFAULT_DODECAHEDRON_CONTROLS,
+}: {
+  prism?: PrismSettings;
+  controls?: DodecahedronControls;
+}) => {
   const setCursorType = useSetCursorType();
+  const meshRef = useRef<Mesh>(null);
+  const geometry = useMemo(() => new THREE.DodecahedronGeometry(1.4, 0), []);
+  const lastPointer = useRef<[number, number]>([0, 0]);
+  const dragging = useRef(false);
+  const velocity = useRef<[number, number]>([0, 0]);
+
+  useEffect(() => () => geometry.dispose(), [geometry]);
+
+  const onPointerDown = (event: ThreeEvent<PointerEvent>) => {
+    if (!controls.dragRotate) return;
+    event.stopPropagation();
+    dragging.current = true;
+    lastPointer.current = [event.clientX, event.clientY];
+    velocity.current = [0, 0];
+  };
+
+  const onPointerUp = () => {
+    if (!controls.dragRotate) return;
+    dragging.current = false;
+  };
+
+  const onPointerMove = (event: ThreeEvent<PointerEvent>) => {
+    if (!controls.dragRotate || !dragging.current || !meshRef.current) return;
+    const [lastX, lastY] = lastPointer.current;
+    const dx = event.clientX - lastX;
+    const dy = event.clientY - lastY;
+    lastPointer.current = [event.clientX, event.clientY];
+    velocity.current = [dy * 0.0025, dx * 0.0025];
+    meshRef.current.rotation.x += velocity.current[0];
+    meshRef.current.rotation.y += velocity.current[1];
+  };
+
+  useFrame(() => {
+    if (!meshRef.current) return;
+    if (!dragging.current) {
+      meshRef.current.rotation.y += 0.003;
+      velocity.current[0] *= controls.inertia;
+      velocity.current[1] *= controls.inertia;
+      meshRef.current.rotation.x += velocity.current[0];
+      meshRef.current.rotation.y += velocity.current[1];
+    }
+    meshRef.current.rotation.x = THREE.MathUtils.clamp(meshRef.current.rotation.x, -Math.PI / 2, Math.PI / 2);
+  });
 
   return (
-    <Float speed={5} rotationIntensity={1} floatIntensity={0.5}>
-      <mesh onPointerOver={() => setCursorType("hover")} onPointerOut={() => setCursorType("default")}>
-        <dodecahedronGeometry args={[1.4, 0]} />
+    <Float speed={5} rotationIntensity={0.35} floatIntensity={0.5}>
+      <mesh
+        ref={meshRef}
+        onPointerOver={() => setCursorType("hover")}
+        onPointerOut={() => setCursorType("default")}
+        onPointerDown={onPointerDown}
+        onPointerUp={onPointerUp}
+        onPointerMove={onPointerMove}
+      >
+        <primitive object={geometry} attach="geometry" />
         <PrismMaterial {...prism} />
       </mesh>
     </Float>

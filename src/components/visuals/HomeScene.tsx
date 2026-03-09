@@ -13,7 +13,7 @@ import {
   DEFAULT_POST_PROCESSING,
   IS_MOBILE,
 } from "./config";
-import { Dodecahedron, HeroContent } from "./HeroContent";
+import { DEFAULT_DODECAHEDRON_CONTROLS, Dodecahedron, type DodecahedronControls, HeroContent } from "./HeroContent";
 import { Lights } from "./Lights";
 import { DevPostProcessingControls, PostProcessing, type PostProcessingControls } from "./PostProcessing";
 
@@ -28,8 +28,9 @@ const DEFAULT_SCENE_CONTROLS = {
 } as const;
 
 type SceneControls = typeof DEFAULT_SCENE_CONTROLS;
+type SceneAndDodecaControls = SceneControls & DodecahedronControls;
 
-const DevSceneControls = ({ onChange }: { onChange: (next: SceneControls) => void }) => {
+const DevSceneControls = ({ onChange }: { onChange: (next: SceneAndDodecaControls) => void }) => {
   const controls = useControls("Scene", {
     prismColor: { value: DEFAULT_SCENE_CONTROLS.prismColor },
     prismTransmission: { value: DEFAULT_SCENE_CONTROLS.prismTransmission, min: 0, max: 1, step: 0.01 },
@@ -43,12 +44,18 @@ const DevSceneControls = ({ onChange }: { onChange: (next: SceneControls) => voi
     warmLightIntensity: { value: DEFAULT_SCENE_CONTROLS.warmLightIntensity, min: 0, max: 10, step: 0.1 },
   });
 
+  const dodecahedronControls = useControls("Dodecahedron", {
+    dragRotate: { value: DEFAULT_DODECAHEDRON_CONTROLS.dragRotate },
+    inertia: { value: DEFAULT_DODECAHEDRON_CONTROLS.inertia, min: 0.75, max: 0.98, step: 0.01 },
+  });
+
   useEffect(() => {
     onChange({
       ...controls,
       ...lightControls,
-    } as SceneControls);
-  }, [controls, lightControls, onChange]);
+      ...dodecahedronControls,
+    } as SceneAndDodecaControls);
+  }, [controls, lightControls, dodecahedronControls, onChange]);
 
   return null;
 };
@@ -57,6 +64,7 @@ export const HomeScene = () => {
   const prefersReducedMotion = useReducedMotion();
   const [controls, setControls] = useState<PostProcessingControls>(DEFAULT_POST_PROCESSING);
   const [sceneControls, setSceneControls] = useState<SceneControls>(DEFAULT_SCENE_CONTROLS);
+  const [dodecahedronControls, setDodecahedronControls] = useState<DodecahedronControls>(DEFAULT_DODECAHEDRON_CONTROLS);
   const [dpr, setDpr] = useState(IS_MOBILE ? 1 : 1.5);
 
   const bloomLimit = prefersReducedMotion ? 0.25 : IS_MOBILE ? 0.3 : 2;
@@ -69,7 +77,23 @@ export const HomeScene = () => {
         <>
           <Leva titleBar={{ position: { x: -30, y: 620 } }} hidden={false} />
           <DevPostProcessingControls onChange={setControls} />
-          <DevSceneControls onChange={setSceneControls} />
+          <DevSceneControls
+            onChange={(next) => {
+              setSceneControls({
+                prismColor: next.prismColor,
+                prismTransmission: next.prismTransmission,
+                prismIor: next.prismIor,
+                prismThickness: next.prismThickness,
+                keyLightIntensity: next.keyLightIntensity,
+                glowLightIntensity: next.glowLightIntensity,
+                warmLightIntensity: next.warmLightIntensity,
+              });
+              setDodecahedronControls({
+                dragRotate: next.dragRotate,
+                inertia: next.inertia,
+              });
+            }}
+          />
         </>
       )}
       <Canvas
@@ -88,6 +112,7 @@ export const HomeScene = () => {
             ior: sceneControls.prismIor,
             thickness: sceneControls.prismThickness,
           }}
+          controls={dodecahedronControls}
         />
         <Lights
           keyIntensity={sceneControls.keyLightIntensity}
