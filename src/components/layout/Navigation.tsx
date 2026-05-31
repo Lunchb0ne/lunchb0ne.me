@@ -1,16 +1,11 @@
 import { Link } from "@tanstack/react-router";
-
-const CONFIG = {
-  LINKS: [
-    { label: "ABOUT", hash: "about" },
-    { label: "EXP.", hash: "experience" },
-    { label: "PROJECTS", hash: "projects" },
-    { label: "SKILLS", hash: "skills" },
-    { label: "CONTACT", hash: "contact" },
-  ],
-} as const;
+import { SECTION_IDS, SECTIONS } from "@/content/sections";
+import { useActiveSection } from "@/hooks/useActiveSection";
+import { cn } from "@/utils/cn";
 
 export const Navigation = () => {
+  const activeId = useActiveSection(SECTION_IDS);
+
   const scrollToTop = () => {
     if (window.scrollY > 0) {
       window.scrollTo({ top: 0 });
@@ -27,14 +22,17 @@ export const Navigation = () => {
         />
       </Link>
       <div className="pointer-events-auto flex gap-6 font-medium font-mono text-white/70 text-xs">
-        {CONFIG.LINKS.map((link) => (
+        {SECTIONS.map((section) => (
           <Link
-            key={link.label}
+            key={section.id}
             to="/"
-            hash={link.hash}
-            className="cursor-pointer transition-colors hover:text-cyan-400 active:scale-[0.98]"
+            hash={section.id}
+            className={cn(
+              "cursor-pointer uppercase transition-colors hover:text-cyan-400 active:scale-[0.98]",
+              activeId === section.id ? "text-cyan-400" : "text-white/70",
+            )}
           >
-            {link.label}
+            {section.navLabel}
           </Link>
         ))}
       </div>
