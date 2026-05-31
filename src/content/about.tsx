@@ -21,7 +21,7 @@ export const ABOUT_CONTENT = {
       id: "about-bias",
       content: (
         <>
-          My bias is toward <span className="font-medium text-white italic">simple, ruthless designs</span>. No
+          My bias is toward <span className="font-medium text-white italic">simple, boring designs</span>. No
           ceremony, no cleverness for its own sake, no black boxes you have to "trust". If a system can&apos;t be
           explained on a <span className="text-white">whiteboard in ten minutes</span>, I probably don&apos;t want it
           running in production.
