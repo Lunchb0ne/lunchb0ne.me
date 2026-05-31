@@ -8,5 +8,5 @@ export const SECTION_TITLES = {
   about: "About Me",
   experience: "Engineering Log",
   projects: "Engineering & Open Source",
-  skills: "Technical Arsenal",
+  skills: "Skills & Tools",
 } as const;
