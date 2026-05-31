@@ -1,6 +1,6 @@
 export const CONTACT_CONTENT = {
   intro:
-    "Whether you have a question about distributed systems, want to collaborate on an open-source project, or just want to say hi, my inbox is always open.",
+    "Got a distributed systems question, an open-source idea, or just a spicy bug story? Say hi—my inbox is usually open and mildly organized.",
   ctaLabel: "Say Hello",
   email: "hi@lunchb0ne.me",
   socials: [
