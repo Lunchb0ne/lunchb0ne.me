@@ -14,5 +14,9 @@ export type SectionId = (typeof SECTIONS)[number]["id"];
 // Stable, module-level array of ids for scroll/observer tracking.
 export const SECTION_IDS = SECTIONS.map((s) => s.id);
 
-// Back-compat map used by section components: { about: "About", ... }
-export const SECTION_TITLES = Object.fromEntries(SECTIONS.map((s) => [s.id, s.title])) as Record<SectionId, string>;
+// Back-compat map used by section components: { about: "About", ... }.
+// Sections with a null title (e.g. contact) render no header and are excluded.
+type TitledSection = Extract<(typeof SECTIONS)[number], { title: string }>;
+export const SECTION_TITLES = Object.fromEntries(
+  SECTIONS.filter((s): s is TitledSection => s.title !== null).map((s) => [s.id, s.title]),
+) as Record<TitledSection["id"], string>;
