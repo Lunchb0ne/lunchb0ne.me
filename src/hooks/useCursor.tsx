@@ -47,10 +47,8 @@ export const CursorProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       const dy = target.y - current.y;
 
       // Simple interpolation for the trail
-      trailPositionRef.current = {
-        x: current.x + dx * 0.18,
-        y: current.y + dy * 0.18,
-      };
+      trailPositionRef.current.x = current.x + dx * 0.18;
+      trailPositionRef.current.y = current.y + dy * 0.18;
 
       for (const sub of subscribersRef.current) {
         sub(trailPositionRef.current);
@@ -60,7 +58,8 @@ export const CursorProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     };
 
     const handleMouseMove = (e: MouseEvent) => {
-      latestPositionRef.current = { x: e.clientX, y: e.clientY };
+      latestPositionRef.current.x = e.clientX;
+      latestPositionRef.current.y = e.clientY;
 
       const elementUnderCursor = document.elementFromPoint(e.clientX, e.clientY);
       if (elementUnderCursor?.tagName === "CANVAS") return;
