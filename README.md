@@ -25,6 +25,7 @@ aubr preview        # preview the production build
 aubr lint           # Biome lint
 aubr format         # Biome format
 aubr check          # Biome lint + format
+aubr typecheck      # tsc (TypeScript 7)
 aubr deploy         # build and deploy to Cloudflare
 ```
 
