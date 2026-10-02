@@ -6,7 +6,7 @@ This file documents the conventions, tech stack, and workflow for this project t
 
 - **Framework**: [TanStack Start](https://tanstack.com/start/latest) (Server-Side Rendering on the Edge)
 - **Routing**: [TanStack Router](https://tanstack.com/router/latest) (File-based routing)
-- **Library**: React 19
+- **Library**: React 19 · Vite 8 (Rolldown) · TypeScript 7
 - **Deployment**: Cloudflare Workers / Pages
 - **Language**: TypeScript
 
@@ -16,7 +16,7 @@ This file documents the conventions, tech stack, and workflow for this project t
 - **Integration**: `@tailwindcss/vite` plugin (no `postcss.config.js` needed)
 - **Conventions**:
   - Use utility classes for styling.
-  - Avoid CSS-in-JS unless necessary for complex dynamic animations (e.g., `framer-motion` or inline styles).
+  - Avoid CSS-in-JS unless necessary for complex dynamic animations (e.g., `motion` via `motion/react`, or inline styles).
   - Use `clsx` or `tailwind-merge` for conditional class names (if installed).
 
 ## Linting & Formatting
@@ -24,18 +24,20 @@ This file documents the conventions, tech stack, and workflow for this project t
 - **Tool**: [Biome](https://biomejs.dev/)
 - **Strictness**: This project relies **exclusively** on Biome.
 - **Commands**:
-  - Format: `bun run format`
-  - Lint: `bun run lint`
-  - Check: `bun run check`
+  - Format: `aubr format`
+  - Lint: `aubr lint`
+  - Check: `aubr check`
 - **Rule**: Do not add Prettier or ESLint configuration. Respect `biome.json` ignores (e.g., `routeTree.gen.ts`).
 
 ## Package Manager
 
-- **Standard**: [Bun](https://bun.sh/)
+- **Standard**: [aube](https://aube.sh/) (lockfile: `aube-lock.yaml`). Never use bun/npm/pnpm to install.
 - **Commands**:
-  - Install: `bun install`
-  - Run scripts: `bun run <script>`
-  - Add packages: `bun add <package>`
+  - Install: `aube install`
+  - Run scripts: `aubr <script>` (`aube run`)
+  - Add packages: `aube add <package>` (`-D` for dev)
+  - One-off binaries: `aube exec <bin>` (local) / `aubx <pkg>` (dlx)
+  - Dependency build scripts need approval: `aube ignored-builds`, then `aube approve-builds`
 
 ## Project Structure
 
@@ -45,7 +47,7 @@ This file documents the conventions, tech stack, and workflow for this project t
 
 ## Performance & Optimization
 
-- **React Compiler**: Enabled (`babel-plugin-react-compiler`).
+- **React Compiler**: Enabled via `@rolldown/plugin-babel` + `reactCompilerPreset()` (Vite 8 / plugin-react 6 no longer bundle Babel).
   - Manual memoization (`useMemo`, `useCallback`) is largely unnecessary for simple cases but acceptable for complex logic.
 - **Image Optimization**: Use appropriate formats (WebP/AVIF) where possible.
 
@@ -53,4 +55,4 @@ This file documents the conventions, tech stack, and workflow for this project t
 
 1. **Always** check `package.json` for available scripts before suggesting commands.
 2. **Always** use absolute imports (`@/components/...`) over relative imports (`../../components/...`).
-3. **Always** run `bun run check` (Biome) after significant refactors to ensure compliance.
+3. **Always** run `aubr check` (Biome) after significant refactors to ensure compliance.
