@@ -42,20 +42,23 @@ export const CursorProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 
     let rafId = 0;
     const updateTrail = () => {
-      // Simple interpolation for the trail
-      trail.x += (cursorPosition.x - trail.x) * TRAIL_LERP_FACTOR;
-      trail.y += (cursorPosition.y - trail.y) * TRAIL_LERP_FACTOR;
+      const dx = cursorPosition.x - trail.x;
+      const dy = cursorPosition.y - trail.y;
+      trail.x += dx * TRAIL_LERP_FACTOR;
+      trail.y += dy * TRAIL_LERP_FACTOR;
 
       for (const sub of subscribers) {
         sub(trail);
       }
 
-      rafId = requestAnimationFrame(updateTrail);
+      // Sleep once the trail has caught up, so an idle page does no per-frame work; pointermove wakes it
+      rafId = Math.abs(dx) + Math.abs(dy) > 0.1 ? requestAnimationFrame(updateTrail) : 0;
     };
 
     const handlePointerMove = (e: PointerEvent) => {
       cursorPosition.x = e.clientX;
       cursorPosition.y = e.clientY;
+      if (!rafId) rafId = requestAnimationFrame(updateTrail);
 
       const elementUnderCursor = document.elementFromPoint(e.clientX, e.clientY);
       if (elementUnderCursor?.tagName === "CANVAS") return;
