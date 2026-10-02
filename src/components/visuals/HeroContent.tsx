@@ -1,9 +1,8 @@
-import { Float, Html, Instances, MeshTransmissionMaterial, Sparkles } from "@react-three/drei";
-import { type ThreeEvent, useFrame } from "@react-three/fiber";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { Float, Instances, MeshTransmissionMaterial, Sparkles } from "@react-three/drei";
+import { type ThreeEvent, useFrame, useThree } from "@react-three/fiber";
+import { useEffect, useMemo, useRef } from "react";
 import type { Group, Mesh } from "three";
 import * as THREE from "three";
-import { TextMorph } from "torph/react";
 import { useSetCursorType } from "@/hooks/useCursor";
 import {
   ALL_TECH_ICONS,
@@ -12,11 +11,8 @@ import {
   CONFIG,
   coinGeometry,
   HERO_MARQUEE_FONT_SIZE,
-  HERO_TAGLINE_INTERVAL_MS,
-  HERO_TAGLINE_Y_OFFSET,
   ICON_COUNT,
   IS_MOBILE,
-  TAGLINES,
 } from "./config";
 import { MarqueeText } from "./MarqueeText";
 import { Sticker } from "./Sticker";
@@ -92,6 +88,8 @@ export const Dodecahedron = ({
   const lastPointer = useRef<[number, number]>([0, 0]);
   const dragging = useRef(false);
   const velocity = useRef<[number, number]>([0, 0]);
+  // Reduced motion renders on demand, so a drag has to request its own frames
+  const invalidate = useThree((state) => state.invalidate);
 
   useEffect(() => () => geometry.dispose(), [geometry]);
 
@@ -117,6 +115,7 @@ export const Dodecahedron = ({
     velocity.current = [dy * 0.0025, dx * 0.0025];
     meshRef.current.rotation.x += velocity.current[0];
     meshRef.current.rotation.y += velocity.current[1];
+    invalidate();
   };
 
   useFrame(() => {
@@ -150,7 +149,6 @@ export const Dodecahedron = ({
 
 export const HeroContent = ({ sparklesEnabled = true }: { sparklesEnabled?: boolean }) => {
   const orbitRef = useRef<Group>(null);
-  const [taglineIndex, setTaglineIndex] = useState(0);
 
   // Simple, readable selection of icons
   const selectedIcons = useMemo(
@@ -160,13 +158,6 @@ export const HeroContent = ({ sparklesEnabled = true }: { sparklesEnabled?: bool
         .map((icon) => ({ ...icon, material: randomMaterial() })),
     [],
   );
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setTaglineIndex((prev) => (prev + 1) % TAGLINES.length);
-    }, HERO_TAGLINE_INTERVAL_MS);
-    return () => clearInterval(interval);
-  }, []);
 
   useFrame((state) => {
     if (orbitRef.current) {
@@ -190,18 +181,6 @@ export const HeroContent = ({ sparklesEnabled = true }: { sparklesEnabled?: bool
         >
           ABHISHEK·ARYAN·
         </MarqueeText>
-
-        <Html center position={[0, HERO_TAGLINE_Y_OFFSET, 0]} className="pointer-events-none">
-          <div
-            className="pointer-events-none flex min-h-[3em] w-[90vw] max-w-150 justify-center text-balance text-center font-['JetBrains_Mono',monospace] font-bold text-base leading-[1.4] tracking-widest opacity-90"
-            style={{
-              color: CONFIG.COLORS.GLOW,
-              textShadow: `0 0 15px ${CONFIG.COLORS.GLOW}33`,
-            }}
-          >
-            <TextMorph duration={600}>{TAGLINES[taglineIndex]}</TextMorph>
-          </div>
-        </Html>
       </group>
 
       <group ref={orbitRef}>

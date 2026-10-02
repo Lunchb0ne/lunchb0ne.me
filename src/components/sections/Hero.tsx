@@ -1,4 +1,5 @@
 import { ClientHomeScene } from "@/components/visuals/ClientHomeScene";
+import { HeroTagline } from "@/components/visuals/HeroTagline";
 import { ScrollIndicator } from "@/components/visuals/ScrollIndicator";
 
 export const Hero = () => {
@@ -8,6 +9,7 @@ export const Hero = () => {
       <h1 className="sr-only">Abhishek Aryan, software engineer on the AWS RDS &amp; Aurora control plane</h1>
       {/* Combined Scene */}
       <ClientHomeScene />
+      <HeroTagline />
       {/* Scroll Indicator */}
       <ScrollIndicator />
     </div>

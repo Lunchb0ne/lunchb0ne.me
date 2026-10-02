@@ -89,7 +89,6 @@ export const TAGLINES = [
   "OPEN SOURCE ON THE SIDE",
 ];
 
-export const HERO_TAGLINE_Y_OFFSET = -2.6;
 export const HERO_TAGLINE_INTERVAL_MS = 3000;
 
 export const IS_MOBILE = typeof window !== "undefined" ? window.matchMedia("(max-width: 768px)").matches : false;
