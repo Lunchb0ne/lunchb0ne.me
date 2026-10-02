@@ -1,4 +1,6 @@
 import { ArrowRightIcon, EnvelopeIcon, GithubLogoIcon, LinkedinLogoIcon, XLogoIcon } from "@phosphor-icons/react";
+import { useEffect, useState } from "react";
+import { TextMorph } from "torph/react";
 import { MorphingWord } from "@/components/visuals/MorphingWord";
 import { CONTACT_CONTENT } from "@/content";
 import { cn } from "@/utils/cn";
@@ -8,6 +10,29 @@ const SOCIAL_ICONS = {
   linkedin: LinkedinLogoIcon,
   twitter: XLogoIcon,
 } as const;
+
+const CopyEmail = () => {
+  const [copied, setCopied] = useState(false);
+
+  useEffect(() => {
+    if (!copied) return;
+    const id = setTimeout(() => setCopied(false), 1600);
+    return () => clearTimeout(id);
+  }, [copied]);
+
+  return (
+    <button
+      type="button"
+      onClick={() => navigator.clipboard?.writeText(CONTACT_CONTENT.email).then(() => setCopied(true))}
+      className="text-white/60 transition-colors hover:text-cyan-400"
+    >
+      <TextMorph duration={300}>{copied ? "copied" : CONTACT_CONTENT.email}</TextMorph>
+      <span className="sr-only" aria-live="polite">
+        {copied ? "Email address copied" : ""}
+      </span>
+    </button>
+  );
+};
 
 export const Contact = () => (
   <div className="relative z-10">
@@ -34,7 +59,7 @@ export const Contact = () => (
           <ArrowRightIcon className="h-4 w-4 transition-transform group-hover:translate-x-1" />
         </a>
         <p className="mt-4 font-mono text-sm text-white/40">
-          or copy <span className="select-all text-white/60">{CONTACT_CONTENT.email}</span>
+          or copy <CopyEmail />
         </p>
       </div>
 
