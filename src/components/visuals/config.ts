@@ -81,6 +81,7 @@ export const ALL_TECH_ICONS = [
 export const ICON_COUNT = 6;
 
 // First line carries identity: most visitors only see one or two before scrolling.
+// Keep each under ~36 characters so it fits on one line on a 320px phone.
 export const TAGLINES = [
   "SOFTWARE ENGINEER · AWS RDS & AURORA",
   "THE CONTROL PLANE BEHIND YOUR DATABASE",
