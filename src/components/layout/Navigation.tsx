@@ -13,7 +13,7 @@ export const Navigation = () => {
   };
 
   return (
-    <nav className="pointer-events-none fixed inset-x-0 top-0 z-40 flex items-center justify-between rounded-b-2xl border-white/10 border-b bg-black/60 px-4 py-2 backdrop-blur-md transition-all duration-300">
+    <nav className="pointer-events-none fixed inset-x-0 top-0 z-40 flex items-center justify-between overflow-hidden rounded-b-2xl border-white/10 border-b bg-black/60 px-4 py-2 backdrop-blur-md transition-all duration-300">
       <Link
         to="/"
         onClick={scrollToTop}
@@ -40,6 +40,7 @@ export const Navigation = () => {
           </Link>
         ))}
       </div>
+      <span aria-hidden="true" className="scroll-progress absolute inset-x-0 bottom-0 h-px bg-cyan-400/70" />
     </nav>
   );
 };

@@ -24,6 +24,7 @@ export const Experience = () => (
           variants={itemVariants}
           className="group relative border-white/10 border-l pl-8 transition-colors duration-500 hover:border-cyan-500/50"
         >
+          <span aria-hidden="true" className="draw-on-view absolute top-0 -left-px h-full w-px bg-cyan-400/60" />
           <div className="absolute top-2 -left-1.25 h-2.5 w-2.5 rounded-full border border-white/30 bg-surface transition-all duration-300 group-hover:border-cyan-400 group-hover:bg-cyan-400 group-hover:shadow-[0_0_10px_rgba(34,211,238,0.5)]" />
 
           <div className="mb-2 flex flex-col justify-between md:flex-row md:items-center">

@@ -11,6 +11,39 @@
   }
 }
 
+/* Scroll-driven flourishes. Browsers without scroll timelines don't show them at all. */
+@keyframes grow-x {
+  from {
+    transform: scaleX(0);
+  }
+}
+
+@keyframes grow-y {
+  from {
+    transform: scaleY(0);
+  }
+}
+
+@utility scroll-progress {
+  transform-origin: left;
+  animation: grow-x linear both;
+  animation-timeline: scroll(root);
+}
+
+@utility draw-on-view {
+  transform-origin: top;
+  animation: grow-y linear both;
+  animation-timeline: view();
+  animation-range: entry 0% cover 50%;
+}
+
+@supports not (animation-timeline: scroll()) {
+  .scroll-progress,
+  .draw-on-view {
+    display: none;
+  }
+}
+
 html {
   overflow-x: hidden;
   overflow-y: scroll;
