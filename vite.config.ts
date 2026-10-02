@@ -10,7 +10,8 @@ export default defineConfig({
   plugins: [
     cloudflare({ viteEnvironment: { name: "ssr" } }),
     tailwindcss(),
-    tanstackStart(),
+    // The site is fully static, so render it to HTML at build time instead of on every request
+    tanstackStart({ prerender: { enabled: true, crawlLinks: false, failOnError: true } }),
     viteReact(),
     babel({ presets: [reactCompilerPreset()] }),
   ],
