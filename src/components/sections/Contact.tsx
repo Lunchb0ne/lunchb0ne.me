@@ -14,8 +14,11 @@ export const Contact = () => (
     <div className="grid grid-cols-1 items-start gap-16 md:grid-cols-[1fr_auto]">
       {/* Left column */}
       <div>
-        <h2 className="mb-6 font-bold text-4xl text-white tracking-tight md:text-5xl">
-          Ready to build the <MorphingWord className="text-cyan-400" />?
+        <h2
+          aria-label="Ready to build something?"
+          className="mb-6 font-bold text-4xl text-white tracking-tight md:text-5xl"
+        >
+          Ready to build something <MorphingWord className="text-cyan-400" />?
         </h2>
         <p className="mb-12 max-w-xl text-lg text-white/50 leading-relaxed">{CONTACT_CONTENT.intro}</p>
 
@@ -27,6 +30,9 @@ export const Contact = () => (
           <span>{CONTACT_CONTENT.ctaLabel}</span>
           <ArrowRightIcon className="h-4 w-4 transition-transform group-hover:translate-x-1" />
         </a>
+        <p className="mt-4 font-mono text-sm text-white/40">
+          or copy <span className="select-all text-white/60">{CONTACT_CONTENT.email}</span>
+        </p>
       </div>
 
       {/* Right column — social links */}
@@ -39,6 +45,7 @@ export const Contact = () => (
               href={social.href}
               target="_blank"
               rel="noopener noreferrer"
+              aria-label={social.label}
               className={cn(
                 "flex items-center gap-3 text-white/40 transition-all duration-300 hover:scale-105",
                 social.hoverClassName,
@@ -52,6 +59,8 @@ export const Contact = () => (
       </div>
     </div>
 
-    <div className="mt-20 font-mono text-sm text-white/20">&copy; 2026 Abhishek Aryan. All rights reserved.</div>
+    <div className="mt-20 font-mono text-sm text-white/20">
+      &copy; {new Date().getFullYear()} Abhishek Aryan · Built with TanStack Start on Cloudflare
+    </div>
   </div>
 );

@@ -82,10 +82,10 @@ export const Route = createRootRoute({
   notFoundComponent: () => (
     <div className="flex min-h-dvh flex-col items-center justify-center bg-surface p-4 text-center text-white">
       <h1 className="mb-4 font-bold text-9xl text-neutral-800">404</h1>
-      <h2 className="mb-4 font-semibold text-2xl">Page Not Found</h2>
-      <p className="mb-8 max-w-md text-neutral-400">The page you are looking for does not exist or has been moved.</p>
+      <h2 className="mb-4 font-semibold text-2xl">Page not found</h2>
+      <p className="mb-8 max-w-md text-neutral-400">This page doesn&apos;t exist, or it moved.</p>
       <Link to="/" className="rounded-lg bg-cyan-600 px-6 py-2 font-medium transition-colors hover:bg-cyan-500">
-        Go Home
+        Back to home
       </Link>
     </div>
   ),

@@ -1,6 +1,6 @@
 export const SKILLS_CONTENT = {
-  Languages: ["Java", "Go", "TypeScript", "Python", "Ruby", "SQL", "Rust"],
-  Infrastructure: ["AWS CDK", "Kubernetes", "Docker", "Terraform", "Lambda", "ECS"],
-  Frontend: ["React", "Vue", "Solid", "Next.js", "TailwindCSS", "Three.js", "Framer Motion", "Tanstack Query"],
-  "Databases & Tools": ["PostgreSQL", "MySQL", "Aurora", "Redis", "Kafka", "Grafana", "Prometheus", "Loki"],
+  Languages: ["Java", "Go", "TypeScript", "Python", "SQL", "Ruby", "Rust"],
+  "Cloud & Infrastructure": ["AWS CDK", "Lambda", "ECS", "Docker", "Kubernetes", "Terraform"],
+  "Data & Observability": ["PostgreSQL", "MySQL", "Aurora", "Redis", "Kafka", "Prometheus", "Grafana", "Loki"],
+  Frontend: ["React", "Next.js", "TanStack Query", "Tailwind CSS", "Three.js", "Framer Motion", "Vue", "Solid"],
 } as const;

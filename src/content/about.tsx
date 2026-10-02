@@ -8,11 +8,10 @@ export const ABOUT_CONTENT = {
       id: "about-intro",
       content: (
         <>
-          I&apos;m a <span className="font-medium text-cyan-400">Software Development Engineer</span> focused on{" "}
-          <span className="text-white">resilient distributed systems</span> and cloud-native infrastructure. At{" "}
-          <span className="font-medium text-white">AWS RDS & Aurora</span>, I work on the{" "}
-          <span className="text-cyan-400">control plane</span> that orchestrates thousands of database clusters:
-          replication, failovers, backups, security, all the{" "}
+          I&apos;m a <span className="font-medium text-cyan-400">software engineer</span> on the{" "}
+          <span className="font-medium text-white">AWS RDS & Aurora</span>{" "}
+          <span className="text-cyan-400">control plane</span>: the systems that place, provision, fail over, back up
+          and upgrade customers&apos; databases. It&apos;s the{" "}
           <span className="text-white/90 italic">invisible machinery</span> that makes “it just works” actually true.
         </>
       ),
@@ -21,10 +20,10 @@ export const ABOUT_CONTENT = {
       id: "about-bias",
       content: (
         <>
-          My bias is toward <span className="font-medium text-white italic">simple, ruthless designs</span>. No
-          ceremony, no cleverness for its own sake, no black boxes you have to "trust". If a system can&apos;t be
-          explained on a <span className="text-white">whiteboard in ten minutes</span>, I probably don&apos;t want it
-          running in production.
+          My bias is toward <span className="font-medium text-white italic">simple, boring designs</span>. No cleverness
+          for its own sake, no black boxes you have to “trust”. If a system can&apos;t be explained on a{" "}
+          <span className="text-white">whiteboard in ten minutes</span>, I probably don&apos;t want it running in
+          production.
         </>
       ),
     },
@@ -32,12 +31,11 @@ export const ABOUT_CONTENT = {
       id: "about-offclock",
       content: (
         <>
-          When I&apos;m off the clock, I&apos;m usually doing the same thing with fewer guardrails: building{" "}
-          <span className="text-cyan-400">stress tools</span>, weird CLIs, and{" "}
-          <span className="font-medium text-pink-400">open source experiments</span> that push databases until they
-          complain and surface where they crack. I also spend an unhealthy amount of time exploring{" "}
-          <span className="text-cyan-400">generative AI</span> and coding agents, and hacking on{" "}
-          <span className="text-cyan-400">new web tech</span> to see how far the stack can be pushed before it gives up.
+          Off the clock I do the same thing with fewer approvals: <span className="text-cyan-400">stress tools</span>{" "}
+          that poke databases until they confess their weaknesses, odd little CLIs, and{" "}
+          <span className="font-medium text-pink-400">open-source</span> work on AI coding agents. I also like seeing
+          how far <span className="text-cyan-400">new web tech</span> can go; this site is TanStack Start running on
+          Cloudflare.
         </>
       ),
     },
@@ -45,15 +43,15 @@ export const ABOUT_CONTENT = {
   cards: [
     {
       title: "Distributed Systems",
-      description: "Architecting highly available, fault-tolerant services that run at global scale.",
+      description: "Failover, cell-based architecture and region automation for managed databases.",
       icon: GlobeIcon,
       iconClassName: "text-cyan-400",
       hoverBorderClassName: "hover:border-cyan-500/30",
       className: "",
     },
     {
-      title: "Database Internals",
-      description: "Deep diving into storage engines, replication protocols, and performance optimization.",
+      title: "Databases",
+      description: "Storage I/O, replication and upgrades: where latency and downtime actually come from.",
       icon: CodeIcon,
       iconClassName: "text-pink-400",
       hoverBorderClassName: "hover:border-pink-500/30",
@@ -61,7 +59,7 @@ export const ABOUT_CONTENT = {
     },
     {
       title: "Open Source",
-      description: "Building tools for the community and learning from the collective wisdom of developers worldwide.",
+      description: "Contributor to Roo Code and author of sql-stress. I like building tools in the open.",
       icon: HeartIcon,
       iconClassName: "text-green-400",
       hoverBorderClassName: "hover:border-green-500/30",

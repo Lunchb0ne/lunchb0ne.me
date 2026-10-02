@@ -2,8 +2,8 @@ import { useEffect, useRef, useState } from "react";
 import { TextMorph } from "torph/react";
 import { cn } from "@/utils/cn";
 
-// Words that tie into the portfolio themes: distributed systems, open source, databases, innovation
-const WORDS = ["Resilient", "Distributed", "Scalable", "Weird", "Open Source"] as const;
+// Completes "Ready to build something ___?", so every entry must read as an adjective phrase
+const WORDS = ["resilient", "boring", "fast", "weird", "that lasts"] as const;
 const INTERVAL_MS = 2500;
 
 export const MorphingWord = ({ className }: { className?: string }) => {
