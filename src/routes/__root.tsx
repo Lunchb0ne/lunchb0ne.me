@@ -96,6 +96,10 @@ function RootDocument({ children }: { children: React.ReactNode }) {
     <html lang="en">
       <head>
         <HeadContent />
+        {/* Sections fade in on scroll via JS; without it they'd stay invisible */}
+        <noscript>
+          <style>{"section{opacity:1!important;transform:none!important}"}</style>
+        </noscript>
       </head>
       <body>
         <NoiseTexture />

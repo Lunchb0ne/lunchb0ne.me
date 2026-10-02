@@ -1,7 +1,17 @@
+import { CatchBoundary } from "@tanstack/react-router";
 import { lazy, Suspense, useEffect, useRef, useState } from "react";
 import { cn } from "@/utils/cn";
 
 const loadHomeScene = () => import("@/components/visuals/HomeScene");
+
+// Without WebGL the canvas throws; show the name as text instead of failing the page.
+const SceneFallback = () => (
+  <div className="flex h-full items-center justify-center">
+    <span aria-hidden="true" className="whitespace-nowrap font-extrabold text-[clamp(2.5rem,9vw,8rem)] text-white/90">
+      ABHISHEK·ARYAN
+    </span>
+  </div>
+);
 
 const HomeScene = lazy<typeof import("@/components/visuals/HomeScene").HomeScene>(async () => {
   const { HomeScene } = await loadHomeScene();
@@ -55,9 +65,11 @@ export const ClientHomeScene = () => {
       )}
     >
       {shouldRender && (
-        <Suspense fallback={null}>
-          <HomeScene paused={isPaused} />
-        </Suspense>
+        <CatchBoundary getResetKey={() => 0} errorComponent={SceneFallback}>
+          <Suspense fallback={null}>
+            <HomeScene paused={isPaused} />
+          </Suspense>
+        </CatchBoundary>
       )}
     </div>
   );
