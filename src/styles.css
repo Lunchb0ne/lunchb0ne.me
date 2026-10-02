@@ -2,6 +2,13 @@
 
 @theme {
   --color-surface: #050505;
+  --animate-nudge: nudge 2s ease-in-out infinite;
+
+  @keyframes nudge {
+    50% {
+      transform: translateY(10px);
+    }
+  }
 }
 
 html {

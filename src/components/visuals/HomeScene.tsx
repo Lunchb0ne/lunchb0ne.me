@@ -49,7 +49,7 @@ export const HomeScene = ({ paused = false }: { paused?: boolean }) => {
         dpr={dpr}
         gl={CANVAS_GL_CONFIG}
         performance={CANVAS_PERFORMANCE_CONFIG}
-        frameloop={paused ? "never" : "always"}
+        frameloop={paused ? "never" : prefersReducedMotion ? "demand" : "always"}
       >
         <PerformanceMonitor onChange={({ factor }) => setDpr(IS_MOBILE ? 1 : 1 + 0.5 * factor)} />
         <color attach="background" args={BACKGROUND_COLOR} />
