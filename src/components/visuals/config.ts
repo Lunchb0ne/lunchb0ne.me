@@ -94,24 +94,6 @@ export const TAGLINES = [
 
 export const HERO_TAGLINE_Y_OFFSET = -2.6;
 export const HERO_TAGLINE_INTERVAL_MS = 3000;
-export const HERO_TAGLINE_CONTAINER_STYLE = {
-  fontFamily: '"JetBrains Mono", monospace',
-  fontSize: "16px",
-  lineHeight: "1.4",
-  color: CONFIG.COLORS.GLOW,
-  letterSpacing: "0.1em",
-  fontWeight: "700",
-  textShadow: `0 0 15px ${CONFIG.COLORS.GLOW}33`,
-  pointerEvents: "none" as const,
-  opacity: 0.9,
-  textAlign: "center" as const,
-  textWrap: "balance" as const,
-  width: "90vw",
-  maxWidth: "600px",
-  display: "flex",
-  justifyContent: "center",
-  minHeight: "3em",
-} as const;
 
 export const IS_MOBILE = typeof window !== "undefined" ? window.matchMedia("(max-width: 768px)").matches : false;
 
@@ -147,7 +129,7 @@ export const coinGeometry = new THREE.CylinderGeometry(
 
 // Premium metal material variants
 export const COIN_MATERIALS = {
-  // Classic chrome/silver
+  // chrome/silver
   chrome: new THREE.MeshPhysicalMaterial({
     color: "#ffffff",
     roughness: 0.15,
@@ -156,7 +138,7 @@ export const COIN_MATERIALS = {
     clearcoatRoughness: 0.1,
     reflectivity: 1,
   }),
-  // Premium gold
+  // gold
   gold: new THREE.MeshPhysicalMaterial({
     color: "#d4a853",
     roughness: 0.2,
@@ -165,7 +147,7 @@ export const COIN_MATERIALS = {
     clearcoatRoughness: 0.15,
     reflectivity: 1,
   }),
-  // Titanium silver (darker, more matte)
+  // Titanium (darker, more matte)
   titanium: new THREE.MeshPhysicalMaterial({
     color: "#8a9a9a",
     roughness: 0.35,

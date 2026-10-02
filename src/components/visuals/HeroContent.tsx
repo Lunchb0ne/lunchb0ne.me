@@ -12,7 +12,6 @@ import {
   CONFIG,
   coinGeometry,
   HERO_MARQUEE_FONT_SIZE,
-  HERO_TAGLINE_CONTAINER_STYLE,
   HERO_TAGLINE_INTERVAL_MS,
   HERO_TAGLINE_Y_OFFSET,
   ICON_COUNT,
@@ -196,7 +195,13 @@ export const HeroContent = ({ sparklesEnabled = true }: { sparklesEnabled?: bool
         </MarqueeText>
 
         <Html center position={[0, HERO_TAGLINE_Y_OFFSET, 0]} className="pointer-events-none">
-          <div style={HERO_TAGLINE_CONTAINER_STYLE}>
+          <div
+            className="pointer-events-none flex min-h-[3em] w-[90vw] max-w-150 justify-center text-balance text-center font-['JetBrains_Mono',monospace] font-bold text-base leading-[1.4] tracking-widest opacity-90"
+            style={{
+              color: CONFIG.COLORS.GLOW,
+              textShadow: `0 0 15px ${CONFIG.COLORS.GLOW}33`,
+            }}
+          >
             <TextMorph duration={600}>{TAGLINES[taglineIndex]}</TextMorph>
           </div>
         </Html>
