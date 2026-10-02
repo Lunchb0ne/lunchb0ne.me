@@ -47,7 +47,6 @@ export const ABOUT_CONTENT = {
       icon: GlobeIcon,
       iconClassName: "text-cyan-400",
       hoverBorderClassName: "hover:border-cyan-500/30",
-      className: "",
     },
     {
       title: "Databases",
@@ -55,7 +54,6 @@ export const ABOUT_CONTENT = {
       icon: CodeIcon,
       iconClassName: "text-pink-400",
       hoverBorderClassName: "hover:border-pink-500/30",
-      className: "",
     },
     {
       title: "Open Source",
@@ -66,7 +64,7 @@ export const ABOUT_CONTENT = {
       className: "sm:col-span-2",
     },
   ],
-} as const satisfies {
+} satisfies {
   paragraphs: readonly { id: string; content: ReactNode }[];
   cards: readonly {
     title: string;
@@ -74,6 +72,6 @@ export const ABOUT_CONTENT = {
     icon: Icon;
     iconClassName: string;
     hoverBorderClassName: string;
-    className: string;
+    className?: string;
   }[];
 };

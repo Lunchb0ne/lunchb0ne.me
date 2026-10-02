@@ -19,7 +19,6 @@ const itemVariants = {
 type ProjectData = {
   title: string;
   category: string;
-  role?: string;
   impact?: string;
   stats?: string;
   description: string;
