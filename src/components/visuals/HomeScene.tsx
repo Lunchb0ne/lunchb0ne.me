@@ -3,64 +3,28 @@
 import { PerformanceMonitor } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
 import { useReducedMotion } from "framer-motion";
-import { Leva, useControls } from "leva";
-import { Suspense, useEffect, useState } from "react";
+import { type ComponentType, lazy, Suspense, useState } from "react";
 import {
   BACKGROUND_COLOR,
   CANVAS_GL_CONFIG,
   CANVAS_PERFORMANCE_CONFIG,
-  CONFIG,
   DEFAULT_POST_PROCESSING,
+  DEFAULT_SCENE_CONTROLS,
   IS_MOBILE,
+  type SceneControls,
 } from "./config";
+import type { DevHomeControlsProps } from "./DevControls";
 import { DEFAULT_DODECAHEDRON_CONTROLS, Dodecahedron, type DodecahedronControls, HeroContent } from "./HeroContent";
 import { Lights } from "./Lights";
-import { DevPostProcessingControls, PostProcessing, type PostProcessingControls } from "./PostProcessing";
+import { PostProcessing, type PostProcessingControls } from "./PostProcessing";
 
-const DEFAULT_SCENE_CONTROLS = {
-  prismColor: CONFIG.COLORS.PRISM,
-  prismTransmission: CONFIG.PRISM.TRANSMISSION,
-  prismIor: CONFIG.PRISM.IOR,
-  prismThickness: CONFIG.PRISM.THICKNESS,
-  keyLightIntensity: 4,
-  glowLightIntensity: 2,
-  warmLightIntensity: 2,
-} as const;
+// `import.meta.env.DEV` is statically false in production builds, so the dynamic import
+// is dead-code-eliminated and leva is never bundled.
+const DevControls: ComponentType<DevHomeControlsProps> = import.meta.env.DEV
+  ? lazy(() => import("./DevControls").then((m) => ({ default: m.DevHomeControls })))
+  : () => null;
 
-type SceneControls = typeof DEFAULT_SCENE_CONTROLS;
-type SceneAndDodecaControls = SceneControls & DodecahedronControls;
-
-const DevSceneControls = ({ onChange }: { onChange: (next: SceneAndDodecaControls) => void }) => {
-  const controls = useControls("Scene", {
-    prismColor: { value: DEFAULT_SCENE_CONTROLS.prismColor },
-    prismTransmission: { value: DEFAULT_SCENE_CONTROLS.prismTransmission, min: 0, max: 1, step: 0.01 },
-    prismIor: { value: DEFAULT_SCENE_CONTROLS.prismIor, min: 1, max: 2.5, step: 0.01 },
-    prismThickness: { value: DEFAULT_SCENE_CONTROLS.prismThickness, min: 0.5, max: 5, step: 0.1 },
-  });
-
-  const lightControls = useControls("Lights", {
-    keyLightIntensity: { value: DEFAULT_SCENE_CONTROLS.keyLightIntensity, min: 0, max: 10, step: 0.1 },
-    glowLightIntensity: { value: DEFAULT_SCENE_CONTROLS.glowLightIntensity, min: 0, max: 10, step: 0.1 },
-    warmLightIntensity: { value: DEFAULT_SCENE_CONTROLS.warmLightIntensity, min: 0, max: 10, step: 0.1 },
-  });
-
-  const dodecahedronControls = useControls("Dodecahedron", {
-    dragRotate: { value: DEFAULT_DODECAHEDRON_CONTROLS.dragRotate },
-    inertia: { value: DEFAULT_DODECAHEDRON_CONTROLS.inertia, min: 0.75, max: 0.98, step: 0.01 },
-  });
-
-  useEffect(() => {
-    onChange({
-      ...controls,
-      ...lightControls,
-      ...dodecahedronControls,
-    } as SceneAndDodecaControls);
-  }, [controls, lightControls, dodecahedronControls, onChange]);
-
-  return null;
-};
-
-export const HomeScene = () => {
+export const HomeScene = ({ paused = false }: { paused?: boolean }) => {
   const prefersReducedMotion = useReducedMotion();
   const [controls, setControls] = useState<PostProcessingControls>(DEFAULT_POST_PROCESSING);
   const [sceneControls, setSceneControls] = useState<SceneControls>(DEFAULT_SCENE_CONTROLS);
@@ -74,34 +38,20 @@ export const HomeScene = () => {
   return (
     <>
       {import.meta.env.DEV && (
-        <>
-          <Leva titleBar={{ position: { x: -30, y: 620 } }} hidden={false} />
-          <DevPostProcessingControls onChange={setControls} />
-          <DevSceneControls
-            onChange={(next) => {
-              setSceneControls({
-                prismColor: next.prismColor,
-                prismTransmission: next.prismTransmission,
-                prismIor: next.prismIor,
-                prismThickness: next.prismThickness,
-                keyLightIntensity: next.keyLightIntensity,
-                glowLightIntensity: next.glowLightIntensity,
-                warmLightIntensity: next.warmLightIntensity,
-              });
-              setDodecahedronControls({
-                dragRotate: next.dragRotate,
-                inertia: next.inertia,
-              });
-            }}
+        <Suspense fallback={null}>
+          <DevControls
+            onPostProcessingChange={setControls}
+            onSceneChange={setSceneControls}
+            onDodecahedronChange={setDodecahedronControls}
           />
-        </>
+        </Suspense>
       )}
       <Canvas
         camera={{ position: [0, 0, 8], fov: 45 }}
         dpr={dpr}
         gl={CANVAS_GL_CONFIG}
         performance={CANVAS_PERFORMANCE_CONFIG}
-        frameloop="always"
+        frameloop={paused ? "never" : "always"}
       >
         <PerformanceMonitor onChange={({ factor }) => setDpr(IS_MOBILE ? 1 : 1 + 0.5 * factor)} />
         <color attach="background" args={BACKGROUND_COLOR} />
