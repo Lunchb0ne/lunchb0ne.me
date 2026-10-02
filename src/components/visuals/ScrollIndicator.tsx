@@ -1,7 +1,7 @@
 "use client";
 
 import { ArrowDownIcon } from "@phosphor-icons/react";
-import { motion } from "framer-motion";
+import { motion } from "motion/react";
 
 const CONFIG = {
   TEXT: {

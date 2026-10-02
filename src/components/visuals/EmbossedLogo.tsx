@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import * as THREE from "three";
-import { SVGLoader } from "three-stdlib";
+import { SVGLoader } from "three/addons/loaders/SVGLoader.js";
 import { CONFIG, logoMaterial } from "./config";
 
 const loader = new SVGLoader();
@@ -24,7 +24,7 @@ export const EmbossedLogo = ({ svgContent }: { svgContent: string }) => {
       shapes = cachedShapes;
     } else {
       const svgData = loader.parse(svgContent);
-      shapes = svgData.paths.flatMap((path) => path.toShapes(true));
+      shapes = svgData.paths.flatMap((path) => path.toShapes());
       shapeCache.set(svgContent, shapes);
     }
 

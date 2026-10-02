@@ -2,7 +2,7 @@
 
 import { PerformanceMonitor } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
-import { useReducedMotion } from "framer-motion";
+import { useReducedMotion } from "motion/react";
 import { type ComponentType, lazy, Suspense, useState } from "react";
 import {
   BACKGROUND_COLOR,

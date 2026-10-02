@@ -1,6 +1,6 @@
 import type { Icon } from "@phosphor-icons/react";
 import { ArrowUpRightIcon } from "@phosphor-icons/react";
-import { motion } from "framer-motion";
+import { motion } from "motion/react";
 import { Section } from "@/components/ui/Section";
 import { Tag } from "@/components/ui/Tag";
 import { PROJECTS_CONTENT, SECTION_TITLES } from "@/content";

@@ -1,6 +1,4 @@
-import { TanStackDevtools } from "@tanstack/react-devtools";
 import { createRootRoute, HeadContent, Link, Scripts } from "@tanstack/react-router";
-import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
 import { CustomCursor } from "@/components/ui/CustomCursor";
 import { NoiseTexture } from "@/components/ui/NoiseTexture";
 import { siteMeta } from "@/content/seo";
@@ -69,7 +67,9 @@ export const Route = createRootRoute({
   errorComponent: (props) => (
     <div className="flex min-h-dvh flex-col items-center justify-center bg-surface p-4 text-center text-white">
       <h1 className="mb-4 font-bold text-4xl text-red-500">Something went wrong</h1>
-      <p className="mb-8 max-w-md text-neutral-400">{props.error.message}</p>
+      <p className="mb-8 max-w-md text-neutral-400">
+        {props.error instanceof Error ? props.error.message : String(props.error)}
+      </p>
       <button
         type="button"
         onClick={props.reset}
@@ -102,19 +102,6 @@ function RootDocument({ children }: { children: React.ReactNode }) {
         <CursorProvider>
           <CustomCursor />
           {children}
-          {import.meta.env.DEV && (
-            <TanStackDevtools
-              config={{
-                position: "bottom-right",
-              }}
-              plugins={[
-                {
-                  name: "Tanstack Router",
-                  render: <TanStackRouterDevtoolsPanel />,
-                },
-              ]}
-            />
-          )}
         </CursorProvider>
         <Scripts />
       </body>
