@@ -13,17 +13,16 @@ const tempBox = new THREE.Box3();
 export const MarqueeText = ({ children, speed = 2, ...props }: MarqueeTextProps) => {
   const group = useRef<Group>(null);
   const [width, setWidth] = useState(0);
-  const widthRef = useRef(0);
 
   useFrame((state, delta) => {
-    if (group.current && widthRef.current > 0) {
+    if (group.current && width > 0) {
       const time = state.clock.getElapsedTime();
       const wave = Math.sin(time * 0.5) * 0.3 + 1;
       const currentSpeed = speed * wave;
 
       group.current.position.x -= delta * currentSpeed;
-      if (group.current.position.x < -widthRef.current) {
-        group.current.position.x += widthRef.current;
+      if (group.current.position.x < -width) {
+        group.current.position.x += width;
       }
     }
   });
@@ -32,8 +31,7 @@ export const MarqueeText = ({ children, speed = 2, ...props }: MarqueeTextProps)
     // Force compute bounding box to get accurate width
     tempBox.setFromObject(scene);
     const w = tempBox.max.x - tempBox.min.x;
-    if (w > 0 && Math.abs(w - widthRef.current) > 0.1) {
-      widthRef.current = w;
+    if (w > 0 && Math.abs(w - width) > 0.1) {
       setWidth(w);
     }
   };
@@ -43,22 +41,12 @@ export const MarqueeText = ({ children, speed = 2, ...props }: MarqueeTextProps)
       <Text anchorX="center" anchorY="middle" onSync={onSync} {...props}>
         {children}
       </Text>
-      {width > 0 && (
-        <>
-          <Text anchorX="center" anchorY="middle" position={[width, 0, 0]} {...props}>
+      {width > 0 &&
+        [-2, -1, 1, 2].map((i) => (
+          <Text key={i} anchorX="center" anchorY="middle" position={[width * i, 0, 0]} {...props}>
             {children}
           </Text>
-          <Text anchorX="center" anchorY="middle" position={[width * 2, 0, 0]} {...props}>
-            {children}
-          </Text>
-          <Text anchorX="center" anchorY="middle" position={[-width, 0, 0]} {...props}>
-            {children}
-          </Text>
-          <Text anchorX="center" anchorY="middle" position={[-width * 2, 0, 0]} {...props}>
-            {children}
-          </Text>
-        </>
-      )}
+        ))}
     </group>
   );
 };

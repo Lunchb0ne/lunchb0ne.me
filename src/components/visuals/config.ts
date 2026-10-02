@@ -38,9 +38,7 @@ export const CONFIG = {
   },
   ORBIT: {
     RADIUS: 3.1,
-    SPEED: 0.1,
     FLOAT_SPEED: 2,
-    FLOAT_INTENSITY: 0.4,
   },
   PRISM: {
     SAMPLES: 16,
@@ -63,20 +61,20 @@ export const HERO_MARQUEE_FONT_SIZE = 3.5;
 
 // Full list of tech icons - random selection happens client-side in HeroContent
 export const ALL_TECH_ICONS = [
-  { slug: "java", icon: siOpenjdk, name: "Java" },
-  { slug: "go", icon: siGo, name: "Go" },
-  { slug: "typescript", icon: siTypescript, name: "TypeScript" },
-  { slug: "python", icon: siPython, name: "Python" },
-  { slug: "ruby", icon: siRuby, name: "Ruby" },
-  { slug: "kubernetes", icon: siKubernetes, name: "Kubernetes" },
-  { slug: "docker", icon: siDocker, name: "Docker" },
-  { slug: "serverless", icon: siServerless, name: "Serverless" },
-  { slug: "react", icon: siReact, name: "React" },
-  { slug: "nextjs", icon: siNextdotjs, name: "Next.js" },
-  { slug: "tailwind", icon: siTailwindcss, name: "Tailwind" },
-  { slug: "threejs", icon: siThreedotjs, name: "Three.js" },
-  { slug: "postgres", icon: siPostgresql, name: "PostgreSQL" },
-  { slug: "mysql", icon: siMysql, name: "MySQL" },
+  { slug: "java", icon: siOpenjdk },
+  { slug: "go", icon: siGo },
+  { slug: "typescript", icon: siTypescript },
+  { slug: "python", icon: siPython },
+  { slug: "ruby", icon: siRuby },
+  { slug: "kubernetes", icon: siKubernetes },
+  { slug: "docker", icon: siDocker },
+  { slug: "serverless", icon: siServerless },
+  { slug: "react", icon: siReact },
+  { slug: "nextjs", icon: siNextdotjs },
+  { slug: "tailwind", icon: siTailwindcss },
+  { slug: "threejs", icon: siThreedotjs },
+  { slug: "postgres", icon: siPostgresql },
+  { slug: "mysql", icon: siMysql },
 ];
 
 // Number of icons to display (randomly selected on each page load)
@@ -125,11 +123,7 @@ export const DEFAULT_SCENE_CONTROLS = {
 
 export type SceneControls = typeof DEFAULT_SCENE_CONTROLS;
 
-// Shared Geometries and Materials
-// We create these once here to avoid recreation on every render/mount if possible,
-// or at least have a central definition.
-// Note: In strict R3F, creating these outside component might be anti-pattern if they depend on context,
-// but for standard materials it's fine and efficient.
+// Shared geometry and materials, created once at module load
 
 export const coinGeometry = new THREE.CylinderGeometry(
   CONFIG.COIN.RADIUS,

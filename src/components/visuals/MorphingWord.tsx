@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { TextMorph } from "torph/react";
 import { cn } from "@/utils/cn";
 
@@ -8,18 +8,12 @@ const INTERVAL_MS = 2500;
 
 export const MorphingWord = ({ className }: { className?: string }) => {
   const [index, setIndex] = useState(0);
-  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   useEffect(() => {
-    intervalRef.current = setInterval(() => {
+    const id = setInterval(() => {
       setIndex((prev) => (prev + 1) % WORDS.length);
     }, INTERVAL_MS);
-
-    return () => {
-      if (intervalRef.current) {
-        clearInterval(intervalRef.current);
-      }
-    };
+    return () => clearInterval(id);
   }, []);
 
   return (

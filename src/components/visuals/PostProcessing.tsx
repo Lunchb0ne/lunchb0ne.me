@@ -2,7 +2,6 @@ import { useLoader } from "@react-three/fiber";
 import { Bloom, EffectComposer, LUT, SMAA, ToneMapping } from "@react-three/postprocessing";
 import { BlendFunction, ToneMappingMode } from "postprocessing";
 import type { ComponentProps, ComponentType } from "react";
-import { memo } from "react";
 import { LUTCubeLoader, type LUTCubeResult } from "three/addons/loaders/LUTCubeLoader.js"; // replace deprecated loader with official loader
 import type { DEFAULT_POST_PROCESSING } from "./config";
 
@@ -31,15 +30,17 @@ const LutPass = ({ blend }: { blend: number }) => {
   return <LutEffect lut={lutTexture} blendFunction={BlendFunction.NORMAL} opacity={blend} />;
 };
 
-export const PostProcessing = memo(
-  ({ bloomIntensity, bloomThreshold, bloomRadius, lutEnabled, lutBlend }: PostProcessingProps) => (
-    <EffectComposer multisampling={0}>
-      <Bloom luminanceThreshold={bloomThreshold} mipmapBlur intensity={bloomIntensity} radius={bloomRadius} />
-      {lutEnabled ? <LutPass blend={lutBlend} /> : <Noop />}
-      <SMAA />
-      <ToneMapping mode={ToneMappingMode.ACES_FILMIC} />
-    </EffectComposer>
-  ),
+export const PostProcessing = ({
+  bloomIntensity,
+  bloomThreshold,
+  bloomRadius,
+  lutEnabled,
+  lutBlend,
+}: PostProcessingProps) => (
+  <EffectComposer multisampling={0}>
+    <Bloom luminanceThreshold={bloomThreshold} mipmapBlur intensity={bloomIntensity} radius={bloomRadius} />
+    {lutEnabled ? <LutPass blend={lutBlend} /> : <Noop />}
+    <SMAA />
+    <ToneMapping mode={ToneMappingMode.ACES_FILMIC} />
+  </EffectComposer>
 );
-
-PostProcessing.displayName = "PostProcessing";

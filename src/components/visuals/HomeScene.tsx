@@ -1,5 +1,3 @@
-"use client";
-
 import { PerformanceMonitor } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
 import { useReducedMotion } from "motion/react";

@@ -4,7 +4,6 @@ import { SVGLoader } from "three/addons/loaders/SVGLoader.js";
 import { CONFIG, logoMaterial } from "./config";
 
 const loader = new SVGLoader();
-const shapeCache = new Map<string, THREE.Shape[]>();
 const geometryCache = new Map<string, THREE.ExtrudeGeometry>();
 
 const EXTRUDE_SETTINGS = {
@@ -17,16 +16,7 @@ export const EmbossedLogo = ({ svgContent }: { svgContent: string }) => {
     const cachedGeo = geometryCache.get(svgContent);
     if (cachedGeo) return cachedGeo;
 
-    const cachedShapes = shapeCache.get(svgContent);
-    let shapes: THREE.Shape[];
-
-    if (cachedShapes) {
-      shapes = cachedShapes;
-    } else {
-      const svgData = loader.parse(svgContent);
-      shapes = svgData.paths.flatMap((path) => path.toShapes());
-      shapeCache.set(svgContent, shapes);
-    }
+    const shapes = loader.parse(svgContent).paths.flatMap((path) => path.toShapes());
 
     const geo = new THREE.ExtrudeGeometry(shapes, EXTRUDE_SETTINGS);
     geo.center();

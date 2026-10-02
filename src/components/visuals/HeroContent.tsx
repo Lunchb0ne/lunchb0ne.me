@@ -1,6 +1,6 @@
 import { Float, Html, Instances, MeshTransmissionMaterial, Sparkles } from "@react-three/drei";
 import { type ThreeEvent, useFrame } from "@react-three/fiber";
-import { memo, useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import type { Group, Mesh } from "three";
 import * as THREE from "three";
 import { TextMorph } from "torph/react";
@@ -56,31 +56,28 @@ export const DEFAULT_DODECAHEDRON_CONTROLS: DodecahedronControls = {
   inertia: 0.92,
 };
 
-const PrismMaterial = memo(
-  ({
-    color = CONFIG.COLORS.PRISM,
-    transmission = CONFIG.PRISM.TRANSMISSION,
-    ior = CONFIG.PRISM.IOR,
-    thickness = CONFIG.PRISM.THICKNESS,
-    roughness = CONFIG.PRISM.ROUGHNESS,
-    chromaticAberration = CONFIG.PRISM.CHROMATIC_ABERRATION,
-    anisotropy = CONFIG.PRISM.ANISOTROPY,
-  }: PrismSettings) => (
-    <MeshTransmissionMaterial
-      backside={true}
-      samples={CONFIG.PRISM.SAMPLES}
-      resolution={CONFIG.PRISM.RESOLUTION}
-      transmission={transmission}
-      roughness={roughness}
-      ior={ior}
-      thickness={thickness}
-      chromaticAberration={chromaticAberration}
-      anisotropy={anisotropy}
-      color={color}
-    />
-  ),
+const PrismMaterial = ({
+  color = CONFIG.COLORS.PRISM,
+  transmission = CONFIG.PRISM.TRANSMISSION,
+  ior = CONFIG.PRISM.IOR,
+  thickness = CONFIG.PRISM.THICKNESS,
+  roughness = CONFIG.PRISM.ROUGHNESS,
+  chromaticAberration = CONFIG.PRISM.CHROMATIC_ABERRATION,
+  anisotropy = CONFIG.PRISM.ANISOTROPY,
+}: PrismSettings) => (
+  <MeshTransmissionMaterial
+    backside={true}
+    samples={CONFIG.PRISM.SAMPLES}
+    resolution={CONFIG.PRISM.RESOLUTION}
+    transmission={transmission}
+    roughness={roughness}
+    ior={ior}
+    thickness={thickness}
+    chromaticAberration={chromaticAberration}
+    anisotropy={anisotropy}
+    color={color}
+  />
 );
-PrismMaterial.displayName = "PrismMaterial";
 
 export const Dodecahedron = ({
   prism,
