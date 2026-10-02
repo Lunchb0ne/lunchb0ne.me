@@ -1,5 +1,5 @@
 import { useRef } from "react";
-import { useCursorPosition, useCursorType, useHasFinePointer, useTrailSubscribe } from "@/hooks/useCursor";
+import { cursorPosition, useCursorType, useHasFinePointer, useTrailSubscribe } from "@/hooks/useCursor";
 
 const CURSOR_STYLES = {
   default: {
@@ -11,11 +11,6 @@ const CURSOR_STYLES = {
     width: 28,
     height: 28,
     borderRadius: "50%",
-  },
-  text: {
-    width: 4,
-    height: 24,
-    borderRadius: 2,
   },
   hidden: {
     width: 0,
@@ -31,7 +26,6 @@ const CURSOR_TRANSITION =
 export const CustomCursor = () => {
   const cursorType = useCursorType();
   const hasFinePointer = useHasFinePointer();
-  const positionRef = useCursorPosition();
   const trailRef = useRef<HTMLDivElement>(null);
   const dotRef = useRef<HTMLDivElement>(null);
   const styleRef = useRef(CURSOR_STYLES[cursorType]);
@@ -48,8 +42,7 @@ export const CustomCursor = () => {
     }
 
     if (dotEl) {
-      const rawPos = positionRef.current;
-      dotEl.style.transform = `translate(${rawPos.x - 2}px, ${rawPos.y - 2}px)`;
+      dotEl.style.transform = `translate(${cursorPosition.x - 2}px, ${cursorPosition.y - 2}px)`;
     }
   });
 

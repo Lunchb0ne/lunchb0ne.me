@@ -1,45 +1,37 @@
 import type React from "react";
-import { createContext, use, useCallback, useEffect, useRef, useState } from "react";
+import { createContext, use, useEffect, useRef, useState } from "react";
 
-type CursorType = "default" | "hover" | "text" | "hidden";
+type CursorType = "default" | "hover" | "hidden";
 
 interface Position {
   x: number;
   y: number;
 }
 
-type PositionRef = React.RefObject<Position>;
 type TrailSubscriber = (pos: Position) => void;
 
-const OFFSCREEN_POSITION: Position = { x: -100, y: -100 };
 const TRAIL_LERP_FACTOR = 0.18;
 const INTERACTIVE_SELECTOR =
   'a, button, input, textarea, select, [role="button"], [tabindex]:not([tabindex="-1"]), .group, [data-interactive]';
 
-const defaultPositionRef = { current: { ...OFFSCREEN_POSITION } } as PositionRef;
-const defaultSubscribersRef = {
-  current: new Set<TrailSubscriber>(),
-} as React.RefObject<Set<TrailSubscriber>>;
+// Mutated in place by the pointer listener / trail loop; never re-assigned, so no context needed.
+export const cursorPosition: Position = { x: -100, y: -100 };
+const trail: Position = { x: -100, y: -100 };
+const subscribers = new Set<TrailSubscriber>();
 
 const CursorTypeContext = createContext<CursorType>("default");
 const CursorActionsContext = createContext<(type: CursorType) => void>(() => {});
-const CursorPositionContext = createContext<PositionRef>(defaultPositionRef);
-const CursorTrailPositionContext = createContext<PositionRef>(defaultPositionRef);
-const TrailSubscribersContext = createContext<React.RefObject<Set<TrailSubscriber>>>(defaultSubscribersRef);
 const HasFinePointerContext = createContext<boolean>(false);
 
 export const CursorProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [cursorType, setCursorType] = useState<CursorType>("default");
+  const [cursorType, setCursorTypeState] = useState<CursorType>("default");
   const [hasFinePointer, setHasFinePointer] = useState(false);
-  const latestPositionRef = useRef<Position>({ ...OFFSCREEN_POSITION });
-  const trailPositionRef = useRef<Position>({ ...OFFSCREEN_POSITION });
-  const subscribersRef = useRef<Set<TrailSubscriber>>(new Set());
   const cursorTypeRef = useRef<CursorType>("default");
-  const trailRafIdRef = useRef<number | null>(null);
 
-  useEffect(() => {
-    cursorTypeRef.current = cursorType;
-  }, [cursorType]);
+  const setCursorType = (type: CursorType) => {
+    cursorTypeRef.current = type;
+    setCursorTypeState(type);
+  };
 
   useEffect(() => {
     const finePointerQuery = window.matchMedia("(pointer: fine)");
@@ -48,62 +40,47 @@ export const CursorProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     const handlePointerChange = (e: MediaQueryListEvent) => setHasFinePointer(e.matches);
     finePointerQuery.addEventListener("change", handlePointerChange);
 
+    let rafId = 0;
     const updateTrail = () => {
-      const target = latestPositionRef.current;
-      const current = trailPositionRef.current;
-      const dx = target.x - current.x;
-      const dy = target.y - current.y;
-
       // Simple interpolation for the trail
-      current.x += dx * TRAIL_LERP_FACTOR;
-      current.y += dy * TRAIL_LERP_FACTOR;
+      trail.x += (cursorPosition.x - trail.x) * TRAIL_LERP_FACTOR;
+      trail.y += (cursorPosition.y - trail.y) * TRAIL_LERP_FACTOR;
 
-      for (const sub of subscribersRef.current) {
-        sub(current);
+      for (const sub of subscribers) {
+        sub(trail);
       }
 
-      trailRafIdRef.current = requestAnimationFrame(updateTrail);
+      rafId = requestAnimationFrame(updateTrail);
     };
 
     const handlePointerMove = (e: PointerEvent) => {
-      latestPositionRef.current.x = e.clientX;
-      latestPositionRef.current.y = e.clientY;
+      cursorPosition.x = e.clientX;
+      cursorPosition.y = e.clientY;
 
       const elementUnderCursor = document.elementFromPoint(e.clientX, e.clientY);
       if (elementUnderCursor?.tagName === "CANVAS") return;
 
-      const isInteractive = elementUnderCursor?.closest(INTERACTIVE_SELECTOR);
-      const nextCursorType: CursorType = isInteractive ? "hover" : "default";
-
+      const nextCursorType: CursorType = elementUnderCursor?.closest(INTERACTIVE_SELECTOR) ? "hover" : "default";
       if (cursorTypeRef.current !== nextCursorType) {
         cursorTypeRef.current = nextCursorType;
-        setCursorType(nextCursorType);
+        setCursorTypeState(nextCursorType);
       }
     };
 
-    trailRafIdRef.current = requestAnimationFrame(updateTrail);
+    rafId = requestAnimationFrame(updateTrail);
     window.addEventListener("pointermove", handlePointerMove, { passive: true });
 
     return () => {
       finePointerQuery.removeEventListener("change", handlePointerChange);
       window.removeEventListener("pointermove", handlePointerMove);
-
-      if (trailRafIdRef.current !== null) {
-        cancelAnimationFrame(trailRafIdRef.current);
-      }
+      cancelAnimationFrame(rafId);
     };
   }, []);
 
   return (
     <HasFinePointerContext.Provider value={hasFinePointer}>
       <CursorActionsContext.Provider value={setCursorType}>
-        <CursorTypeContext.Provider value={cursorType}>
-          <CursorPositionContext.Provider value={latestPositionRef}>
-            <CursorTrailPositionContext.Provider value={trailPositionRef}>
-              <TrailSubscribersContext.Provider value={subscribersRef}>{children}</TrailSubscribersContext.Provider>
-            </CursorTrailPositionContext.Provider>
-          </CursorPositionContext.Provider>
-        </CursorTypeContext.Provider>
+        <CursorTypeContext.Provider value={cursorType}>{children}</CursorTypeContext.Provider>
       </CursorActionsContext.Provider>
     </HasFinePointerContext.Provider>
   );
@@ -111,8 +88,6 @@ export const CursorProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 
 export const useCursorType = () => use(CursorTypeContext);
 export const useSetCursorType = () => use(CursorActionsContext);
-export const useCursorPosition = () => use(CursorPositionContext);
-export const useCursorTrailPosition = () => use(CursorTrailPositionContext);
 export const useHasFinePointer = () => use(HasFinePointerContext);
 
 /**
@@ -121,27 +96,14 @@ export const useHasFinePointer = () => use(HasFinePointerContext);
  * shared rAF loop — no need for a separate animation frame.
  */
 export const useTrailSubscribe = (callback: TrailSubscriber) => {
-  const subscribersRef = use(TrailSubscribersContext);
   const callbackRef = useRef(callback);
   callbackRef.current = callback;
 
-  // Stable subscriber that always calls the latest callback
-  const stableSubscriber = useCallback((pos: Position) => {
-    callbackRef.current(pos);
-  }, []);
-
   useEffect(() => {
-    const subs = subscribersRef.current;
-    subs.add(stableSubscriber);
+    const subscriber: TrailSubscriber = (pos) => callbackRef.current(pos);
+    subscribers.add(subscriber);
     return () => {
-      subs.delete(stableSubscriber);
+      subscribers.delete(subscriber);
     };
-  }, [subscribersRef, stableSubscriber]);
+  }, []);
 };
-
-export const useCursor = () => ({
-  cursorType: useCursorType(),
-  setCursorType: useSetCursorType(),
-  position: useCursorPosition(),
-  trailPosition: useCursorTrailPosition(),
-});
