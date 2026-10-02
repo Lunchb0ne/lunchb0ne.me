@@ -15,44 +15,49 @@ export const siteMeta: SiteMeta = {
   themeColor: "#050505",
 };
 
-export const buildSocialMeta = (meta: SiteMeta) => [
-  {
-    property: "og:type",
-    content: "website",
-  },
-  {
-    property: "og:url",
-    content: meta.url,
-  },
-  {
-    property: "og:title",
-    content: meta.title,
-  },
-  {
-    property: "og:description",
-    content: meta.description,
-  },
-  {
-    property: "og:image",
-    content: meta.image,
-  },
-  {
-    name: "twitter:card",
-    content: "summary_large_image",
-  },
-  {
-    name: "twitter:title",
-    content: meta.title,
-  },
-  {
-    name: "twitter:description",
-    content: meta.description,
-  },
-  {
-    name: "twitter:image",
-    content: meta.image,
-  },
-];
+export const buildSocialMeta = (meta: SiteMeta) => {
+  // Link unfurlers require an absolute image URL.
+  const imageUrl = new URL(meta.image, meta.url).href;
+
+  return [
+    {
+      property: "og:type",
+      content: "website",
+    },
+    {
+      property: "og:url",
+      content: meta.url,
+    },
+    {
+      property: "og:title",
+      content: meta.title,
+    },
+    {
+      property: "og:description",
+      content: meta.description,
+    },
+    {
+      property: "og:image",
+      content: imageUrl,
+    },
+    {
+      name: "twitter:card",
+      content: "summary_large_image",
+    },
+    {
+      name: "twitter:title",
+      content: meta.title,
+    },
+    {
+      name: "twitter:description",
+      content: meta.description,
+    },
+    {
+      name: "twitter:image",
+      content: imageUrl,
+    },
+  ];
+};
 
 export const buildPageMeta = (overrides: Partial<SiteMeta> = {}) => {
   const meta = { ...siteMeta, ...overrides };
