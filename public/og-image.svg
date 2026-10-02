@@ -28,11 +28,11 @@
   
   <!-- Text -->
   <text x="200" y="245" font-family="system-ui, -apple-system, sans-serif" font-size="56" font-weight="700" fill="white">Abhishek Aryan</text>
-  <text x="200" y="295" font-family="monospace" font-size="24" fill="#a5f3fc" letter-spacing="0.1em">SDE II @ AWS</text>
+  <text x="200" y="295" font-family="monospace" font-size="24" fill="#a5f3fc" letter-spacing="0.1em">SOFTWARE ENGINEER · AWS RDS &amp; AURORA</text>
   
   <!-- Tagline -->
-  <text x="80" y="480" font-family="system-ui, -apple-system, sans-serif" font-size="28" fill="rgba(255,255,255,0.6)">Building resilient distributed systems</text>
-  <text x="80" y="520" font-family="system-ui, -apple-system, sans-serif" font-size="28" fill="rgba(255,255,255,0.6)">and cloud-native infrastructure.</text>
+  <text x="80" y="480" font-family="system-ui, -apple-system, sans-serif" font-size="28" fill="rgba(255,255,255,0.6)">Building the control plane behind</text>
+  <text x="80" y="520" font-family="system-ui, -apple-system, sans-serif" font-size="28" fill="rgba(255,255,255,0.6)">Amazon RDS and Aurora.</text>
   
   <!-- Border accent -->
   <rect x="0" y="620" width="1200" height="10" fill="#a5f3fc"/>

@@ -7,9 +7,9 @@ export type SiteMeta = {
 };
 
 export const siteMeta: SiteMeta = {
-  title: "Abhishek Aryan | SDE II at AWS",
+  title: "Abhishek Aryan | Software Engineer, AWS RDS & Aurora",
   description:
-    "Software Development Engineer specialized in building resilient distributed systems and cloud-native infrastructure.",
+    "Abhishek Aryan is a software engineer on the AWS RDS & Aurora control plane, working on Blue/Green Deployments, high availability and database tooling.",
   url: "https://lunchb0ne.me",
   image: "/og-image.png",
   themeColor: "#050505",
