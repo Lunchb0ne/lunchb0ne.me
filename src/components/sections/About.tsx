@@ -1,10 +1,10 @@
 import { Section } from "@/components/ui/Section";
-import { ABOUT_CONTENT, SECTION_TITLES } from "@/content";
+import { ABOUT_CONTENT } from "@/content";
 import { cn } from "@/utils/cn";
 
 export const About = () => (
   <>
-    <Section.Header>{SECTION_TITLES.about}</Section.Header>
+    <Section.Header id="about" />
 
     <div className="grid grid-cols-1 items-start gap-12 md:grid-cols-2 md:items-stretch">
       <div className="space-y-6 text-lg text-white/70 leading-relaxed">

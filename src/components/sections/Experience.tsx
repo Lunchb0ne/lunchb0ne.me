@@ -1,7 +1,7 @@
 import { motion } from "motion/react";
 import { Section } from "@/components/ui/Section";
 import { Tag } from "@/components/ui/Tag";
-import { EXPERIENCE_ITEMS, SECTION_TITLES } from "@/content";
+import { EXPERIENCE_ITEMS } from "@/content";
 
 const containerVariants = {
   hidden: {},
@@ -15,7 +15,7 @@ const itemVariants = {
 
 export const Experience = () => (
   <>
-    <Section.Header>{SECTION_TITLES.experience}</Section.Header>
+    <Section.Header id="experience" />
 
     <motion.div className="space-y-12" variants={containerVariants}>
       {EXPERIENCE_ITEMS.map((exp) => (

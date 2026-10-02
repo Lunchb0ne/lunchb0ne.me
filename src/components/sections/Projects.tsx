@@ -3,7 +3,7 @@ import { ArrowUpRightIcon } from "@phosphor-icons/react";
 import { motion } from "motion/react";
 import { Section } from "@/components/ui/Section";
 import { Tag } from "@/components/ui/Tag";
-import { PROJECTS_CONTENT, SECTION_TITLES } from "@/content";
+import { PROJECTS_CONTENT } from "@/content";
 import { cn } from "@/utils/cn";
 
 const containerVariants = {
@@ -152,7 +152,7 @@ export const Projects = () => {
 
   return (
     <>
-      <Section.Header>{SECTION_TITLES.projects}</Section.Header>
+      <Section.Header id="projects" />
 
       <div className="space-y-20">
         <div>

@@ -1,5 +1,6 @@
 import { motion, useReducedMotion } from "motion/react";
 import type { ReactNode } from "react";
+import { SECTION_IDS, SECTION_TITLES } from "@/content";
 import { cn } from "@/utils/cn";
 
 interface SectionProps {
@@ -43,9 +44,12 @@ export const Section = ({ children, className, id, maxWidth = "6xl" }: SectionPr
   );
 };
 
-const Header = ({ children }: { children: ReactNode }) => (
+const Header = ({ id }: { id: keyof typeof SECTION_TITLES }) => (
   <div className="mb-16 flex items-baseline gap-4">
-    <h2 className="font-light text-4xl text-white/90 tracking-tighter md:text-5xl">{children}</h2>
+    <span className="font-mono text-cyan-400/60 text-sm tabular-nums">
+      {String(SECTION_IDS.indexOf(id) + 1).padStart(2, "0")}
+    </span>
+    <h2 className="font-light text-4xl text-white/90 tracking-tighter md:text-5xl">{SECTION_TITLES[id]}</h2>
     <span className="h-px flex-1 bg-white/10" />
   </div>
 );
