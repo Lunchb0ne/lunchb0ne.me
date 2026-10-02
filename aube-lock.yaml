@@ -78,6 +78,9 @@ importers:
       '@rolldown/plugin-babel':
         specifier: ^0.2.4
         version: 0.2.4(@babel/core@7.29.7)(rolldown@1.2.12)(vite@8.3.2(@types/node@26.6.4))
+      '@tanstack/intent':
+        specifier: ^0.5.0
+        version: 0.5.0
       '@types/node':
         specifier: ^26.6.4
         version: 26.6.4
@@ -1240,6 +1243,11 @@ packages:
   '@tanstack/history@1.162.4':
     resolution: {integrity: sha512-utTS5L2OkeYUzXGohL1Z8sefu1GLNOJcxe8Hd6iIdc/Xo1K1nDB2JEp4iSFhvYh33xKC9V91TxrS8qfrpoKobQ==}
     engines: {node: '>=20.19'}
+
+  '@tanstack/intent@0.5.0':
+    resolution: {integrity: sha512-27zOOpQLfBTM5cQjqkASf6JH3jggMwr29UhK8dlAI1WP9rjzywJ87/I6meiH/khyPIFNRluh9Q8wlIVrpN4Jpg==}
+    engines: {node: '>=20.12.0'}
+    hasBin: true
 
   '@tanstack/react-router@1.170.41':
     resolution: {integrity: sha512-Mpvw8Wm5MGDbTqI8Yc9flLKxbOHwoWocv0H2aGKcgw2a017oK5nZWqa954P+DrUx/8fI98YNywnHP5XcD3tQ9w==}
@@ -3369,6 +3377,8 @@ snapshots:
       vite: 8.3.2(@types/node@26.6.4)
 
   '@tanstack/history@1.162.4': {}
+
+  '@tanstack/intent@0.5.0': {}
 
   '@tanstack/react-router@1.170.41(react@19.3.0)(react-dom@19.3.0(react@19.3.0))':
     dependencies:
