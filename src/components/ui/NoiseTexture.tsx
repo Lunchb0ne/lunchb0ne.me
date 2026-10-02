@@ -1,12 +1,8 @@
-"use client";
-
-import { memo } from "react";
-
 /**
  * Subtle noise/grain texture overlay for visual depth.
  * Uses SVG filter rendered to a filled rectangle for film grain effect.
  */
-export const NoiseTexture = memo(() => (
+export const NoiseTexture = () => (
   <svg
     className="pointer-events-none fixed inset-0 z-50 h-full w-full"
     style={{ mixBlendMode: "soft-light", opacity: 0.25 }}
@@ -18,6 +14,4 @@ export const NoiseTexture = memo(() => (
     </filter>
     <rect width="100%" height="100%" filter="url(#noise)" />
   </svg>
-));
-
-NoiseTexture.displayName = "NoiseTexture";
+);

@@ -6,11 +6,10 @@ interface SectionProps {
   children: ReactNode;
   className?: string;
   id?: string;
-  delay?: number;
   maxWidth?: "4xl" | "6xl";
 }
 
-export const Section = ({ children, className = "", id, delay = 0, maxWidth = "6xl" }: SectionProps) => {
+export const Section = ({ children, className, id, maxWidth = "6xl" }: SectionProps) => {
   const maxWidthClass = maxWidth === "4xl" ? "max-w-4xl" : "max-w-6xl";
   const prefersReducedMotion = useReducedMotion();
 
@@ -29,7 +28,6 @@ export const Section = ({ children, className = "", id, delay = 0, maxWidth = "6
             stiffness: 100,
             damping: 20,
             duration: prefersReducedMotion ? 0 : 0.8,
-            delay: prefersReducedMotion ? 0 : delay,
             staggerChildren: prefersReducedMotion ? 0 : 0.1,
           },
         },
@@ -45,13 +43,8 @@ export const Section = ({ children, className = "", id, delay = 0, maxWidth = "6
   );
 };
 
-interface HeaderProps {
-  children: ReactNode;
-  className?: string;
-}
-
-const Header = ({ children, className = "" }: HeaderProps) => (
-  <div className={cn("mb-16 flex items-baseline gap-4", className)}>
+const Header = ({ children }: { children: ReactNode }) => (
+  <div className="mb-16 flex items-baseline gap-4">
     <h2 className="font-light text-4xl text-white/90 tracking-tighter md:text-5xl">{children}</h2>
     <span className="h-px flex-1 bg-white/10" />
   </div>
