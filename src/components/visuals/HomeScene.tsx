@@ -9,6 +9,7 @@ import {
   DEFAULT_POST_PROCESSING,
   DEFAULT_SCENE_CONTROLS,
   IS_MOBILE,
+  MAX_DPR,
   type SceneControls,
 } from "./config";
 import type { DevHomeControlsProps } from "./DevControls";
@@ -27,7 +28,7 @@ export const HomeScene = ({ paused = false }: { paused?: boolean }) => {
   const [controls, setControls] = useState<PostProcessingControls>(DEFAULT_POST_PROCESSING);
   const [sceneControls, setSceneControls] = useState<SceneControls>(DEFAULT_SCENE_CONTROLS);
   const [dodecahedronControls, setDodecahedronControls] = useState<DodecahedronControls>(DEFAULT_DODECAHEDRON_CONTROLS);
-  const [dpr, setDpr] = useState(IS_MOBILE ? 1 : 1.5);
+  const [dpr, setDpr] = useState(MAX_DPR);
 
   const bloomLimit = prefersReducedMotion ? 0.25 : IS_MOBILE ? 0.3 : 2;
   const effectiveBloomIntensity = Math.min(bloomLimit, controls.bloomIntensity);
@@ -51,7 +52,7 @@ export const HomeScene = ({ paused = false }: { paused?: boolean }) => {
         performance={CANVAS_PERFORMANCE_CONFIG}
         frameloop={paused ? "never" : prefersReducedMotion ? "demand" : "always"}
       >
-        <PerformanceMonitor onChange={({ factor }) => setDpr(IS_MOBILE ? 1 : 1 + 0.5 * factor)} />
+        <PerformanceMonitor onChange={({ factor }) => setDpr(IS_MOBILE ? 1 : (MAX_DPR * (2 + factor)) / 3)} />
         <color attach="background" args={BACKGROUND_COLOR} />
         <Dodecahedron
           prism={{

@@ -94,6 +94,14 @@ export const HERO_TAGLINE_INTERVAL_MS = 3000;
 
 export const IS_MOBILE = typeof window !== "undefined" ? window.matchMedia("(max-width: 768px)").matches : false;
 
+// Frame cost scales with canvas pixels, so cap the canvas near 3 MP instead of using a fixed DPR
+// (a fixed 1.5x meant 6–8 MP and 6–20 ms per frame on large displays).
+// ponytail: sized once at load; resizing the window afterwards keeps the initial cap.
+export const MAX_DPR =
+  IS_MOBILE || typeof window === "undefined"
+    ? 1
+    : Math.min(1.5, Math.max(0.75, Math.sqrt(3e6 / (window.innerWidth * window.innerHeight))));
+
 export const CANVAS_GL_CONFIG = {
   antialias: false,
   alpha: true,
