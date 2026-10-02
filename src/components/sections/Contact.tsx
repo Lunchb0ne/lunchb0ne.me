@@ -18,7 +18,10 @@ export const Contact = () => (
           aria-label="Ready to build something?"
           className="mb-6 font-bold text-4xl text-white tracking-tight md:text-5xl"
         >
-          Ready to build something <MorphingWord className="text-cyan-400" />?
+          Ready to build something{" "}
+          <span className="whitespace-nowrap">
+            <MorphingWord className="text-cyan-400" />?
+          </span>
         </h2>
         <p className="mb-12 max-w-xl text-lg text-white/50 leading-relaxed">{CONTACT_CONTENT.intro}</p>
 
