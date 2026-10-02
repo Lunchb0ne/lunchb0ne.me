@@ -1,7 +1,7 @@
 export const CONTACT_CONTENT = {
   intro:
-    "Whether you have a question about distributed systems, want to collaborate on an open-source project, or just want to say hi, my inbox is always open.",
-  ctaLabel: "Say Hello",
+    "Questions about databases or distributed systems, an open-source idea, or an interesting role on an infrastructure team? I'd like to hear about it.",
+  ctaLabel: "Email me",
   email: "hi@lunchb0ne.me",
   socials: [
     {
@@ -17,10 +17,10 @@ export const CONTACT_CONTENT = {
       hoverClassName: "hover:text-[#0077b5]",
     },
     {
-      label: "Twitter",
+      label: "X",
       href: "https://twitter.com/lunchb0ne",
       icon: "twitter",
-      hoverClassName: "hover:text-[#1DA1F2]",
+      hoverClassName: "hover:text-white",
     },
   ],
 } as const;

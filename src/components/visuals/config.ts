@@ -38,9 +38,7 @@ export const CONFIG = {
   },
   ORBIT: {
     RADIUS: 3.1,
-    SPEED: 0.1,
     FLOAT_SPEED: 2,
-    FLOAT_INTENSITY: 0.4,
   },
   PRISM: {
     SAMPLES: 16,
@@ -63,57 +61,46 @@ export const HERO_MARQUEE_FONT_SIZE = 3.5;
 
 // Full list of tech icons - random selection happens client-side in HeroContent
 export const ALL_TECH_ICONS = [
-  { slug: "java", icon: siOpenjdk, name: "Java" },
-  { slug: "go", icon: siGo, name: "Go" },
-  { slug: "typescript", icon: siTypescript, name: "TypeScript" },
-  { slug: "python", icon: siPython, name: "Python" },
-  { slug: "ruby", icon: siRuby, name: "Ruby" },
-  { slug: "kubernetes", icon: siKubernetes, name: "Kubernetes" },
-  { slug: "docker", icon: siDocker, name: "Docker" },
-  { slug: "serverless", icon: siServerless, name: "Serverless" },
-  { slug: "react", icon: siReact, name: "React" },
-  { slug: "nextjs", icon: siNextdotjs, name: "Next.js" },
-  { slug: "tailwind", icon: siTailwindcss, name: "Tailwind" },
-  { slug: "threejs", icon: siThreedotjs, name: "Three.js" },
-  { slug: "postgres", icon: siPostgresql, name: "PostgreSQL" },
-  { slug: "mysql", icon: siMysql, name: "MySQL" },
+  { slug: "java", icon: siOpenjdk },
+  { slug: "go", icon: siGo },
+  { slug: "typescript", icon: siTypescript },
+  { slug: "python", icon: siPython },
+  { slug: "ruby", icon: siRuby },
+  { slug: "kubernetes", icon: siKubernetes },
+  { slug: "docker", icon: siDocker },
+  { slug: "serverless", icon: siServerless },
+  { slug: "react", icon: siReact },
+  { slug: "nextjs", icon: siNextdotjs },
+  { slug: "tailwind", icon: siTailwindcss },
+  { slug: "threejs", icon: siThreedotjs },
+  { slug: "postgres", icon: siPostgresql },
+  { slug: "mysql", icon: siMysql },
 ];
 
 // Number of icons to display (randomly selected on each page load)
 export const ICON_COUNT = 6;
 
+// First line carries identity: most visitors only see one or two before scrolling.
+// Keep each under ~36 characters so it fits on one line on a 320px phone.
 export const TAGLINES = [
-  "ARCHITECTING RESILIENT DISTRIBUTED SYSTEMS",
-  "DISTRIBUTED SYSTEMS AT CLOUD SCALE",
-  "CLOUD SCALE DATABASE INTERNALS",
-  "DATABASE INTERNALS & HIGH AVAILABILITY",
-  "HIGH AVAILABILITY AT THE EDGE",
-  "COMPUTING THROUGH OPEN SOURCE",
-  "OPEN SOURCE DISTRIBUTED SYSTEMS",
+  "SOFTWARE ENGINEER · AWS RDS & AURORA",
+  "THE CONTROL PLANE BEHIND YOUR DATABASE",
+  "UPGRADES IN UNDER A MINUTE",
+  "SIMPLE SYSTEMS THAT STAY UP",
+  "OPEN SOURCE ON THE SIDE",
 ];
 
-export const HERO_TAGLINE_Y_OFFSET = -2.6;
 export const HERO_TAGLINE_INTERVAL_MS = 3000;
-export const HERO_TAGLINE_CONTAINER_STYLE = {
-  fontFamily: '"JetBrains Mono", monospace',
-  fontSize: "16px",
-  lineHeight: "1.4",
-  color: CONFIG.COLORS.GLOW,
-  letterSpacing: "0.1em",
-  fontWeight: "700",
-  textShadow: `0 0 15px ${CONFIG.COLORS.GLOW}33`,
-  pointerEvents: "none" as const,
-  opacity: 0.9,
-  textAlign: "center" as const,
-  textWrap: "balance" as const,
-  width: "90vw",
-  maxWidth: "600px",
-  display: "flex",
-  justifyContent: "center",
-  minHeight: "3em",
-} as const;
 
 export const IS_MOBILE = typeof window !== "undefined" ? window.matchMedia("(max-width: 768px)").matches : false;
+
+// Frame cost scales with canvas pixels, so cap the canvas near 3 MP instead of using a fixed DPR
+// (a fixed 1.5x meant 6–8 MP and 6–20 ms per frame on large displays).
+// ponytail: sized once at load; resizing the window afterwards keeps the initial cap.
+export const MAX_DPR =
+  IS_MOBILE || typeof window === "undefined"
+    ? 1
+    : Math.min(1.5, Math.max(0.75, Math.sqrt(3e6 / (window.innerWidth * window.innerHeight))));
 
 export const CANVAS_GL_CONFIG = {
   antialias: false,
@@ -132,11 +119,19 @@ export const DEFAULT_POST_PROCESSING = {
   lutBlend: 0.7,
 } as const;
 
-// Shared Geometries and Materials
-// We create these once here to avoid recreation on every render/mount if possible,
-// or at least have a central definition.
-// Note: In strict R3F, creating these outside component might be anti-pattern if they depend on context,
-// but for standard materials it's fine and efficient.
+export const DEFAULT_SCENE_CONTROLS = {
+  prismColor: CONFIG.COLORS.PRISM,
+  prismTransmission: CONFIG.PRISM.TRANSMISSION,
+  prismIor: CONFIG.PRISM.IOR,
+  prismThickness: CONFIG.PRISM.THICKNESS,
+  keyLightIntensity: 4,
+  glowLightIntensity: 2,
+  warmLightIntensity: 2,
+} as const;
+
+export type SceneControls = typeof DEFAULT_SCENE_CONTROLS;
+
+// Shared geometry and materials, created once at module load
 
 export const coinGeometry = new THREE.CylinderGeometry(
   CONFIG.COIN.RADIUS,
@@ -147,7 +142,7 @@ export const coinGeometry = new THREE.CylinderGeometry(
 
 // Premium metal material variants
 export const COIN_MATERIALS = {
-  // Classic chrome/silver
+  // chrome/silver
   chrome: new THREE.MeshPhysicalMaterial({
     color: "#ffffff",
     roughness: 0.15,
@@ -156,7 +151,7 @@ export const COIN_MATERIALS = {
     clearcoatRoughness: 0.1,
     reflectivity: 1,
   }),
-  // Premium gold
+  // gold
   gold: new THREE.MeshPhysicalMaterial({
     color: "#d4a853",
     roughness: 0.2,
@@ -165,7 +160,7 @@ export const COIN_MATERIALS = {
     clearcoatRoughness: 0.15,
     reflectivity: 1,
   }),
-  // Titanium silver (darker, more matte)
+  // Titanium (darker, more matte)
   titanium: new THREE.MeshPhysicalMaterial({
     color: "#8a9a9a",
     roughness: 0.35,

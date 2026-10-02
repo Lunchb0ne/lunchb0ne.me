@@ -1,9 +1,8 @@
-import { Float, Html, Instances, MeshTransmissionMaterial, Sparkles } from "@react-three/drei";
-import { type ThreeEvent, useFrame } from "@react-three/fiber";
-import { memo, useEffect, useMemo, useRef, useState } from "react";
+import { Float, Instances, MeshTransmissionMaterial, Sparkles } from "@react-three/drei";
+import { type ThreeEvent, useFrame, useThree } from "@react-three/fiber";
+import { useEffect, useMemo, useRef } from "react";
 import type { Group, Mesh } from "three";
 import * as THREE from "three";
-import { TextMorph } from "torph/react";
 import { useSetCursorType } from "@/hooks/useCursor";
 import {
   ALL_TECH_ICONS,
@@ -12,12 +11,8 @@ import {
   CONFIG,
   coinGeometry,
   HERO_MARQUEE_FONT_SIZE,
-  HERO_TAGLINE_CONTAINER_STYLE,
-  HERO_TAGLINE_INTERVAL_MS,
-  HERO_TAGLINE_Y_OFFSET,
   ICON_COUNT,
   IS_MOBILE,
-  TAGLINES,
 } from "./config";
 import { MarqueeText } from "./MarqueeText";
 import { Sticker } from "./Sticker";
@@ -36,6 +31,8 @@ function shuffleArray<T>(array: T[]): T[] {
 function randomMaterial(): keyof typeof COIN_MATERIALS {
   return COIN_MATERIAL_KEYS[Math.floor(Math.random() * COIN_MATERIAL_KEYS.length)];
 }
+
+const FULL_SCALE = new THREE.Vector3(1, 1, 1);
 
 export interface PrismSettings {
   color?: string;
@@ -57,31 +54,28 @@ export const DEFAULT_DODECAHEDRON_CONTROLS: DodecahedronControls = {
   inertia: 0.92,
 };
 
-const PrismMaterial = memo(
-  ({
-    color = CONFIG.COLORS.PRISM,
-    transmission = CONFIG.PRISM.TRANSMISSION,
-    ior = CONFIG.PRISM.IOR,
-    thickness = CONFIG.PRISM.THICKNESS,
-    roughness = CONFIG.PRISM.ROUGHNESS,
-    chromaticAberration = CONFIG.PRISM.CHROMATIC_ABERRATION,
-    anisotropy = CONFIG.PRISM.ANISOTROPY,
-  }: PrismSettings) => (
-    <MeshTransmissionMaterial
-      backside={true}
-      samples={CONFIG.PRISM.SAMPLES}
-      resolution={CONFIG.PRISM.RESOLUTION}
-      transmission={transmission}
-      roughness={roughness}
-      ior={ior}
-      thickness={thickness}
-      chromaticAberration={chromaticAberration}
-      anisotropy={anisotropy}
-      color={color}
-    />
-  ),
+const PrismMaterial = ({
+  color = CONFIG.COLORS.PRISM,
+  transmission = CONFIG.PRISM.TRANSMISSION,
+  ior = CONFIG.PRISM.IOR,
+  thickness = CONFIG.PRISM.THICKNESS,
+  roughness = CONFIG.PRISM.ROUGHNESS,
+  chromaticAberration = CONFIG.PRISM.CHROMATIC_ABERRATION,
+  anisotropy = CONFIG.PRISM.ANISOTROPY,
+}: PrismSettings) => (
+  <MeshTransmissionMaterial
+    backside={true}
+    samples={CONFIG.PRISM.SAMPLES}
+    resolution={CONFIG.PRISM.RESOLUTION}
+    transmission={transmission}
+    roughness={roughness}
+    ior={ior}
+    thickness={thickness}
+    chromaticAberration={chromaticAberration}
+    anisotropy={anisotropy}
+    color={color}
+  />
 );
-PrismMaterial.displayName = "PrismMaterial";
 
 export const Dodecahedron = ({
   prism,
@@ -96,6 +90,9 @@ export const Dodecahedron = ({
   const lastPointer = useRef<[number, number]>([0, 0]);
   const dragging = useRef(false);
   const velocity = useRef<[number, number]>([0, 0]);
+  // Reduced motion renders on demand, so a drag has to request its own frames
+  const invalidate = useThree((state) => state.invalidate);
+  const entrance = useThree((state) => state.frameloop) !== "demand";
 
   useEffect(() => () => geometry.dispose(), [geometry]);
 
@@ -121,10 +118,13 @@ export const Dodecahedron = ({
     velocity.current = [dy * 0.0025, dx * 0.0025];
     meshRef.current.rotation.x += velocity.current[0];
     meshRef.current.rotation.y += velocity.current[1];
+    invalidate();
   };
 
   useFrame(() => {
     if (!meshRef.current) return;
+    // Settle in from slightly smaller on load
+    meshRef.current.scale.lerp(FULL_SCALE, 0.05);
     if (!dragging.current) {
       meshRef.current.rotation.y += 0.003;
       velocity.current[0] *= controls.inertia;
@@ -139,6 +139,7 @@ export const Dodecahedron = ({
     <Float speed={5} rotationIntensity={0.35} floatIntensity={0.5}>
       <mesh
         ref={meshRef}
+        scale={entrance ? 0.85 : 1}
         onPointerOver={() => setCursorType("hover")}
         onPointerOut={() => setCursorType("default")}
         onPointerDown={onPointerDown}
@@ -154,7 +155,6 @@ export const Dodecahedron = ({
 
 export const HeroContent = ({ sparklesEnabled = true }: { sparklesEnabled?: boolean }) => {
   const orbitRef = useRef<Group>(null);
-  const [taglineIndex, setTaglineIndex] = useState(0);
 
   // Simple, readable selection of icons
   const selectedIcons = useMemo(
@@ -164,13 +164,6 @@ export const HeroContent = ({ sparklesEnabled = true }: { sparklesEnabled?: bool
         .map((icon) => ({ ...icon, material: randomMaterial() })),
     [],
   );
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setTaglineIndex((prev) => (prev + 1) % TAGLINES.length);
-    }, HERO_TAGLINE_INTERVAL_MS);
-    return () => clearInterval(interval);
-  }, []);
 
   useFrame((state) => {
     if (orbitRef.current) {
@@ -194,12 +187,6 @@ export const HeroContent = ({ sparklesEnabled = true }: { sparklesEnabled?: bool
         >
           ABHISHEK·ARYAN·
         </MarqueeText>
-
-        <Html center position={[0, HERO_TAGLINE_Y_OFFSET, 0]} className="pointer-events-none">
-          <div style={HERO_TAGLINE_CONTAINER_STYLE}>
-            <TextMorph duration={600}>{TAGLINES[taglineIndex]}</TextMorph>
-          </div>
-        </Html>
       </group>
 
       <group ref={orbitRef}>

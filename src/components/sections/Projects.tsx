@@ -1,9 +1,9 @@
 import type { Icon } from "@phosphor-icons/react";
 import { ArrowUpRightIcon } from "@phosphor-icons/react";
-import { motion } from "framer-motion";
+import { motion } from "motion/react";
 import { Section } from "@/components/ui/Section";
 import { Tag } from "@/components/ui/Tag";
-import { PROJECTS_CONTENT, SECTION_TITLES } from "@/content";
+import { PROJECTS_CONTENT } from "@/content";
 import { cn } from "@/utils/cn";
 
 const containerVariants = {
@@ -19,7 +19,6 @@ const itemVariants = {
 type ProjectData = {
   title: string;
   category: string;
-  role?: string;
   impact?: string;
   stats?: string;
   description: string;
@@ -40,10 +39,18 @@ function MaybeLink({ href, className, children }: { href?: string; className?: s
   return <div className={cn("h-full", className)}>{children}</div>;
 }
 
-function FeaturedCard({ project, isExternal }: { project: ProjectData; isExternal?: boolean }) {
+function FeaturedCard({
+  project,
+  isExternal,
+  spanRows,
+}: {
+  project: ProjectData;
+  isExternal?: boolean;
+  spanRows: boolean;
+}) {
   const Icon = project.icon;
   return (
-    <MaybeLink href={isExternal ? project.link : undefined} className="md:row-span-2">
+    <MaybeLink href={isExternal ? project.link : undefined} className={cn(spanRows && "md:row-span-2")}>
       <motion.div
         variants={itemVariants}
         className="group flex h-full flex-col justify-between overflow-hidden rounded-2xl border border-cyan-500/20 bg-white/5 p-8 shadow-[0_0_30px_rgba(34,211,238,0.04)] transition-colors hover:border-cyan-500/30 md:p-10"
@@ -121,13 +128,17 @@ function CompactCard({ project, isExternal }: { project: ProjectData; isExternal
 function BentoGrid({ projects, isExternal }: { projects: readonly ProjectData[]; isExternal?: boolean }) {
   const featured = projects.find((p) => p.highlight) ?? projects[0];
   const rest = projects.filter((p) => p !== featured);
+  const spanRows = rest.length > 1;
 
   return (
     <motion.div
-      className="grid auto-rows-min grid-cols-1 gap-4 md:grid-cols-[1.4fr_1fr] md:grid-rows-[1fr_1fr]"
+      className={cn(
+        "grid auto-rows-min grid-cols-1 gap-4 md:grid-cols-[1.4fr_1fr]",
+        spanRows && "md:grid-rows-[1fr_1fr]",
+      )}
       variants={containerVariants}
     >
-      <FeaturedCard project={featured} isExternal={isExternal} />
+      <FeaturedCard project={featured} isExternal={isExternal} spanRows={spanRows} />
       {rest.map((project) => (
         <CompactCard key={project.title} project={project} isExternal={isExternal} />
       ))}
@@ -141,7 +152,7 @@ export const Projects = () => {
 
   return (
     <>
-      <Section.Header>{SECTION_TITLES.projects}</Section.Header>
+      <Section.Header id="projects" />
 
       <div className="space-y-20">
         <div>

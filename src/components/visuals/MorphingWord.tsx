@@ -1,29 +1,18 @@
-import { useEffect, useRef, useState } from "react";
+import { useRef } from "react";
 import { TextMorph } from "torph/react";
+import { useCycle } from "@/hooks/useCycle";
 import { cn } from "@/utils/cn";
 
-// Words that tie into the portfolio themes: distributed systems, open source, databases, innovation
-const WORDS = ["Resilient", "Distributed", "Scalable", "Weird", "Open Source"] as const;
+// Completes "Ready to build something ___?", so every entry must read as an adjective phrase
+const WORDS = ["resilient", "fast", "weird", "groundbreaking"] as const;
 const INTERVAL_MS = 2500;
 
 export const MorphingWord = ({ className }: { className?: string }) => {
-  const [index, setIndex] = useState(0);
-  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
-
-  useEffect(() => {
-    intervalRef.current = setInterval(() => {
-      setIndex((prev) => (prev + 1) % WORDS.length);
-    }, INTERVAL_MS);
-
-    return () => {
-      if (intervalRef.current) {
-        clearInterval(intervalRef.current);
-      }
-    };
-  }, []);
+  const ref = useRef<HTMLSpanElement>(null);
+  const index = useCycle(ref, WORDS.length, INTERVAL_MS);
 
   return (
-    <span className={cn(className, "relative inline-block leading-normal")}>
+    <span ref={ref} className={cn(className, "relative inline-block leading-normal")}>
       <TextMorph duration={600}>{WORDS[index]}</TextMorph>
     </span>
   );

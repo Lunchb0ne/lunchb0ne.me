@@ -1,6 +1,4 @@
-import { TanStackDevtools } from "@tanstack/react-devtools";
 import { createRootRoute, HeadContent, Link, Scripts } from "@tanstack/react-router";
-import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
 import { CustomCursor } from "@/components/ui/CustomCursor";
 import { NoiseTexture } from "@/components/ui/NoiseTexture";
 import { siteMeta } from "@/content/seo";
@@ -69,7 +67,9 @@ export const Route = createRootRoute({
   errorComponent: (props) => (
     <div className="flex min-h-dvh flex-col items-center justify-center bg-surface p-4 text-center text-white">
       <h1 className="mb-4 font-bold text-4xl text-red-500">Something went wrong</h1>
-      <p className="mb-8 max-w-md text-neutral-400">{props.error.message}</p>
+      <p className="mb-8 max-w-md text-neutral-400">
+        {props.error instanceof Error ? props.error.message : String(props.error)}
+      </p>
       <button
         type="button"
         onClick={props.reset}
@@ -82,10 +82,10 @@ export const Route = createRootRoute({
   notFoundComponent: () => (
     <div className="flex min-h-dvh flex-col items-center justify-center bg-surface p-4 text-center text-white">
       <h1 className="mb-4 font-bold text-9xl text-neutral-800">404</h1>
-      <h2 className="mb-4 font-semibold text-2xl">Page Not Found</h2>
-      <p className="mb-8 max-w-md text-neutral-400">The page you are looking for does not exist or has been moved.</p>
+      <h2 className="mb-4 font-semibold text-2xl">Page not found</h2>
+      <p className="mb-8 max-w-md text-neutral-400">This page doesn&apos;t exist, or it moved.</p>
       <Link to="/" className="rounded-lg bg-cyan-600 px-6 py-2 font-medium transition-colors hover:bg-cyan-500">
-        Go Home
+        Back to home
       </Link>
     </div>
   ),
@@ -96,25 +96,16 @@ function RootDocument({ children }: { children: React.ReactNode }) {
     <html lang="en">
       <head>
         <HeadContent />
+        {/* Sections fade in on scroll via JS; without it they'd stay invisible */}
+        <noscript>
+          <style>{"section{opacity:1!important;transform:none!important}"}</style>
+        </noscript>
       </head>
       <body>
         <NoiseTexture />
         <CursorProvider>
           <CustomCursor />
           {children}
-          {import.meta.env.DEV && (
-            <TanStackDevtools
-              config={{
-                position: "bottom-right",
-              }}
-              plugins={[
-                {
-                  name: "Tanstack Router",
-                  render: <TanStackRouterDevtoolsPanel />,
-                },
-              ]}
-            />
-          )}
         </CursorProvider>
         <Scripts />
       </body>

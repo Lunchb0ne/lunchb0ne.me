@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { useEffect } from "react";
 import { Navigation } from "@/components/layout/Navigation";
 import { About } from "@/components/sections/About";
 import { Contact } from "@/components/sections/Contact";
@@ -8,6 +9,7 @@ import { Projects } from "@/components/sections/Projects";
 import { Skills } from "@/components/sections/Skills";
 import { Section } from "@/components/ui/Section";
 import { Spotlight } from "@/components/ui/Spotlight";
+import { CONTACT_CONTENT } from "@/content";
 import { buildPageMeta } from "@/content/seo";
 import { useCursorType } from "@/hooks/useCursor";
 import { cn } from "@/utils/cn";
@@ -19,8 +21,18 @@ export const Route = createFileRoute("/")({
   }),
 });
 
+// A note for anyone who opens DevTools
+const greetConsole = () =>
+  console.log(
+    `%cHi there.%c\nThe source is at github.com/lunchb0ne/lunchb0ne.me. Say hello: ${CONTACT_CONTENT.email}`,
+    "font: 700 16px Outfit, sans-serif; color: #22d3ee",
+    "font: 12px 'JetBrains Mono', monospace; color: #a1a1aa",
+  );
+
 function Home() {
   const cursorType = useCursorType();
+
+  useEffect(greetConsole, []);
 
   return (
     <main
