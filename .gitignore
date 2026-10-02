@@ -171,3 +171,6 @@ todos.json
 .gemini
 .cursor
 .cursorignore
+# Claude Code local state (skills in .claude/skills are committed)
+.claude/.cc-writes/
+.claude/settings.local.json
