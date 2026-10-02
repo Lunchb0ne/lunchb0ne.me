@@ -32,6 +32,8 @@ function randomMaterial(): keyof typeof COIN_MATERIALS {
   return COIN_MATERIAL_KEYS[Math.floor(Math.random() * COIN_MATERIAL_KEYS.length)];
 }
 
+const FULL_SCALE = new THREE.Vector3(1, 1, 1);
+
 export interface PrismSettings {
   color?: string;
   transmission?: number;
@@ -90,6 +92,7 @@ export const Dodecahedron = ({
   const velocity = useRef<[number, number]>([0, 0]);
   // Reduced motion renders on demand, so a drag has to request its own frames
   const invalidate = useThree((state) => state.invalidate);
+  const entrance = useThree((state) => state.frameloop) !== "demand";
 
   useEffect(() => () => geometry.dispose(), [geometry]);
 
@@ -120,6 +123,8 @@ export const Dodecahedron = ({
 
   useFrame(() => {
     if (!meshRef.current) return;
+    // Settle in from slightly smaller on load
+    meshRef.current.scale.lerp(FULL_SCALE, 0.05);
     if (!dragging.current) {
       meshRef.current.rotation.y += 0.003;
       velocity.current[0] *= controls.inertia;
@@ -134,6 +139,7 @@ export const Dodecahedron = ({
     <Float speed={5} rotationIntensity={0.35} floatIntensity={0.5}>
       <mesh
         ref={meshRef}
+        scale={entrance ? 0.85 : 1}
         onPointerOver={() => setCursorType("hover")}
         onPointerOut={() => setCursorType("default")}
         onPointerDown={onPointerDown}

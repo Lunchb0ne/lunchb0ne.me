@@ -1,5 +1,5 @@
 import { Instance } from "@react-three/drei";
-import { useFrame } from "@react-three/fiber";
+import { useFrame, useThree } from "@react-three/fiber";
 import { useMemo, useRef } from "react";
 import type * as SI from "simple-icons";
 import * as THREE from "three";
@@ -17,6 +17,9 @@ export const Sticker = ({ icon, index, total }: StickerProps) => {
   const meshRef = useRef<THREE.Group>(null);
   const hoveredRef = useRef(false);
   const setCursorType = useSetCursorType();
+  // Coins pop in one after another; reduced motion renders on demand, so there they start in place
+  const entrance = useThree((state) => state.frameloop) !== "demand";
+  const appearAt = 0.4 + index * 0.12;
 
   // Memoize position calculation
   const { x, y, z } = useMemo(() => {
@@ -52,7 +55,7 @@ export const Sticker = ({ icon, index, total }: StickerProps) => {
     meshRef.current.position.y = y + floatY;
 
     // Handle Scale
-    const targetScale = hoveredRef.current ? CONFIG.ANIMATION.HOVER_SCALE : 1;
+    const targetScale = entrance && t < appearAt ? 0 : hoveredRef.current ? CONFIG.ANIMATION.HOVER_SCALE : 1;
     tempVec.set(targetScale, targetScale, targetScale);
     meshRef.current.scale.lerp(tempVec, CONFIG.ANIMATION.TRANSITION_SPEED);
 
@@ -74,6 +77,7 @@ export const Sticker = ({ icon, index, total }: StickerProps) => {
     <group position={[x, y, z]}>
       <group
         ref={meshRef}
+        scale={entrance ? 0 : 1}
         onPointerOver={(e) => {
           e.stopPropagation();
           hoveredRef.current = true;
