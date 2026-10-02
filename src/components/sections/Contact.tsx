@@ -43,8 +43,9 @@ export const Contact = () => (
           aria-label="Ready to build something?"
           className="mb-6 font-bold text-4xl text-white tracking-tight md:text-5xl"
         >
-          Ready to build something{" "}
-          <span className="whitespace-nowrap">
+          Ready to build something
+          {/* Own line, so the rotating word never reflows the heading */}
+          <span className="block whitespace-nowrap">
             <MorphingWord className="text-cyan-400" />?
           </span>
         </h2>
