@@ -19,6 +19,7 @@ with a Three.js hero scene.
 
 ```bash
 aube install
+aubr skills         # install the agent skills pinned in skills-lock.json
 aubr dev            # dev server at http://localhost:3000
 aubr build          # production build
 aubr preview        # preview the production build

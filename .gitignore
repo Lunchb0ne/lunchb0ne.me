@@ -17,7 +17,8 @@ dist/
 .DS_Store
 *.sublime*
 
-# Agent tooling (skills in .claude/skills are committed)
+# Agent tooling. Skills are pinned in skills-lock.json; install them with `aubr skills`
+.claude/skills/
 .agent/
 .agents/
 .cursor/
