@@ -3,7 +3,7 @@ import { TextMorph } from "torph/react";
 import { cn } from "@/utils/cn";
 
 // Completes "Ready to build something ___?", so every entry must read as an adjective phrase
-const WORDS = ["resilient", "boring", "fast", "weird", "that lasts"] as const;
+const WORDS = ["resilient", "fast", "weird", "groundbreaking"] as const;
 const INTERVAL_MS = 2500;
 
 export const MorphingWord = ({ className }: { className?: string }) => {
